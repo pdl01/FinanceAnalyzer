@@ -8,6 +8,7 @@ package financialanalyzer.companynews;
 import financialanalyzer.http.HTMLPage;
 import financialanalyzer.http.HttpFetcher;
 import financialanalyzer.objects.Company;
+import financialanalyzer.sentimentanalysis.SentimentAnalysisManager;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -23,25 +24,42 @@ import org.springframework.stereotype.Component;
 public class CompanyNewsServiceImpl implements CompanyNewsService {
 
     private static final Logger LOGGER = Logger.getLogger(CompanyNewsServiceImpl.class.getName());
-    
 
+    @Autowired
+    private SentimentAnalysisManager companyNewsSentimentAnalysisManagerImpl;
 
-    
     @Autowired
     private CompanyNewsProviderRegistry companyNewProviderRegistry;
-    
+
     @Override
     public List<CompanyNewsItem> getCompanyNewsItems(Company _company, int _numberOfArticlesPerProvider) {
 
         List<CompanyNewsItem> cnis = new ArrayList<>();
-            
-        for (CompanyNewsProvider provider: this.companyNewProviderRegistry.getProviders()) {
+
+        for (CompanyNewsProvider provider : this.companyNewProviderRegistry.getProviders()) {
             List<CompanyNewsItem> cnis_items = provider.getCompanyNewsItems(_company, _numberOfArticlesPerProvider);
             if (cnis_items != null) {
-                cnis.addAll(cnis_items);
+                for (CompanyNewsItem cnis_item : cnis_items) {
+                    Double d = this.companyNewsSentimentAnalysisManagerImpl.getPositiveSentimentAnalysisIndex(cnis_item.getBody(), null);
+                    LOGGER.info("Positive Sentiment:" + d);
+                    CompanyNewsItem cnisItemClone = null;
+                    try {
+                        cnisItemClone = (CompanyNewsItem) cnis_item.clone();
+                    } catch (Exception e) {
+                        LOGGER.severe(e.getMessage());
+                    }
+
+                    if (cnisItemClone != null) {
+                        cnisItemClone.setExchange(_company.getStockExchange());
+                        cnisItemClone.setSymbol(_company.getStockSymbol());
+                        cnis.add(cnisItemClone);
+                    }
+
+                }
+                //cnis.addAll(cnis_items);
             }
         }
-        
+
         return cnis;
     }
 

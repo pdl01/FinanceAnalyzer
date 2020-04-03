@@ -34,6 +34,10 @@ public class AppConfig {
     private String companyNewsDownloadDir;
     //public final static String companyNewsDownloadDir = "/tmp/fa/work/companyNewsDownloads";
 
+    @Value("${dir.sentimentanalysis.companynews.positive}")
+    private String companyNewsPostiveSentimentAnalysisRefDir;
+
+    
     public final static SimpleDateFormat standardDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
     public String getStockHistoryDownloadDir() {
@@ -62,6 +66,14 @@ public class AppConfig {
 
     public String getCompanyNewsDownloadDir() {
         return companyNewsDownloadDir;
+    }
+
+    public String getCompanyNewsPostiveSentimentAnalysisRefDir() {
+        return companyNewsPostiveSentimentAnalysisRefDir;
+    }
+
+    public void setCompanyNewsPostiveSentimentAnalysisRefDir(String companyNewsPostiveSentimentAnalysisRefDir) {
+        this.companyNewsPostiveSentimentAnalysisRefDir = companyNewsPostiveSentimentAnalysisRefDir;
     }
 
     public void setCompanyNewsDownloadDir(String companyNewsDownloadDir) {

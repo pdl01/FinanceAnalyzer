@@ -9,7 +9,7 @@ package financialanalyzer.companynews;
  *
  * @author pldor
  */
-public class CompanyNewsItem {
+public class CompanyNewsItem implements Cloneable {
     private String id;
     private String url;
     private String subject;
@@ -22,6 +22,11 @@ public class CompanyNewsItem {
 
     public String getId() {
         return id;
+    }
+
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        return super.clone(); //To change body of generated methods, choose Tools | Templates.
     }
 
     public void setId(String id) {

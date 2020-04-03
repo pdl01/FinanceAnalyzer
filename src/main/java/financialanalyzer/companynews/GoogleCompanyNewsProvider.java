@@ -9,9 +9,14 @@ import financialanalyzer.http.HTMLPage;
 import financialanalyzer.http.HttpFetcher;
 import financialanalyzer.objects.Company;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -24,6 +29,7 @@ public class GoogleCompanyNewsProvider implements CompanyNewsProvider {
 
     private static final Logger LOGGER = Logger.getLogger(GoogleCompanyNewsProvider.class.getName());
     public static final String PROVIDER_IDENTIFIER = "google";
+    //private static final String API_KEY = "AIzaSyALO1nr8exiTWuUIpeBSw3B8nPhce01FGU";
     @Autowired
     protected HttpFetcher httpFetcher;
 
@@ -39,7 +45,53 @@ public class GoogleCompanyNewsProvider implements CompanyNewsProvider {
         try {
             LOGGER.info("Starting Download of company News for :" + _company.getStockSymbol());
             companyNewsIndexPage = this.httpFetcher.getResponse(resolvedurl, false);
-            LOGGER.info(companyNewsIndexPage.getContent());
+            //LOGGER.info(companyNewsIndexPage.getContent());
+            if (companyNewsIndexPage != null && companyNewsIndexPage.getContent() != null) {
+                Document doc = Jsoup.parse(companyNewsIndexPage.getContent());
+                Elements dbsr_divs = doc.select("div.dbsr");
+                if (dbsr_divs != null && dbsr_divs.size() > 0) {
+                    Iterator<Element> dbsrDivsIterator = dbsr_divs.iterator();
+                    while (dbsrDivsIterator.hasNext()) {
+                        Element dbsrDiv = dbsrDivsIterator.next();
+                        Element dbsrLink = dbsrDiv.selectFirst("a[href]");
+                        if (dbsrLink != null) {
+                            String dbsrLinkHref = dbsrLink.attr("href");
+                            //download the link to get the title, and text
+                            LOGGER.info(dbsrLinkHref);
+                            //download the link to get the title, and text
+                            HTMLPage companyNewsItemPage = this.httpFetcher.getResponse(dbsrLinkHref, false);
+                            if (companyNewsItemPage != null && companyNewsItemPage.getContent() != null) {
+                                CompanyNewsItem cni = new CompanyNewsItem();
+                                cni.setUrl(dbsrLinkHref);
+                                
+                                //LOGGER.info(companyNewsItemPage.getContent());
+                                Document newsDoc = Jsoup.parse(companyNewsItemPage.getContent());
+                                Element newsTitle = newsDoc.selectFirst("title");
+                                String newsTitleText = "Empty";
+                                if (newsTitle != null) {
+                                    newsTitleText = newsTitle.text();
+
+                                }
+                                cni.setSubject(newsTitleText);
+                                LOGGER.info(newsTitleText);
+                                String bodyText = newsDoc.body().text();
+                                String newsBodyText = "Empty";
+                                
+                                if (bodyText != null && bodyText.length() > 2000) {
+                                    newsBodyText = bodyText;
+                                } else if (bodyText != null) {
+                                    newsBodyText = bodyText;
+                                }
+                                cni.setBody(bodyText);
+                                //LOGGER.info(newsBodyText);
+                                cnis.add(cni);
+
+                            }
+                        }
+                    }
+                }
+            }
+
             LOGGER.info("Completed Download of company News index for :" + _company.getStockSymbol());
 
         } catch (Exception ex) {

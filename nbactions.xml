@@ -10,7 +10,7 @@
                 <goal>org.codehaus.mojo:exec-maven-plugin:1.2.1:exec</goal>
             </goals>
             <properties>
-                <exec.args>-Dapp_home=/tmp/fa -classpath %classpath financialanalyzer.application.FinancialAnalyzerApplication</exec.args>
+                <exec.args>-Dapp_home=/home/phil/fa -classpath %classpath financialanalyzer.application.FinancialAnalyzerApplication</exec.args>
                 <exec.executable>java</exec.executable>
             </properties>
         </action>
@@ -24,7 +24,7 @@
                 <goal>org.codehaus.mojo:exec-maven-plugin:1.5.0:exec</goal>
             </goals>
             <properties>
-                <exec.args>-agentlib:jdwp=transport=dt_socket,server=n,address=${jpda.address} -Dapp_home=/temp/fa -classpath %classpath financialanalyzer.application.FinancialAnalyzerApplication</exec.args>
+                <exec.args>-agentlib:jdwp=transport=dt_socket,server=n,address=${jpda.address} -Dapp_home=/home/phil/fa -classpath %classpath financialanalyzer.application.FinancialAnalyzerApplication</exec.args>
                 <exec.executable>java</exec.executable>
                 <jpda.listen>true</jpda.listen>
             </properties>
@@ -39,7 +39,7 @@
                 <goal>org.codehaus.mojo:exec-maven-plugin:1.5.0:exec</goal>
             </goals>
             <properties>
-                <exec.args>-Dapp_home=/tmp/fa -classpath %classpath financialanalyzer.application.FinancialAnalyzerApplication</exec.args>
+                <exec.args>-Dapp_home=/home/phil/fa -classpath %classpath financialanalyzer.application.FinancialAnalyzerApplication</exec.args>
                 <exec.executable>java</exec.executable>
             </properties>
         </action>

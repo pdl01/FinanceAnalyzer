@@ -24,6 +24,12 @@ import org.springframework.stereotype.Component;
 public class HttpFetcher {
 
     private static final Logger LOGGER = Logger.getLogger(HttpFetcher.class.getName());
+
+    private static final String[] agents = {
+            "Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:56.0) Gecko/20100101 Firefox/56.0",
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X x.y; rv:42.0) Gecko/20100101 Firefox/42.0",
+            "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.106 Safari/537.36 OPR/38.0.2220.41"
+        };
 // Create a trust manager that does not validate certificate chains 
     private static final TrustManager[] trustAllCerts = new TrustManager[]{
         new X509TrustManager() {
@@ -57,9 +63,12 @@ public class HttpFetcher {
             URL urlObj = new URL(_url);
             HTMLPage htmlPage = new HTMLPage();
             HttpURLConnection conn = (HttpURLConnection) urlObj.openConnection();
+            conn.setConnectTimeout(2000);
+            conn.setReadTimeout(2000);
+
             conn.setRequestMethod("GET");
             if (_agent != null) {
-                conn.addRequestProperty("User-Agent",_agent);
+                conn.addRequestProperty("User-Agent", _agent);
             }
             int responseCode = conn.getResponseCode();
 
@@ -90,8 +99,15 @@ public class HttpFetcher {
         return null;
     }
 
-    public HTMLPage getResponse(String _url,boolean contentTextOnly) {
-        return this.getResponse(_url, "Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:56.0) Gecko/20100101 Firefox/56.0",contentTextOnly);
+    public HTMLPage getResponse(String _url, boolean contentTextOnly) {
+        return this.getResponse(_url, this.getRandomAgent(), contentTextOnly);
 
+    }
+
+    private String getRandomAgent() {
+
+        int index =  (int) (Math.random()*agents.length);
+        return agents[index];
+                
     }
 }

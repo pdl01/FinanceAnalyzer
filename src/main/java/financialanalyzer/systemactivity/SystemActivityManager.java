@@ -10,7 +10,7 @@ package financialanalyzer.systemactivity;
  * @author pldor
  */
 public interface SystemActivityManager {
-    public final static String ACTIVITY_TYPE_STOCK_SEARCH = "stock-search";
+    public final static String ACTIVITY_TYPE_STOCK_SYMBOL_SEARCH = "stock-symbol-search";
     public final static String ACTIVITY_TYPE_STOCK_HISTORY_DOWNLOAD = "stock-history-download";
     public final static String ACTIVITY_TYPE_COMPANY_NEWS = "company-news";
     

@@ -6,12 +6,10 @@
 package financialanalyzer.companynews;
 
 import financialanalyzer.config.ActiveMQConfig;
-import financialanalyzer.download.StockHistoryDownloadTask;
-import financialanalyzer.download.StockHistoryDownloadTaskReceiver;
-import financialanalyzer.http.HTMLPage;
-import financialanalyzer.http.HttpFetcher;
 import financialanalyzer.objects.Company;
-import java.util.logging.Level;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
 import java.util.logging.Logger;
 import javax.jms.Message;
 import javax.jms.Session;
@@ -30,22 +28,42 @@ import org.springframework.stereotype.Component;
 public class CompanyNewsReceiver {
 
     private static final Logger LOGGER = Logger.getLogger(CompanyNewsReceiver.class.getName());
-    
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+
     @Autowired
     private CompanyNewsRepo companyNewsSearchRepo;
-    
 
-    
+    @Autowired
+    private CompanyNewsService companyNewsServiceImpl;
+
     @JmsListener(destination = ActiveMQConfig.COMPANY_NEWS_QUEUE)
     public void receiveMessage(@Payload Company _company,
             @Headers MessageHeaders headers,
             Message message, Session session) {
         LOGGER.info("Received " + _company.getId());
         //get top 10 news urls about the company
-       
+
+        List<CompanyNewsItem> cnis = this.companyNewsServiceImpl.getCompanyNewsItems(_company, 10);
+
+        if (cnis != null && cnis.size() > 0) {
+            for (CompanyNewsItem cni : cnis) {
+                //check if it exists already; if it does don't update
+                CompanyNewsSearchProperties cnsp = new CompanyNewsSearchProperties();
+                cnsp.setCompanyNewsItemId(cni.getId());
+
+                List<CompanyNewsItem> alreadyIngestedNewsItems = this.companyNewsSearchRepo.searchForCompanyNews(cnsp);
+                if (alreadyIngestedNewsItems == null || (alreadyIngestedNewsItems != null && alreadyIngestedNewsItems.size() == 0)) {
+                    cni.setRecordDate(new Date());
+                    cni.setPublishedDate(new Date());
+                    this.companyNewsSearchRepo.submit(cni);
+                    //TODO:trigger sentimient analysis update
+                }
+            }
+
+        }
         //save the url and text and do some sentiment analysis (good/bad news)
         //save the item to the repo
-        
+
         //this.companyNewsSearchRepo.submit(_companyNewsItem);
     }
 }

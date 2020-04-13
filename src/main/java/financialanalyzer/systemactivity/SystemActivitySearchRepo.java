@@ -123,12 +123,7 @@ public class SystemActivitySearchRepo extends ElasticSearchManager implements Sy
 
         }
         if (_sp.getActivityType() != null) {
-            try {
-                boolQuery.must(QueryBuilders.matchQuery("activityType", sdf.parse(_sp.getActivityType())));
-            } catch (ParseException ex) {
-                logger.log(Level.SEVERE, null, ex);
-            }
-
+            boolQuery.must(QueryBuilders.matchQuery("activityType", _sp.getActivityType()));
         }
 
         //.fuzziness(Fuzziness.AUTO);

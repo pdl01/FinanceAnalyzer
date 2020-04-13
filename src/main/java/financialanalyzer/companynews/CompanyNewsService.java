@@ -14,4 +14,5 @@ import java.util.List;
  */
 public interface CompanyNewsService {
     public List<CompanyNewsItem> getCompanyNewsItems(Company _company, int _numberOfArticlesPerProvider);
+    public void submitCompanyToDownloadQueue(Company _company);
 }

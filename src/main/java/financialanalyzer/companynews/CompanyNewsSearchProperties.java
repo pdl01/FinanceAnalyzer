@@ -5,10 +5,22 @@
  */
 package financialanalyzer.companynews;
 
+import financialanalyzer.objects.AbstractSearchProperties;
+
 /**
  *
  * @author pldor
  */
-public class CompanyNewsSearchProperties {
-    
+public class CompanyNewsSearchProperties extends AbstractSearchProperties {
+
+    protected String companyNewsItemId;
+
+    public String getCompanyNewsItemId() {
+        return companyNewsItemId;
+    }
+
+    public void setCompanyNewsItemId(String companyNewsItemId) {
+        this.companyNewsItemId = companyNewsItemId;
+    }
+
 }

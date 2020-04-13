@@ -6,18 +6,13 @@
 package financialanalyzer.respository;
 
 import financialanalyzer.elasticsearch.ElasticSearchManager;
-import financialanalyzer.objects.Company;
-import financialanalyzer.objects.CompanySearchProperties;
 import financialanalyzer.objects.StockHistory;
 import financialanalyzer.objects.StockHistorySearchProperties;
 import java.io.IOException;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.index.IndexRequest;

@@ -19,5 +19,5 @@ public interface CompanyNewsRepo {
 
     public boolean delete(CompanyNewsItem _item);
 
-    public List<CompanyNewsItem> searchForSystemActivity(CompanyNewsSearchProperties _sp);
+    public List<CompanyNewsItem> searchForCompanyNews(CompanyNewsSearchProperties _sp);
 }

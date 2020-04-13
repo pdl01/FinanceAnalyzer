@@ -9,6 +9,6 @@ package financialanalyzer.objects;
  *
  * @author pldor
  */
-public class StockHistorySearchProperties extends StockSearchProperties{
+public class StockHistorySearchProperties extends AbstractSearchProperties{
     
 }

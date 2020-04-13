@@ -66,7 +66,7 @@ public class CompanyRestController {
     @RequestMapping(value = "/symbol/{symbol}", method = RequestMethod.GET, produces = "application/json")
     public RestResponse getCompaniesBySymbol(@PathVariable("symbol") String symbol) {
         RestResponse restResponse = new RestResponse();
-        this.systemActivityManagerImpl.saveSystemActivity(null, symbol, SystemActivityManager.ACTIVITY_TYPE_STOCK_SEARCH, "Search Performed");
+        this.systemActivityManagerImpl.saveSystemActivity(symbol,null, SystemActivityManager.ACTIVITY_TYPE_STOCK_SYMBOL_SEARCH, "Search Performed");
         CompanySearchProperties csp = new CompanySearchProperties();
 
         csp.setStockSymbol(symbol);
@@ -79,7 +79,7 @@ public class CompanyRestController {
     public RestResponse getCompanyById(@PathVariable("id") String _id) {
         RestResponse restResponse = new RestResponse();
         CompanySearchProperties csp = new CompanySearchProperties();
-        csp.setCompanyId(_id);;
+        csp.setCompanyId(_id);
         List<Company> companies = this.companySearchRepo.searchForCompany(csp);
         restResponse.setObject(companies);
         return restResponse;
@@ -198,15 +198,18 @@ public class CompanyRestController {
     public RestResponse getCompanyNewsForCompany(@PathVariable("id") String _id) {
         RestResponse restResponse = new RestResponse();
         CompanySearchProperties csp = new CompanySearchProperties();
-        csp.setCompanyId(_id);;
+        csp.setCompanyId(_id);
+        
         List<Company> companies = this.companySearchRepo.searchForCompany(csp);
         List<CompanyNewsItem> companyNewsItems = new ArrayList<>();
+        
         if (companies != null) {
             for (Company company : companies) {
-                List<CompanyNewsItem> cnis = this.companyNewsServiceImpl.getCompanyNewsItems(company, 10);
-                if (cnis != null) {
-                    companyNewsItems.addAll(cnis);
-                }
+                this.companyNewsServiceImpl.submitCompanyToDownloadQueue(company);
+                //List<CompanyNewsItem> cnis = this.companyNewsServiceImpl.getCompanyNewsItems(company, 10);
+                //if (cnis != null) {
+                //    companyNewsItems.addAll(cnis);
+                //}
             }
         }
         restResponse.setObject(companyNewsItems);

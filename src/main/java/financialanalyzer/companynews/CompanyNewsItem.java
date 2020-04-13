@@ -5,19 +5,24 @@
  */
 package financialanalyzer.companynews;
 
+import java.util.Date;
+
 /**
  *
  * @author pldor
  */
 public class CompanyNewsItem implements Cloneable {
+
     private String id;
     private String url;
     private String subject;
     private String body;
     private String exchange;
     private String symbol;
-    private String publishedDate;
-    private String recordDate;
+    private Date publishedDate;
+    private String publishedDateAsString;
+    private String recordDateAsString;
+    private Date recordDate;
     private String sentiment;
 
     public String getId() {
@@ -73,22 +78,6 @@ public class CompanyNewsItem implements Cloneable {
         this.symbol = symbol;
     }
 
-    public String getPublishedDate() {
-        return publishedDate;
-    }
-
-    public void setPublishedDate(String publishedDate) {
-        this.publishedDate = publishedDate;
-    }
-
-    public String getRecordDate() {
-        return recordDate;
-    }
-
-    public void setRecordDate(String recordDate) {
-        this.recordDate = recordDate;
-    }
-
     public String getSentiment() {
         return sentiment;
     }
@@ -96,6 +85,37 @@ public class CompanyNewsItem implements Cloneable {
     public void setSentiment(String sentiment) {
         this.sentiment = sentiment;
     }
-    
-    
+
+    public Date getPublishedDate() {
+        return publishedDate;
+    }
+
+    public void setPublishedDate(Date publishedDate) {
+        this.publishedDate = publishedDate;
+    }
+
+    public Date getRecordDate() {
+        return recordDate;
+    }
+
+    public void setRecordDate(Date recordDate) {
+        this.recordDate = recordDate;
+    }
+
+    public String getPublishedDateAsString() {
+        return publishedDateAsString;
+    }
+
+    public void setPublishedDateAsString(String publishedDateAsString) {
+        this.publishedDateAsString = publishedDateAsString;
+    }
+
+    public String getRecordDateAsString() {
+        return recordDateAsString;
+    }
+
+    public void setRecordDateAsString(String recordDateAsString) {
+        this.recordDateAsString = recordDateAsString;
+    }
+
 }

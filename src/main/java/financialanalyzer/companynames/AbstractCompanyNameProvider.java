@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package financialanalyzer.download;
+package financialanalyzer.companynames;
 
 import financialanalyzer.http.HttpFetcher;
 import financialanalyzer.http.HTMLPage;
@@ -12,10 +12,12 @@ import com.opencsv.CSVReader;
 import financialanalyzer.config.AppConfig;
 import financialanalyzer.objects.Company;
 import financialanalyzer.objects.StockHistory;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -37,16 +39,16 @@ import org.springframework.beans.factory.annotation.Autowired;
  *
  * @author pldor
  */
-public abstract class AbstractCompanyProvider {
+public abstract class AbstractCompanyNameProvider {
 
-    private static final Logger LOGGER = Logger.getLogger(AdvfnAMEXCompanyProvider.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(AdvfnAMEXCompanyNameProvider.class.getName());
 
     @Autowired
     protected HttpFetcher httpFetcher;
 
     @Autowired
-    protected AppConfig appConfig;    
-    
+    protected AppConfig appConfig;
+
     protected List<StockHistory> downloadAndProcessCSVFromNasDaq(String _exchange, String _symbol, Date _date) {
         //https://www.nasdaq.com/api/v1/historical/BA/stocks/2020-03-01/2020-03-07
         String url = "https://www.nasdaq.com/api/v1/historical/::SYMBOL::/stocks/::MIN-DATE::/::MAX-DATE::";
@@ -66,25 +68,35 @@ public abstract class AbstractCompanyProvider {
             now.setTime(refDate);
             now.add(Calendar.DAY_OF_YEAR, -4);
             min_date = sdf.format(now.getTime());
-        } 
+        }
 
         String resolvedURL = url.replaceAll("::SYMBOL::", _symbol).replaceAll("::MIN-DATE::", min_date).replaceAll("::MAX-DATE::", max_date);
-        String downloadDirectoryPath = this.appConfig.getStockHistoryDownloadDir() + "/"+sdf.format(new Date());
-        File downloadDirecory = new File (downloadDirectoryPath);
+        String downloadDirectoryPath = this.appConfig.getStockHistoryDownloadDir() + "/" + sdf.format(new Date());
+        File downloadDirecory = new File(downloadDirectoryPath);
         downloadDirecory.mkdirs();
         String downloadFile = downloadDirectoryPath + "/" + _symbol + "-" + max_date + ".csv";
         boolean downloaded = this.downloadCSVForExchangeFromNasDaq(resolvedURL, downloadFile);
         LOGGER.info(downloaded + " : " + resolvedURL);
-
-        List<StockHistory> shs = new ArrayList<>();
-        shs = processStockHistoryExchangeCVS(_exchange, _symbol, _date, downloadFile);
-        return shs;
+        if (downloaded) {
+            List<StockHistory> shs = new ArrayList<>();
+            shs = processStockHistoryExchangeCVS(_exchange, _symbol, _date, downloadFile);
+            return shs;
+        }
+        return null;
     }
 
     protected boolean downloadCSVForExchangeFromNasDaq(String _url, String _fileName) {
         try {
-            InputStream in = new URL(_url).openStream();
-            Files.copy(in, Paths.get(_fileName), StandardCopyOption.REPLACE_EXISTING);
+            URL csvUrl = new URL(_url);
+            BufferedReader in = new BufferedReader(new InputStreamReader(csvUrl.openStream()));
+            String inputLine;
+            while ((inputLine = in.readLine()) != null){
+                System.out.println(inputLine);
+            }
+                
+            in.close();
+            
+            //Files.copy(in., Paths.get(_fileName), StandardCopyOption.REPLACE_EXISTING);
             File f = new File(_fileName);
             if (f.canRead()) {
                 return true;

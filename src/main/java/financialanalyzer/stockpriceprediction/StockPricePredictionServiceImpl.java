@@ -5,7 +5,7 @@
  */
 package financialanalyzer.stockpriceprediction;
 
-import financialanalyzer.download.StockHistoryDownloadDriver;
+import financialanalyzer.stockhistory.StockHistoryDownloadDriver;
 import financialanalyzer.objects.Company;
 import financialanalyzer.objects.StockHistory;
 import financialanalyzer.objects.StockHistorySearchProperties;

@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package financialanalyzer.download;
+package financialanalyzer.companynames;
 
 import financialanalyzer.config.AppConfig;
 import financialanalyzer.objects.Company;
@@ -18,9 +18,9 @@ import org.springframework.stereotype.Component;
  * @author pldor
  */
 @Component
-public class AdvfnNYSECompanyProvider extends AbstractCompanyProvider implements CompanyProvider {
+public class AdvfnNYSECompanyNameProvider extends AbstractCompanyNameProvider implements CompanyNameProvider {
 
-    private static final Logger LOGGER = Logger.getLogger(AdvfnNYSECompanyProvider.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(AdvfnNYSECompanyNameProvider.class.getName());
 
     private static String download_url = "https://old.nasdaq.com/screening/companies-by-name.aspx?letter=0&exchange=nyse&render=download";
     //private static String latest_filename = AppConfig.companyDownloadDir + "/nyse_latest.csv";
@@ -42,18 +42,21 @@ public class AdvfnNYSECompanyProvider extends AbstractCompanyProvider implements
         return null;
     }
 
+    private String getLatestFileName() {
+        return this.appConfig.getCompanyDownloadDir() + "/nyse_latest.csv";
+    }
+    /*
     @Override
     public List<StockHistory> getStockHistoryForCompany(String _symbol) {
         return this.getStockHistoryForCompanyForDay(_symbol,null);
     }
-    private String getLatestFileName() {
-        return this.appConfig.getCompanyDownloadDir() + "/nyse_latest.csv";
-    }
+
     @Override
     public List<StockHistory> getStockHistoryForCompanyForDay(String _symbol, Date _date) {
-                return this.downloadAndProcessCSVFromNasDaq(CompanyProvider.EXCHANGE_NYSE,_symbol, _date);
+                return this.downloadAndProcessCSVFromNasDaq(CompanyNameProvider.EXCHANGE_NYSE,_symbol, _date);
 
         //return this.downloadTimeHistoryAlphavantage(CompanyProvider.EXCHANGE_NYSE,_symbol, _date);
     }
+     */
 
 }

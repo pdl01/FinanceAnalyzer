@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package financialanalyzer.download;
+package financialanalyzer.companynames;
 
 import financialanalyzer.objects.Company;
 import financialanalyzer.objects.StockHistory;
@@ -14,13 +14,17 @@ import java.util.List;
  *
  * @author pldor
  */
-public interface CompanyProvider {
+public interface CompanyNameProvider {
+
     public static final String EXCHANGE_NASDAQ = "nasdaq";
     public static final String EXCHANGE_AMEX = "amex";
     public static final String EXCHANGE_NYSE = "nyse";
-    
+
     List<Company> getAllCompanies();
+
     List<Company> getCompaniesBeginningWithLetter(String _letter);
-    List<StockHistory> getStockHistoryForCompany(String _symbol);
-    List<StockHistory> getStockHistoryForCompanyForDay(String _symbol,Date _date);
+
+    //List<StockHistory> getStockHistoryForCompany(String _symbol);
+
+    //List<StockHistory> getStockHistoryForCompanyForDay(String _symbol, Date _date);
 }

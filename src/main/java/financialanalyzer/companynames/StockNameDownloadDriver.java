@@ -1,5 +1,5 @@
 
-package financialanalyzer.download;
+package financialanalyzer.companynames;
 
 /**
  *

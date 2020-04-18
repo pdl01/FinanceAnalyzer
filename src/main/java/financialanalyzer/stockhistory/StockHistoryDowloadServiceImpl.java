@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package financialanalyzer.download;
+package financialanalyzer.stockhistory;
 
 import financialanalyzer.config.ActiveMQConfig;
 import financialanalyzer.objects.Company;
@@ -12,9 +12,11 @@ import financialanalyzer.respository.StockHistorySearchRepo;
 import financialanalyzer.systemactivity.SystemActivityManager;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
+import financialanalyzer.companynames.CompanyNameProvider;
 
 /**
  *
@@ -22,15 +24,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class StockHistoryDowloadServiceImpl implements StockHistoryDownloadService {
-
-    @Autowired
-    private CompanyProvider advfnAMEXCompanyProvider;
-
-    @Autowired
-    private CompanyProvider advfnNYSECompanyProvider;
-
-    @Autowired
-    private CompanyProvider advfnNasDaqCompanyProvider;
+    private static final Logger LOGGER = Logger.getLogger(StockHistoryDowloadServiceImpl.class.getName());
 
     @Autowired
     private StockHistorySearchRepo stockHistorySearchRepoImpl;
@@ -40,6 +34,10 @@ public class StockHistoryDowloadServiceImpl implements StockHistoryDownloadServi
 
     @Autowired
     private JmsTemplate jmsTemplate;
+    
+    @Autowired
+    private StockHistoryProviderRegistry stockHistoryProviderRegistry;
+    
 
     @Override
     public List<StockHistory> fetchDataForCompany(Company company) {
@@ -52,23 +50,36 @@ public class StockHistoryDowloadServiceImpl implements StockHistoryDownloadServi
             return null;
         }
         List<StockHistory> shs = null;
+        
+        StockHistoryProvider shProvider = this.stockHistoryProviderRegistry.getPreferred();
+        if (shProvider == null) {
+            LOGGER.severe("Unable to locate a StockHistory Provider");
+            return null;
+        }
+        
         if (_date != null) {
-            if (company.getStockExchange().equalsIgnoreCase(CompanyProvider.EXCHANGE_NASDAQ)) {
-                shs = this.advfnNasDaqCompanyProvider.getStockHistoryForCompany(company.getStockSymbol());
-            } else if (company.getStockExchange().equalsIgnoreCase(CompanyProvider.EXCHANGE_NYSE)) {
-                shs = this.advfnNYSECompanyProvider.getStockHistoryForCompany(company.getStockSymbol());
-            } else if (company.getStockExchange().equalsIgnoreCase(CompanyProvider.EXCHANGE_AMEX)) {
-                shs = this.advfnAMEXCompanyProvider.getStockHistoryForCompany(company.getStockSymbol());
+            shs = shProvider.getStockHistoryForCompany(company.getStockExchange(),company.getStockSymbol());
+            /*
+            if (company.getStockExchange().equalsIgnoreCase(CompanyNameProvider.EXCHANGE_NASDAQ)) {
+                shs = this.advfnNasDaqCompanyProvider.getStockHistoryForCompany(company.getStockExchange(),company.getStockSymbol());
+            } else if (company.getStockExchange().equalsIgnoreCase(CompanyNameProvider.EXCHANGE_NYSE)) {
+                shs = this.advfnNYSECompanyProvider.getStockHistoryForCompany(company.getStockExchange(),company.getStockSymbol());
+            } else if (company.getStockExchange().equalsIgnoreCase(CompanyNameProvider.EXCHANGE_AMEX)) {
+                shs = this.advfnAMEXCompanyProvider.getStockHistoryForCompany(company.getStockExchange(),company.getStockSymbol());
             }
+            */
 
         } else {
-            if (company.getStockExchange().equalsIgnoreCase(CompanyProvider.EXCHANGE_NASDAQ)) {
+            shs = shProvider.getStockHistoryForCompanyForDay(company.getStockExchange(),company.getStockSymbol(), _date);
+            /*
+            if (company.getStockExchange().equalsIgnoreCase(CompanyNameProvider.EXCHANGE_NASDAQ)) {
                 shs = this.advfnNasDaqCompanyProvider.getStockHistoryForCompanyForDay(company.getStockSymbol(), _date);
-            } else if (company.getStockExchange().equalsIgnoreCase(CompanyProvider.EXCHANGE_NYSE)) {
+            } else if (company.getStockExchange().equalsIgnoreCase(CompanyNameProvider.EXCHANGE_NYSE)) {
                 shs = this.advfnNYSECompanyProvider.getStockHistoryForCompanyForDay(company.getStockSymbol(), _date);
-            } else if (company.getStockExchange().equalsIgnoreCase(CompanyProvider.EXCHANGE_AMEX)) {
+            } else if (company.getStockExchange().equalsIgnoreCase(CompanyNameProvider.EXCHANGE_AMEX)) {
                 shs = this.advfnAMEXCompanyProvider.getStockHistoryForCompanyForDay(company.getStockSymbol(), _date);
             }
+            */
         }
         if (shs != null) {
             for (StockHistory item : shs) {
@@ -105,6 +116,7 @@ public class StockHistoryDowloadServiceImpl implements StockHistoryDownloadServi
 
     @Override
     public void queueStockHistoryDownloadTask(StockHistoryDownloadTask _item) {
+        LOGGER.info("queueing _item:"+_item.getSymbol());
         this.jmsTemplate.convertAndSend(ActiveMQConfig.STOCK_HISTORY_DOWNLOAD_QUEUE, _item);
     }
 

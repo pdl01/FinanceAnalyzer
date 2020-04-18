@@ -7,9 +7,9 @@ package financialanalyzer.controller.v1;
 
 import financialanalyzer.companynews.CompanyNewsItem;
 import financialanalyzer.companynews.CompanyNewsService;
-import financialanalyzer.download.AllStockNamesDownloadDriver;
-import financialanalyzer.download.StockHistoryDownloadDriver;
-import financialanalyzer.download.StockHistoryDownloadService;
+import financialanalyzer.companynames.AllStockNamesDownloadDriver;
+import financialanalyzer.stockhistory.StockHistoryDownloadDriver;
+import financialanalyzer.stockhistory.StockHistoryDownloadService;
 import financialanalyzer.objects.Company;
 import financialanalyzer.objects.CompanySearchProperties;
 import financialanalyzer.objects.StockHistory;
@@ -205,11 +205,11 @@ public class CompanyRestController {
         
         if (companies != null) {
             for (Company company : companies) {
-                this.companyNewsServiceImpl.submitCompanyToDownloadQueue(company);
-                //List<CompanyNewsItem> cnis = this.companyNewsServiceImpl.getCompanyNewsItems(company, 10);
-                //if (cnis != null) {
-                //    companyNewsItems.addAll(cnis);
-                //}
+                //this.companyNewsServiceImpl.submitCompanyToDownloadQueue(company);
+                List<CompanyNewsItem> cnis = this.companyNewsServiceImpl.getCompanyNewsItems(company, 10);
+                if (cnis != null) {
+                    companyNewsItems.addAll(cnis);
+                }
             }
         }
         restResponse.setObject(companyNewsItems);

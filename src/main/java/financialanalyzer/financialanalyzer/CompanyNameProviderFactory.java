@@ -7,7 +7,7 @@ package financialanalyzer.financialanalyzer;
 
 import org.springframework.stereotype.Component;
 
-import financialanalyzer.download.CompanyProvider;
+import financialanalyzer.companynames.CompanyNameProvider;
 
 /**
  *
@@ -17,7 +17,7 @@ import financialanalyzer.download.CompanyProvider;
 public class CompanyNameProviderFactory {
 	
 	
-    public CompanyProvider getCompanyProvider(String _exchange) {
+    public CompanyNameProvider getCompanyProvider(String _exchange) {
     	return null;
     }
 }

@@ -5,7 +5,6 @@
  */
 package financialanalyzer.companynews;
 
-import financialanalyzer.download.CompanyProvider;
 import financialanalyzer.objects.Company;
 import financialanalyzer.objects.CompanySearchProperties;
 import financialanalyzer.respository.CompanySearchRepo;
@@ -14,6 +13,7 @@ import java.util.List;
 import java.util.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
+import financialanalyzer.companynames.CompanyNameProvider;
 
 /**
  *
@@ -41,7 +41,7 @@ public class CompanyNewsDownloadDriver {
     }
 
     public void fetchLatestData(Date _date) {
-        String[] exchangeArray = {CompanyProvider.EXCHANGE_AMEX, CompanyProvider.EXCHANGE_NASDAQ, CompanyProvider.EXCHANGE_NYSE};
+        String[] exchangeArray = {CompanyNameProvider.EXCHANGE_AMEX, CompanyNameProvider.EXCHANGE_NASDAQ, CompanyNameProvider.EXCHANGE_NYSE};
 
         for (String exchange : exchangeArray) {
             CompanySearchProperties csp = new CompanySearchProperties();

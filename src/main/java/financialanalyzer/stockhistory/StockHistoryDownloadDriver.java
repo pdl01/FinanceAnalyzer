@@ -3,22 +3,20 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package financialanalyzer.download;
+package financialanalyzer.stockhistory;
 
-import financialanalyzer.config.ActiveMQConfig;
 import financialanalyzer.objects.Company;
 import financialanalyzer.objects.CompanySearchProperties;
 import financialanalyzer.objects.StockHistory;
-import financialanalyzer.respository.CompanyRepo;
 import financialanalyzer.respository.CompanySearchRepo;
 import financialanalyzer.respository.StockHistorySearchRepo;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jms.core.JmsTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import financialanalyzer.companynames.CompanyNameProvider;
 
 /**
  *
@@ -58,7 +56,7 @@ public class StockHistoryDownloadDriver {
     public void fetchLatestData(Date _date) {
         LOGGER.info("Starting fetchLatestData");
 
-        String[] exchangeArray = {CompanyProvider.EXCHANGE_AMEX, CompanyProvider.EXCHANGE_NASDAQ, CompanyProvider.EXCHANGE_NYSE};
+        String[] exchangeArray = {CompanyNameProvider.EXCHANGE_AMEX, CompanyNameProvider.EXCHANGE_NASDAQ, CompanyNameProvider.EXCHANGE_NYSE};
 
         for (String exchange : exchangeArray) {
             CompanySearchProperties csp = new CompanySearchProperties();

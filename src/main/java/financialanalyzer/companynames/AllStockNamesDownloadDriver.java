@@ -1,5 +1,5 @@
 
-package financialanalyzer.download;
+package financialanalyzer.companynames;
 
 import financialanalyzer.objects.Company;
 import financialanalyzer.respository.CompanyRepo;
@@ -21,18 +21,17 @@ public class AllStockNamesDownloadDriver {
     private CompanyRepo companySearchRepo;
     
     @Autowired
-    private CompanyProvider advfnAMEXCompanyProvider;
-    
-    @Autowired
-    private CompanyProvider advfnNYSECompanyProvider;
-        
-    @Autowired
-    private CompanyProvider advfnNasDaqCompanyProvider;    
+    private CompanyNameProviderRegistry companyNameProviderRegistry;
     
     //@Scheduled(initialDelay = 5000,fixedRate = 1000*60*60*24)
     @Scheduled(initialDelay=1000*60*60*24,fixedRate = 1000*60*60*24)
     public void fetchLatestData() {
         LOGGER.info("Starting fetchLatestData");
+        for (CompanyNameProvider provider: this.companyNameProviderRegistry.getProviders()) {
+            List<Company> companyList = provider.getAllCompanies();
+            this.processCompanyList(companyList);
+        }
+        /*
         List<Company> companyList = this.advfnAMEXCompanyProvider.getAllCompanies();
         this.processCompanyList(companyList);
         
@@ -41,7 +40,7 @@ public class AllStockNamesDownloadDriver {
         
         companyList = this.advfnNasDaqCompanyProvider.getAllCompanies();
         this.processCompanyList(companyList);
-        
+        */
         LOGGER.info("Ending fetchLatestData");
     }
     

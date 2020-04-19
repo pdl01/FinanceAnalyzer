@@ -7,8 +7,8 @@ package financialanalyzer.stockpriceprediction;
 
 import financialanalyzer.stockhistory.StockHistoryDownloadDriver;
 import financialanalyzer.objects.Company;
-import financialanalyzer.objects.StockHistory;
-import financialanalyzer.objects.StockHistorySearchProperties;
+import financialanalyzer.stockhistory.StockHistory;
+import financialanalyzer.stockhistory.StockHistorySearchProperties;
 import financialanalyzer.stockhistory.StockHistoryRepo;
 import financialanalyzer.stockhistory.StockHistorySearchRepo;
 import java.util.List;

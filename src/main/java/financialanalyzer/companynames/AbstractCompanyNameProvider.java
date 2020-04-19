@@ -11,7 +11,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.opencsv.CSVReader;
 import financialanalyzer.config.AppConfig;
 import financialanalyzer.objects.Company;
-import financialanalyzer.objects.StockHistory;
+import financialanalyzer.stockhistory.StockHistory;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;

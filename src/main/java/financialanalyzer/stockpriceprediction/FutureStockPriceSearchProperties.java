@@ -5,7 +5,7 @@
  */
 package financialanalyzer.stockpriceprediction;
 
-import financialanalyzer.objects.StockSearchProperties;
+import financialanalyzer.stockhistory.StockSearchProperties;
 
 /**
  *

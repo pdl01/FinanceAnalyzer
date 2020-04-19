@@ -1,5 +1,5 @@
 
-package financialanalyzer.objects;
+package financialanalyzer.stockhistory;
 
 import java.util.Date;
 

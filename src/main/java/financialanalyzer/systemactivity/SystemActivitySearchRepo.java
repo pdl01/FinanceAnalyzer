@@ -6,7 +6,7 @@
 package financialanalyzer.systemactivity;
 
 import financialanalyzer.elasticsearch.ElasticSearchManager;
-import financialanalyzer.objects.StockHistory;
+import financialanalyzer.stockhistory.StockHistory;
 import financialanalyzer.stockhistory.StockHistorySearchRepo;
 import java.io.IOException;
 import java.text.ParseException;

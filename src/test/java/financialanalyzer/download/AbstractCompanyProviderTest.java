@@ -7,7 +7,7 @@ package financialanalyzer.download;
 
 import financialanalyzer.companynames.AbstractCompanyNameProvider;
 import financialanalyzer.objects.Company;
-import financialanalyzer.objects.StockHistory;
+import financialanalyzer.stockhistory.StockHistory;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;

@@ -7,7 +7,6 @@ package financialanalyzer.stockhistory;
 
 import financialanalyzer.objects.Company;
 import financialanalyzer.objects.CompanySearchProperties;
-import financialanalyzer.objects.StockHistory;
 import financialanalyzer.companynames.CompanySearchRepo;
 import java.util.Date;
 import java.util.List;

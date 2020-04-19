@@ -7,7 +7,6 @@ package financialanalyzer.stockhistory;
 
 import financialanalyzer.config.ActiveMQConfig;
 import financialanalyzer.objects.Company;
-import financialanalyzer.objects.StockHistory;
 import java.util.List;
 import java.util.logging.Logger;
 import javax.jms.Message;

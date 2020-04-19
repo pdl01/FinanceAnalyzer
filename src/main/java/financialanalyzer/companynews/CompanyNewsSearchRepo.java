@@ -6,8 +6,8 @@
 package financialanalyzer.companynews;
 
 import financialanalyzer.elasticsearch.ElasticSearchManager;
-import financialanalyzer.objects.StockHistory;
-import financialanalyzer.objects.StockHistorySearchProperties;
+import financialanalyzer.stockhistory.StockHistory;
+import financialanalyzer.stockhistory.StockHistorySearchProperties;
 import financialanalyzer.stockhistory.StockHistoryReportSearchRepo;
 import java.io.IOException;
 import java.text.ParseException;

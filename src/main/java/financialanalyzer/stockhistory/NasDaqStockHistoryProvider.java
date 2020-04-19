@@ -4,7 +4,6 @@ import com.opencsv.CSVReader;
 import financialanalyzer.config.AppConfig;
 import financialanalyzer.http.HTMLPage;
 import financialanalyzer.http.HttpFetcher;
-import financialanalyzer.objects.StockHistory;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;

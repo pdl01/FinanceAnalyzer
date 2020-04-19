@@ -7,7 +7,7 @@ package financialanalyzer.companynames;
 
 import financialanalyzer.config.AppConfig;
 import financialanalyzer.objects.Company;
-import financialanalyzer.objects.StockHistory;
+import financialanalyzer.stockhistory.StockHistory;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;

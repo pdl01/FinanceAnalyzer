@@ -7,7 +7,7 @@ package financialanalyzer.download;
 
 import financialanalyzer.stockhistory.StockHistoryDowloadServiceImpl;
 import financialanalyzer.objects.Company;
-import financialanalyzer.objects.StockHistory;
+import financialanalyzer.stockhistory.StockHistory;
 import java.util.Date;
 import java.util.List;
 import org.junit.After;

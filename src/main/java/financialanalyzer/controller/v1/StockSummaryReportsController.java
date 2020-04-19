@@ -5,8 +5,8 @@
  */
 package financialanalyzer.controller.v1;
 
-import financialanalyzer.objects.StockHistory;
-import financialanalyzer.objects.StockHistorySearchProperties;
+import financialanalyzer.stockhistory.StockHistory;
+import financialanalyzer.stockhistory.StockHistorySearchProperties;
 import financialanalyzer.report.ReportGenerator;
 import financialanalyzer.report.ReportSummary;
 import financialanalyzer.report.TopVolumesByAmountGenerator;

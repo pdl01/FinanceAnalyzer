@@ -6,7 +6,6 @@
 package financialanalyzer.stockhistory;
 
 import financialanalyzer.objects.Company;
-import financialanalyzer.objects.StockHistory;
 import java.util.Date;
 import java.util.List;
 

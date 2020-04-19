@@ -3,8 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package financialanalyzer.respository;
+package financialanalyzer.companynames;
 
+import financialanalyzer.companynames.CompanyRepo;
 import financialanalyzer.elasticsearch.ElasticSearchManager;
 import financialanalyzer.objects.Company;
 import financialanalyzer.objects.CompanySearchProperties;

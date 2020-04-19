@@ -2,7 +2,6 @@
 package financialanalyzer.companynames;
 
 import financialanalyzer.objects.Company;
-import financialanalyzer.respository.CompanyRepo;
 import java.util.List;
 import java.util.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;

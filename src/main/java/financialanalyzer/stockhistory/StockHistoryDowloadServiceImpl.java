@@ -8,7 +8,6 @@ package financialanalyzer.stockhistory;
 import financialanalyzer.config.ActiveMQConfig;
 import financialanalyzer.objects.Company;
 import financialanalyzer.objects.StockHistory;
-import financialanalyzer.respository.StockHistorySearchRepo;
 import financialanalyzer.systemactivity.SystemActivityManager;
 import java.util.Date;
 import java.util.List;

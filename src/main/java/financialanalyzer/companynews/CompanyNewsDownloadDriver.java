@@ -7,7 +7,7 @@ package financialanalyzer.companynews;
 
 import financialanalyzer.objects.Company;
 import financialanalyzer.objects.CompanySearchProperties;
-import financialanalyzer.respository.CompanySearchRepo;
+import financialanalyzer.companynames.CompanySearchRepo;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;

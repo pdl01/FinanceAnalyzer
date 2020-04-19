@@ -5,7 +5,7 @@
  */
 package financialanalyzer.report;
 
-import financialanalyzer.respository.StockHistoryReportSearchRepo;
+import financialanalyzer.stockhistory.StockHistoryReportSearchRepo;
 import org.elasticsearch.action.search.SearchRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 

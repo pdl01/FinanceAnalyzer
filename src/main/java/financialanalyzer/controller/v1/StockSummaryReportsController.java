@@ -10,7 +10,7 @@ import financialanalyzer.objects.StockHistorySearchProperties;
 import financialanalyzer.report.ReportGenerator;
 import financialanalyzer.report.ReportSummary;
 import financialanalyzer.report.TopVolumesByAmountGenerator;
-import financialanalyzer.respository.StockHistoryRepo;
+import financialanalyzer.stockhistory.StockHistoryRepo;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;

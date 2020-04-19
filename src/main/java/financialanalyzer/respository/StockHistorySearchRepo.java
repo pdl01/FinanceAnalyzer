@@ -39,6 +39,7 @@ public class StockHistorySearchRepo extends ElasticSearchManager implements Stoc
 
     private static final Logger logger = Logger.getLogger(StockHistorySearchRepo.class.getName());
     private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+
     @Override
     public StockHistory submit(StockHistory _item) {
         if (_item == null) {
@@ -59,17 +60,25 @@ public class StockHistorySearchRepo extends ElasticSearchManager implements Stoc
                         "percent_gain", _item.getPercent_gain(),
                         "actual_gain", _item.getActual_gain(),
                         "volume", _item.getVolume(),
-                        "high",_item.getHigh(),
-                        "low",_item.getLow()
+                        "high", _item.getHigh(),
+                        "low", _item.getLow()
                 );
+        int retryCounter = 0;
+        boolean indexedSuccessfully = false;
+        while (!indexedSuccessfully && retryCounter < 3) {
 
-        try {
-            IndexResponse indexResponse = client.index(indexRequest);
-            //logger.info(indexResponse.getIndex());
-            //logger.info(indexResponse.getResult().name());
-        } catch (IOException ex) {
-            //ex.printStackTrace();
-            logger.severe(ex.getMessage());
+            try {
+                logger.info("Index Attempt:"+retryCounter);
+                IndexResponse indexResponse = client.index(indexRequest);
+                //logger.info(indexResponse.getIndex());
+                //logger.info(indexResponse.getResult().name());
+                //TODO: inspect index response instead of just absence of exception for retry
+                indexedSuccessfully = true;
+            } catch (IOException ex) {
+                //ex.printStackTrace();
+                logger.severe(ex.getMessage());
+            }
+            retryCounter++;
         }
         this.closeClient(client);
         return _item;
@@ -119,7 +128,7 @@ public class StockHistorySearchRepo extends ElasticSearchManager implements Stoc
         //searchSourceBuilder.query(QueryBuilders.matchAllQuery());
         QueryBuilder matchQueryBuilder = null;
         BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
-        
+
         if (_shsp.getStockExchange() != null) {
             boolQuery.must(QueryBuilders.matchQuery("exchange", _shsp.getStockExchange()));
 
@@ -130,12 +139,12 @@ public class StockHistorySearchRepo extends ElasticSearchManager implements Stoc
         }
         if (_shsp.getSearchDate() != null) {
             //try {
-                boolQuery.must(QueryBuilders.matchQuery("recordDate", _shsp.getSearchDate()));
+            boolQuery.must(QueryBuilders.matchQuery("recordDate", _shsp.getSearchDate()));
             //} catch (ParseException ex) {
             //    logger.log(Level.SEVERE, null, ex);
             //}
 
-        }        
+        }
 
         //.fuzziness(Fuzziness.AUTO);
         searchSourceBuilder.query(boolQuery).from(_shsp.getStartResults()).size(_shsp.getNumResults());
@@ -148,11 +157,11 @@ public class StockHistorySearchRepo extends ElasticSearchManager implements Stoc
                 searchSourceBuilder.sort(_shsp.getSortField(), SortOrder.DESC);
             }
         }
-        
+
         searchRequest.source(searchSourceBuilder);
 
         try {
-            SearchResponse searchResponse = client.search(searchRequest,RequestOptions.DEFAULT);
+            SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
 
             SearchHits hits = searchResponse.getHits();
             SearchHit[] searchHits = hits.getHits();
@@ -181,11 +190,11 @@ public class StockHistorySearchRepo extends ElasticSearchManager implements Stoc
     private StockHistory buildStockHistoryFromSourceMap(Map<String, Object> _sourceAsMap) {
         //2020-03-09T04:00:00.000Z
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        
+
         String id = (String) _sourceAsMap.get("id");
 
-        String recordDate = ((String) _sourceAsMap.get("recordDate")).substring(0,10);
-        
+        String recordDate = ((String) _sourceAsMap.get("recordDate")).substring(0, 10);
+
         String symbol = (String) _sourceAsMap.get("symbol");
         String exchange = (String) _sourceAsMap.get("exchange");
         //even though mapping is float, sourcemap is being returned as double; need to make unsafe cast, but should be fine
@@ -197,17 +206,15 @@ public class StockHistorySearchRepo extends ElasticSearchManager implements Stoc
         float high = ((Double) _sourceAsMap.get("high")).floatValue();
         float low = ((Double) _sourceAsMap.get("low")).floatValue();
         int volume = (int) _sourceAsMap.get("volume");
-        
-        
-        
+
         StockHistory sh = new StockHistory();
         sh.setRecordDateAsString(recordDate);
         try {
-            sh.setRecordDate(sdf.parse(recordDate));    
+            sh.setRecordDate(sdf.parse(recordDate));
         } catch (Exception e) {
             logger.severe("Cannot convert recordDate from search to java date");
         }
-        
+
         sh.setActual_gain(actual_gain);
         sh.setVolume(volume);
         sh.setPercent_gain(percent_gain);
@@ -215,11 +222,10 @@ public class StockHistorySearchRepo extends ElasticSearchManager implements Stoc
         sh.setClose(closeValue);
         sh.setHigh(high);
         sh.setLow(low);
-        
+
         sh.setExchange(exchange);
         sh.setSymbol(symbol);
-        
-        
+
         return sh;
     }
 }

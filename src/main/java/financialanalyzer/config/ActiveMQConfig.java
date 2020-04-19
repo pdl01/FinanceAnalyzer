@@ -18,7 +18,6 @@ import org.springframework.jms.support.converter.MessageType;
  *
  * @author pldor
  */
-@EnableJms
 @Configuration
 public class ActiveMQConfig {
 

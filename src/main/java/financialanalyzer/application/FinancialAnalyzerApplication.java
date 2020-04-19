@@ -12,6 +12,7 @@ import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.jms.annotation.EnableJms;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
@@ -23,6 +24,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 @EnableScheduling
 @ComponentScan("financialanalyzer")
 @EnableWebMvc
+@EnableJms
 public class FinancialAnalyzerApplication implements ApplicationRunner {
 
     public static void main(String[] args) {

@@ -41,7 +41,7 @@ public class StockHistoryDownloadDriver {
     public void fetchLatestData() {
         this.fetchLatestData(null);
     }
-    @Scheduled(cron = "0 15 1 * * ?")
+    @Scheduled(cron = "0 15 1 * * 2-6")
     public void fetchDaily() {
         LOGGER.info("Starting fetchDaily");
 

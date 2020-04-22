@@ -15,6 +15,8 @@ import financialanalyzer.objects.CompanySearchProperties;
 import financialanalyzer.stockhistory.StockHistory;
 import financialanalyzer.stockhistory.StockHistorySearchProperties;
 import financialanalyzer.companynames.CompanyRepo;
+import financialanalyzer.companynews.CompanyNewsRepo;
+import financialanalyzer.companynews.CompanyNewsSearchProperties;
 import financialanalyzer.stockhistory.StockHistoryRepo;
 import financialanalyzer.systemactivity.SystemActivity;
 import financialanalyzer.systemactivity.SystemActivityManager;
@@ -62,6 +64,9 @@ public class CompanyRestController {
 
     @Autowired
     private CompanyNewsService companyNewsServiceImpl;
+    
+    @Autowired
+    private CompanyNewsRepo companyNewsSearchRepo;
 
     @RequestMapping(value = "/symbol/{symbol}", method = RequestMethod.GET, produces = "application/json")
     public RestResponse getCompaniesBySymbol(@PathVariable("symbol") String symbol) {
@@ -205,8 +210,13 @@ public class CompanyRestController {
         
         if (companies != null) {
             for (Company company : companies) {
+                CompanyNewsSearchProperties cnsp = new CompanyNewsSearchProperties();
+                cnsp.setStockExchange(company.getStockExchange());
+                cnsp.setStockSymbol(company.getStockSymbol());
+                cnsp.setSortField("recordDate");
+               
                 //this.companyNewsServiceImpl.submitCompanyToDownloadQueue(company);
-                List<CompanyNewsItem> cnis = this.companyNewsServiceImpl.getCompanyNewsItems(company, 10);
+                List<CompanyNewsItem> cnis = this.companyNewsSearchRepo.searchForCompanyNews(cnsp);
                 if (cnis != null) {
                     companyNewsItems.addAll(cnis);
                 }

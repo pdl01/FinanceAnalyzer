@@ -38,10 +38,10 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class CompanyNewsSearchRepo extends ElasticSearchManager implements CompanyNewsRepo {
-    
+
     private static final Logger logger = Logger.getLogger(CompanyNewsSearchRepo.class.getName());
     private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-    
+
     @Override
     public CompanyNewsItem submit(CompanyNewsItem _item) {
         logger.info("processing submit");
@@ -52,7 +52,7 @@ public class CompanyNewsSearchRepo extends ElasticSearchManager implements Compa
         if (client == null) {
             return null;
         }
-        
+
         IndexRequest indexRequest = new IndexRequest("companynews", "companynewsitem", _item.getId())
                 .source("id", _item.getId(),
                         "recordDate", sdf.format(_item.getRecordDate()),
@@ -64,24 +64,31 @@ public class CompanyNewsSearchRepo extends ElasticSearchManager implements Compa
                         "body", _item.getBody(),
                         "sentiment", _item.getSentiment()
                 );
-        
-        try {
-            IndexResponse indexResponse = client.index(indexRequest);
-            //logger.info(indexResponse.getIndex());
-            //logger.info(indexResponse.getResult().name());
-        } catch (IOException ex) {
-            //ex.printStackTrace();
-            logger.severe(ex.getMessage());
+
+        int retryCounter = 0;
+        boolean indexedSuccessfully = false;
+        while (!indexedSuccessfully && retryCounter < 3) {
+
+            try {
+                IndexResponse indexResponse = client.index(indexRequest);
+                //logger.info(indexResponse.getIndex());
+                //logger.info(indexResponse.getResult().name());
+                indexedSuccessfully = true;
+            } catch (IOException ex) {
+                //ex.printStackTrace();
+                logger.severe(ex.getMessage());
+                indexedSuccessfully = false;
+            }
         }
         this.closeClient(client);
         return _item;
     }
-    
+
     @Override
     public boolean delete(CompanyNewsItem _item) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-    
+
     @Override
     public List<CompanyNewsItem> searchForCompanyNews(CompanyNewsSearchProperties _sp) {
         logger.info("Beginning Search");
@@ -91,16 +98,16 @@ public class CompanyNewsSearchRepo extends ElasticSearchManager implements Compa
             logger.severe("Client is null");
             return cnis;
         }
-        
+
         SearchRequest searchRequest = new SearchRequest("companynews");
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         //searchSourceBuilder.query(QueryBuilders.matchAllQuery());
         QueryBuilder matchQueryBuilder = null;
         BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
-        
+
         if (_sp.getStockExchange() != null) {
             boolQuery.must(QueryBuilders.matchQuery("exchange", _sp.getStockExchange()));
-            
+
         }
         if (_sp.getStockSymbol() != null) {
             boolQuery.must(QueryBuilders.matchQuery("symbol", _sp.getStockSymbol()));
@@ -119,7 +126,7 @@ public class CompanyNewsSearchRepo extends ElasticSearchManager implements Compa
 
         //.fuzziness(Fuzziness.AUTO);
         searchSourceBuilder.query(boolQuery).from(_sp.getStartResults()).size(_sp.getNumResults());
-        
+
         if (_sp.getSortField() != null) {
             //TODO sort based on dimension type
             if ("ASC".equalsIgnoreCase(_sp.getSortOrder())) {
@@ -128,22 +135,22 @@ public class CompanyNewsSearchRepo extends ElasticSearchManager implements Compa
                 searchSourceBuilder.sort(_sp.getSortField(), SortOrder.DESC);
             }
         }
-        
+
         searchRequest.source(searchSourceBuilder);
-        
+
         try {
             SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
-            
+
             SearchHits hits = searchResponse.getHits();
             SearchHit[] searchHits = hits.getHits();
-            
+
             for (SearchHit hit : searchHits) {
                 //build some artificial items that will house basic info about the artifact, without hitting the main db again. (id,title)
                 if (hit.getType().equalsIgnoreCase("companynewsitem")) {
                     String sourceAsString = hit.getSourceAsString();
                     Map<String, Object> sourceAsMap = hit.getSourceAsMap();
                     CompanyNewsItem cni = this.buildCompanyNewsItemFromSourceMap(sourceAsMap);
-                    
+
                     cnis.add(cni);
                 }
                 // do something with the SearchHit
@@ -151,22 +158,22 @@ public class CompanyNewsSearchRepo extends ElasticSearchManager implements Compa
         } catch (IOException ex) {
             logger.severe(ex.getMessage());
         }
-        
+
         this.closeClient(client);
         logger.info("Returning frm search");
         return cnis;
-        
+
     }
-    
+
     private CompanyNewsItem buildCompanyNewsItemFromSourceMap(Map<String, Object> _sourceAsMap) {
         //2020-03-09T04:00:00.000Z
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        
+
         String id = (String) _sourceAsMap.get("id");
-        
+
         String recordDate = ((String) _sourceAsMap.get("recordDate")).substring(0, 10);
         String publishedDate = ((String) _sourceAsMap.get("publishedDate")).substring(0, 10);
-        
+
         String symbol = (String) _sourceAsMap.get("symbol");
         String exchange = (String) _sourceAsMap.get("exchange");
         //even though mapping is float, sourcemap is being returned as double; need to make unsafe cast, but should be fine
@@ -175,7 +182,7 @@ public class CompanyNewsSearchRepo extends ElasticSearchManager implements Compa
         String body = (String) _sourceAsMap.get("body");
         String url = (String) _sourceAsMap.get("url");
         String sentiment = (String) _sourceAsMap.get("sentiment");
-        
+
         CompanyNewsItem cni = new CompanyNewsItem();
         cni.setId(id);
         cni.setRecordDateAsString(recordDate);
@@ -185,19 +192,19 @@ public class CompanyNewsSearchRepo extends ElasticSearchManager implements Compa
             logger.severe("Cannot convert recordDate from search to java date");
         }
         cni.setPublishedDateAsString(publishedDate);
-        
+
         try {
             cni.setPublishedDate(sdf.parse(publishedDate));
         } catch (Exception e) {
             logger.severe("Cannot convert publishedDate from search to java date");
         }
-        
+
         cni.setSubject(subject);
         cni.setBody(body);
         cni.setUrl(url);
         cni.setSentiment(sentiment);
-        
+
         return cni;
     }
-    
+
 }

@@ -14,11 +14,13 @@ import java.util.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import financialanalyzer.companynames.CompanyNameProvider;
+import org.springframework.stereotype.Component;
 
 /**
  *
  * @author pldor
  */
+@Component
 public class CompanyNewsDownloadDriver {
 
     private static final Logger LOGGER = Logger.getLogger(CompanyNewsDownloadDriver.class.getName());
@@ -31,7 +33,7 @@ public class CompanyNewsDownloadDriver {
     private CompanyNewsService companyNewsServiceImpl;
     
 
-    @Scheduled(cron = "0 15 4 * * ?")
+    @Scheduled(cron = "0 0 22 * * ?")
     public void fetchDaily() {
         LOGGER.info("Starting fetchDaily");
 

@@ -90,7 +90,7 @@ public class NasDaqStockHistoryProvider implements StockHistoryProvider {
 
         boolean downloaded = false;
         int retryCounter = 0;
-        if (!downloaded && retryCounter < 3) {
+        while (!downloaded && retryCounter < 3) {
             LOGGER.info("Download Attempt:"+retryCounter);
             downloaded = this.httpFetcher.downloadToFile(resolvedURL, downloadFile);
             retryCounter++;

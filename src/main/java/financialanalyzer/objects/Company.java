@@ -13,6 +13,7 @@ public class Company {
     private String stockSymbol;
     private String stockExchange;
     private List<String> sectors;
+    private List<String> industries;
 
     public String getId() {
         return this.stockExchange+"-"+this.stockSymbol;
@@ -52,6 +53,14 @@ public class Company {
 
     public void setSectors(List<String> sectors) {
         this.sectors = sectors;
+    }
+
+    public List<String> getIndustries() {
+        return industries;
+    }
+
+    public void setIndustries(List<String> industries) {
+        this.industries = industries;
     }
     
     

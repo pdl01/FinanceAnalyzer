@@ -41,6 +41,8 @@ public class NasDaqStockHistoryProvider implements StockHistoryProvider {
 
     private static final Logger LOGGER = Logger.getLogger(NasDaqStockHistoryProvider.class.getName());
 
+    private static final String IDENTIFIER="nasdaq";
+    
     @Autowired
     protected AppConfig appConfig;
 
@@ -83,16 +85,21 @@ public class NasDaqStockHistoryProvider implements StockHistoryProvider {
         }
 
         String resolvedURL = url.replaceAll("::SYMBOL::", _symbol).replaceAll("::MIN-DATE::", min_date).replaceAll("::MAX-DATE::", max_date);
-        String downloadDirectoryPath = this.appConfig.getStockHistoryDownloadDir() + "/" + sdf.format(new Date());
+        String downloadDirectoryPath = this.appConfig.getStockHistoryDownloadDir() + File.separator + sdf.format(new Date());
         File downloadDirecory = new File(downloadDirectoryPath);
         downloadDirecory.mkdirs();
-        String downloadFile = downloadDirectoryPath + "/" + _symbol + "-" + max_date + ".csv";
-
+        String downloadFileName = downloadDirectoryPath + File.separator + _symbol + "-" + max_date + ".csv";
+        
+        File downloadFile=new File(downloadFileName);
+        if (downloadFile.exists()) {
+            return null;
+        }
+        
         boolean downloaded = false;
         int retryCounter = 0;
         while (!downloaded && retryCounter < 3) {
             LOGGER.info("Download Attempt:"+retryCounter);
-            downloaded = this.httpFetcher.downloadToFile(resolvedURL, downloadFile);
+            downloaded = this.httpFetcher.downloadToFile(resolvedURL, downloadFileName);
             retryCounter++;
         
         }
@@ -101,7 +108,7 @@ public class NasDaqStockHistoryProvider implements StockHistoryProvider {
         LOGGER.info(downloaded + " : " + resolvedURL);
         if (downloaded) {
             List<StockHistory> shs = new ArrayList<>();
-            shs = processStockHistoryExchangeCVS(_exchange, _symbol, _date, downloadFile);
+            shs = processStockHistoryExchangeCVS(_exchange, _symbol, _date, downloadFileName);
             return shs;
         }
         return null;
@@ -219,4 +226,11 @@ public class NasDaqStockHistoryProvider implements StockHistoryProvider {
 
         return shs;
     }
+
+    @Override
+    public String getIdentifier() {
+        return IDENTIFIER;
+    }
+    
+    
 }

@@ -5,6 +5,7 @@
  */
 package financialanalyzer.companynames;
 
+import financialanalyzer.companynews.BingCompanyNewsProvider;
 import financialanalyzer.config.AppConfig;
 import financialanalyzer.objects.Company;
 import financialanalyzer.stockhistory.StockHistory;
@@ -25,6 +26,8 @@ public class AdvfnAMEXCompanyNameProvider extends AbstractCompanyNameProvider im
     private static String download_url = "https://old.nasdaq.com/screening/companies-by-name.aspx?letter=0&exchange=amex&render=download";
     //private static String latest_filename = AppConfig.companyDownloadDir + "/amex_latest.csv";
 
+    public static final String IDENTIFIER = "amex";
+
     @Override
     public List<Company> getAllCompanies() {
         LOGGER.info("Starting getAllCompanies");
@@ -41,9 +44,11 @@ public class AdvfnAMEXCompanyNameProvider extends AbstractCompanyNameProvider im
         LOGGER.info("Ending getCompaniesBeginningWithLetter");
         return null;
     }
+
     private String getLatestFileName() {
         return this.appConfig.getCompanyDownloadDir() + "/amex_latest.csv";
     }
+
     /*
     @Override
     public List<StockHistory> getStockHistoryForCompany(String _symbol) {
@@ -55,6 +60,11 @@ public class AdvfnAMEXCompanyNameProvider extends AbstractCompanyNameProvider im
         return this.downloadAndProcessCSVFromNasDaq(CompanyNameProvider.EXCHANGE_AMEX,_symbol, _date);
         //return this.downloadTimeHistoryAlphavantage(CompanyProvider.EXCHANGE_AMEX,_symbol, _date);
     }
-    */
+     */
+
+    @Override
+    public String getIdentifier() {
+        return IDENTIFIER;
+    }
 
 }

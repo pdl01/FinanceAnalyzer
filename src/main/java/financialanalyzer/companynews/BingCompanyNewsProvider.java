@@ -1,8 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package financialanalyzer.companynews;
 
 import financialanalyzer.http.HTMLPage;
@@ -25,18 +21,18 @@ import org.springframework.stereotype.Component;
  * @author pldor
  */
 @Component
-public class GoogleCompanyNewsProvider implements CompanyNewsProvider {
+public class BingCompanyNewsProvider implements CompanyNewsProvider {
 
-    private static final Logger LOGGER = Logger.getLogger(GoogleCompanyNewsProvider.class.getName());
-    public static final String PROVIDER_IDENTIFIER = "google";
-    //private static final String API_KEY = "AIzaSyALO1nr8exiTWuUIpeBSw3B8nPhce01FGU";
+    private static final Logger LOGGER = Logger.getLogger(BingCompanyNewsProvider.class.getName());
+    public static final String PROVIDER_IDENTIFIER = "bing";
+
     @Autowired
     protected HttpFetcher httpFetcher;
 
     @Override
     public List<CompanyNewsItem> getCompanyNewsItems(Company _company, int _numberOfArticles) {
-        LOGGER.info(this.getIdentifier() + ":beginning getCompanyNewsItems");
-        String url = "https://www.google.com/search?tbm=nws&q=::ENCODED_COMPANY_NAME::";
+        LOGGER.info(this.getIdentifier()+":beginning getCompanyNewsItems");
+        String url = "https://www.bing.com/news/search?q=::ENCODED_COMPANY_NAME::+stock";
         List<CompanyNewsItem> cnis = new ArrayList<>();
 
         HTMLPage companyNewsIndexPage = null;
@@ -49,7 +45,7 @@ public class GoogleCompanyNewsProvider implements CompanyNewsProvider {
             //LOGGER.info(companyNewsIndexPage.getContent());
             if (companyNewsIndexPage != null && companyNewsIndexPage.getContent() != null) {
                 Document doc = Jsoup.parse(companyNewsIndexPage.getContent());
-                Elements dbsr_divs = doc.select("div.dbsr");
+                Elements dbsr_divs = doc.select("div.t_t");
                 if (dbsr_divs != null && dbsr_divs.size() > 0) {
                     Iterator<Element> dbsrDivsIterator = dbsr_divs.iterator();
                     while (dbsrDivsIterator.hasNext()) {
@@ -108,7 +104,7 @@ public class GoogleCompanyNewsProvider implements CompanyNewsProvider {
 
     @Override
     public String getIdentifier() {
-        return GoogleCompanyNewsProvider.PROVIDER_IDENTIFIER;
+        return BingCompanyNewsProvider.PROVIDER_IDENTIFIER;
     }
-
+    
 }

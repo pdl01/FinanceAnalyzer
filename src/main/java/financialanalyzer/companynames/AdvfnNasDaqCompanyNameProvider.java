@@ -5,6 +5,7 @@
  */
 package financialanalyzer.companynames;
 
+import static financialanalyzer.companynames.AdvfnAMEXCompanyNameProvider.IDENTIFIER;
 import financialanalyzer.objects.Company;
 import financialanalyzer.stockhistory.StockHistory;
 import java.util.Date;
@@ -20,7 +21,7 @@ import org.springframework.stereotype.Component;
 public class AdvfnNasDaqCompanyNameProvider extends AbstractCompanyNameProvider implements CompanyNameProvider {
 
     private static final Logger LOGGER = Logger.getLogger(AdvfnNasDaqCompanyNameProvider.class.getName());
-
+    public static final String IDENTIFIER = "nasdaq";
     private static String download_url = "https://old.nasdaq.com/screening/companies-by-name.aspx?letter=0&exchange=nasdaq&render=download";
     //private static String latest_filename = AppConfig.companyDownloadDir + "/nasdaq_latest.csv";
 
@@ -56,4 +57,8 @@ public class AdvfnNasDaqCompanyNameProvider extends AbstractCompanyNameProvider 
 
     }
     */
+        @Override
+    public String getIdentifier() {
+        return IDENTIFIER;
+    }
 }

@@ -20,9 +20,12 @@ public interface CompanyNameProvider {
     public static final String EXCHANGE_AMEX = "amex";
     public static final String EXCHANGE_NYSE = "nyse";
 
-    List<Company> getAllCompanies();
+    public List<Company> getAllCompanies();
 
-    List<Company> getCompaniesBeginningWithLetter(String _letter);
+    public List<Company> getCompaniesBeginningWithLetter(String _letter);
+    
+    public String getIdentifier();
+    
 
     //List<StockHistory> getStockHistoryForCompany(String _symbol);
 

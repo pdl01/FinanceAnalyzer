@@ -49,7 +49,7 @@ public class StockHistoryDowloadServiceImpl implements StockHistoryDownloadServi
         }
         List<StockHistory> shs = null;
         
-        StockHistoryProvider shProvider = this.stockHistoryProviderRegistry.getPreferred();
+        StockHistoryProvider shProvider = this.stockHistoryProviderRegistry.getPreferredProvider();
         if (shProvider == null) {
             LOGGER.severe("Unable to locate a StockHistory Provider");
             return null;
@@ -57,27 +57,10 @@ public class StockHistoryDowloadServiceImpl implements StockHistoryDownloadServi
         
         if (_date != null) {
             shs = shProvider.getStockHistoryForCompany(company.getStockExchange(),company.getStockSymbol());
-            /*
-            if (company.getStockExchange().equalsIgnoreCase(CompanyNameProvider.EXCHANGE_NASDAQ)) {
-                shs = this.advfnNasDaqCompanyProvider.getStockHistoryForCompany(company.getStockExchange(),company.getStockSymbol());
-            } else if (company.getStockExchange().equalsIgnoreCase(CompanyNameProvider.EXCHANGE_NYSE)) {
-                shs = this.advfnNYSECompanyProvider.getStockHistoryForCompany(company.getStockExchange(),company.getStockSymbol());
-            } else if (company.getStockExchange().equalsIgnoreCase(CompanyNameProvider.EXCHANGE_AMEX)) {
-                shs = this.advfnAMEXCompanyProvider.getStockHistoryForCompany(company.getStockExchange(),company.getStockSymbol());
-            }
-            */
 
         } else {
             shs = shProvider.getStockHistoryForCompanyForDay(company.getStockExchange(),company.getStockSymbol(), _date);
-            /*
-            if (company.getStockExchange().equalsIgnoreCase(CompanyNameProvider.EXCHANGE_NASDAQ)) {
-                shs = this.advfnNasDaqCompanyProvider.getStockHistoryForCompanyForDay(company.getStockSymbol(), _date);
-            } else if (company.getStockExchange().equalsIgnoreCase(CompanyNameProvider.EXCHANGE_NYSE)) {
-                shs = this.advfnNYSECompanyProvider.getStockHistoryForCompanyForDay(company.getStockSymbol(), _date);
-            } else if (company.getStockExchange().equalsIgnoreCase(CompanyNameProvider.EXCHANGE_AMEX)) {
-                shs = this.advfnAMEXCompanyProvider.getStockHistoryForCompanyForDay(company.getStockSymbol(), _date);
-            }
-            */
+
         }
         if (shs != null) {
             for (StockHistory item : shs) {

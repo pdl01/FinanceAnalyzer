@@ -5,6 +5,7 @@
  */
 package financialanalyzer.companynames;
 
+import static financialanalyzer.companynames.AdvfnAMEXCompanyNameProvider.IDENTIFIER;
 import financialanalyzer.config.AppConfig;
 import financialanalyzer.objects.Company;
 import financialanalyzer.stockhistory.StockHistory;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Component;
 public class AdvfnNYSECompanyNameProvider extends AbstractCompanyNameProvider implements CompanyNameProvider {
 
     private static final Logger LOGGER = Logger.getLogger(AdvfnNYSECompanyNameProvider.class.getName());
+    public static final String IDENTIFIER = "nyse";
 
     private static String download_url = "https://old.nasdaq.com/screening/companies-by-name.aspx?letter=0&exchange=nyse&render=download";
     //private static String latest_filename = AppConfig.companyDownloadDir + "/nyse_latest.csv";
@@ -58,5 +60,8 @@ public class AdvfnNYSECompanyNameProvider extends AbstractCompanyNameProvider im
         //return this.downloadTimeHistoryAlphavantage(CompanyProvider.EXCHANGE_NYSE,_symbol, _date);
     }
      */
-
+    @Override
+    public String getIdentifier() {
+        return IDENTIFIER;
+    }
 }

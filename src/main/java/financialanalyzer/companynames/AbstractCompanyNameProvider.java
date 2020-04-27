@@ -125,6 +125,9 @@ public abstract class AbstractCompanyNameProvider {
                     List<String> sectors = new ArrayList<>();
                     sectors.add(line[5]);
                     company.setSectors(sectors);
+                    List<String> industries = new ArrayList<>();
+                    industries.add(line[6]);
+                    company.setIndustries(industries);
                     companies.add(company);
                 }
                 lineCounter++;

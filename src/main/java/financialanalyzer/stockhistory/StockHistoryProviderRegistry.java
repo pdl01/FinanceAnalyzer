@@ -5,6 +5,7 @@
  */
 package financialanalyzer.stockhistory;
 
+import financialanalyzer.config.AppConfig;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -16,16 +17,40 @@ import org.springframework.stereotype.Component;
 @Component
 public class StockHistoryProviderRegistry {
 
+    private StockHistoryProvider preferredProvider;
+
     @Autowired
     private List<StockHistoryProvider> providers;
 
+    @Autowired
+    private AppConfig appConfig;
+    
+    
     public List<StockHistoryProvider> getProviders() {
         return providers;
     }
-    public StockHistoryProvider getPreferred(){
-        if (this.providers != null && this.providers.size()>0) {
-            return this.providers.get(0);
+
+    public StockHistoryProvider getPreferredProvider() {
+        if (preferredProvider == null) {
+            if (providers != null) {
+                for (int i=0;i<this.providers.size();i++) {
+                    if (this.providers.get(i).getIdentifier().equalsIgnoreCase(this.appConfig.getPreferredStockHistoryProvider())) {
+                        this.preferredProvider = this.providers.get(i);
+                    }
+                }
+                if (this.preferredProvider == null) {
+                    this.preferredProvider = this.getRandomProvider();
+                }
+            }
         }
-        return null;
+        return this.preferredProvider;
+
     }
+
+    public StockHistoryProvider getRandomProvider() {
+        int index = (int) (Math.random() * providers.size());
+        return this.providers.get(index);
+
+    }
+
 }

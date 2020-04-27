@@ -9,7 +9,9 @@ import java.util.List;
  */
 public interface StockHistoryProvider {
 
-    List<StockHistory> getStockHistoryForCompany(String _exchange,String _symbol);
+    public List<StockHistory> getStockHistoryForCompany(String _exchange,String _symbol);
 
-    List<StockHistory> getStockHistoryForCompanyForDay(String _exchange,String _symbol, Date _date);
+    public List<StockHistory> getStockHistoryForCompanyForDay(String _exchange,String _symbol, Date _date);
+    
+    public String getIdentifier();
 }

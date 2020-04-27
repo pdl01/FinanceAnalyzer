@@ -37,7 +37,15 @@ public class AppConfig {
     @Value("${dir.sentimentanalysis.companynews.positive}")
     private String companyNewsPostiveSentimentAnalysisRefDir;
 
-    
+    @Value("${provider.stockhistory.preferred: default}")
+    private String preferredStockHistoryProvider;
+
+    @Value("${provider.companynews.preferred: default}")
+    private String preferredCompanyNewsProvider;
+
+    @Value("${provider.companyname.preferred: default}")
+    private String preferredCompanyNameProvider;
+
     public final static SimpleDateFormat standardDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
     public String getStockHistoryDownloadDir() {
@@ -78,6 +86,30 @@ public class AppConfig {
 
     public void setCompanyNewsDownloadDir(String companyNewsDownloadDir) {
         this.companyNewsDownloadDir = companyNewsDownloadDir;
+    }
+
+    public String getPreferredStockHistoryProvider() {
+        return preferredStockHistoryProvider;
+    }
+
+    public void setPreferredStockHistoryProvider(String preferredStockHistoryProvider) {
+        this.preferredStockHistoryProvider = preferredStockHistoryProvider;
+    }
+
+    public String getPreferredCompanyNewsProvider() {
+        return preferredCompanyNewsProvider;
+    }
+
+    public void setPreferredCompanyNewsProvider(String preferredCompanyNewsProvider) {
+        this.preferredCompanyNewsProvider = preferredCompanyNewsProvider;
+    }
+
+    public String getPreferredCompanyNameProvider() {
+        return preferredCompanyNameProvider;
+    }
+
+    public void setPreferredCompanyNameProvider(String preferredCompanyNameProvider) {
+        this.preferredCompanyNameProvider = preferredCompanyNameProvider;
     }
     
     

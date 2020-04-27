@@ -43,7 +43,7 @@ public class CompanyNewsReceiver {
         LOGGER.info("Received " + _company.getId());
         //get top 10 news urls about the company
 
-        List<CompanyNewsItem> cnis = this.companyNewsServiceImpl.getCompanyNewsItems(_company, 10);
+        List<CompanyNewsItem> cnis = this.companyNewsServiceImpl.fetchCompanyNewsItems(_company, 10);
 
         if (cnis != null && cnis.size() > 0) {
             for (CompanyNewsItem cni : cnis) {

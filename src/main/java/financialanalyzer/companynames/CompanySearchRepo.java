@@ -53,7 +53,8 @@ public class CompanySearchRepo extends ElasticSearchManager implements CompanyRe
                 .source("id", _company.getId(),
                         "name", _company.getName(), "symbol", _company.getStockSymbol(),
                         "exchange", _company.getStockExchange(),
-                        "sector", _company.getSectors()
+                        "sector", _company.getSectors(),
+                        "industry",_company.getIndustries()
                 );
 
         try {
@@ -168,12 +169,16 @@ public class CompanySearchRepo extends ElasticSearchManager implements CompanyRe
         String name = (String) _sourceAsMap.get("name");
         String symbol = (String) _sourceAsMap.get("symbol");
         String exchange = (String) _sourceAsMap.get("exchange");
-
+        List<String> sectors = (List<String>) _sourceAsMap.get("sector");
+        List<String> industries = (List<String>) _sourceAsMap.get("industry");
         Company company = new Company();
         company.setId(id);
         company.setName(name);
         company.setStockExchange(exchange);
         company.setStockSymbol(symbol);
+        company.setSectors(sectors);
+        company.setIndustries(industries);
+        
         return company;
     }
 

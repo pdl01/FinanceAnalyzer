@@ -13,6 +13,8 @@ import java.util.List;
  * @author pldor
  */
 public interface CompanyNewsService {
-    public List<CompanyNewsItem> getCompanyNewsItems(Company _company, int _numberOfArticlesPerProvider);
+    public List<CompanyNewsItem> fetchCompanyNewsItems(Company _company, int _numberOfArticlesPerProvider);
     public void submitCompanyToDownloadQueue(Company _company);
+  
+    
 }

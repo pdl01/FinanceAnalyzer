@@ -34,7 +34,7 @@ public class CompanyNewsServiceImpl implements CompanyNewsService {
     private JmsTemplate jmsTemplate;    
     
     @Override
-    public List<CompanyNewsItem> getCompanyNewsItems(Company _company, int _numberOfArticlesPerProvider) {
+    public List<CompanyNewsItem> fetchCompanyNewsItems(Company _company, int _numberOfArticlesPerProvider) {
 
         List<CompanyNewsItem> cnis = new ArrayList<>();
 

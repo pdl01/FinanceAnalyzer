@@ -15,6 +15,7 @@ import financialanalyzer.objects.CompanySearchProperties;
 import financialanalyzer.stockhistory.StockHistory;
 import financialanalyzer.stockhistory.StockHistorySearchProperties;
 import financialanalyzer.companynames.CompanyRepo;
+import financialanalyzer.companynews.CompanyNewsDownloadDriver;
 import financialanalyzer.companynews.CompanyNewsRepo;
 import financialanalyzer.companynews.CompanyNewsSearchProperties;
 import financialanalyzer.stockhistory.StockHistoryRepo;
@@ -23,6 +24,7 @@ import financialanalyzer.systemactivity.SystemActivityManager;
 import financialanalyzer.systemactivity.SystemActivityRepo;
 import financialanalyzer.systemactivity.SystemActivitySearchProperties;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,16 +64,12 @@ public class CompanyRestController {
     @Autowired
     private SystemActivityRepo systemActivitySearchRepo;
 
-    @Autowired
-    private CompanyNewsService companyNewsServiceImpl;
-    
-    @Autowired
-    private CompanyNewsRepo companyNewsSearchRepo;
 
+    
     @RequestMapping(value = "/symbol/{symbol}", method = RequestMethod.GET, produces = "application/json")
     public RestResponse getCompaniesBySymbol(@PathVariable("symbol") String symbol) {
         RestResponse restResponse = new RestResponse();
-        this.systemActivityManagerImpl.saveSystemActivity(symbol,null, SystemActivityManager.ACTIVITY_TYPE_STOCK_SYMBOL_SEARCH, "Search Performed");
+        this.systemActivityManagerImpl.saveSystemActivity(symbol, null, SystemActivityManager.ACTIVITY_TYPE_STOCK_SYMBOL_SEARCH, "Search Performed");
         CompanySearchProperties csp = new CompanySearchProperties();
 
         csp.setStockSymbol(symbol);
@@ -133,6 +131,8 @@ public class CompanyRestController {
         //restResponse.setObject(company);
         return restResponse;
     }
+
+
 
     @RequestMapping(value = "/symbol/{symbol}/stock/fetch", method = RequestMethod.POST, produces = "application/json")
     public RestResponse fetchStockInformation(@PathVariable("symbol") String symbol) {
@@ -199,32 +199,6 @@ public class CompanyRestController {
         return restResponse;
     }
 
-    @RequestMapping(value = "/company/{id}/news", method = RequestMethod.GET, produces = "application/json")
-    public RestResponse getCompanyNewsForCompany(@PathVariable("id") String _id) {
-        RestResponse restResponse = new RestResponse();
-        CompanySearchProperties csp = new CompanySearchProperties();
-        csp.setCompanyId(_id);
-        
-        List<Company> companies = this.companySearchRepo.searchForCompany(csp);
-        List<CompanyNewsItem> companyNewsItems = new ArrayList<>();
-        
-        if (companies != null) {
-            for (Company company : companies) {
-                CompanyNewsSearchProperties cnsp = new CompanyNewsSearchProperties();
-                cnsp.setStockExchange(company.getStockExchange());
-                cnsp.setStockSymbol(company.getStockSymbol());
-                cnsp.setSortField("recordDate");
-               
-                //this.companyNewsServiceImpl.submitCompanyToDownloadQueue(company);
-                List<CompanyNewsItem> cnis = this.companyNewsSearchRepo.searchForCompanyNews(cnsp);
-                if (cnis != null) {
-                    companyNewsItems.addAll(cnis);
-                }
-            }
-        }
-        restResponse.setObject(companyNewsItems);
-        return restResponse;
 
-    }
 
 }

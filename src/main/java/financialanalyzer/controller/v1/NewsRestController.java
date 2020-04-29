@@ -50,7 +50,6 @@ public class NewsRestController {
         //restResponse.setObject(company);
         return restResponse;
     }
-    
 
     @RequestMapping(value = "/latest", method = RequestMethod.GET, produces = "application/json")
     public RestResponse getNews() {
@@ -61,25 +60,23 @@ public class NewsRestController {
         List<Company> companies = this.companySearchRepo.searchForCompany(csp);
         List<CompanyNewsItem> companyNewsItems = new ArrayList<>();
 
-        if (companies != null) {
-            for (Company company : companies) {
-                CompanyNewsSearchProperties cnsp = new CompanyNewsSearchProperties();
-                cnsp.setStockExchange(company.getStockExchange());
-                cnsp.setStockSymbol(company.getStockSymbol());
-                cnsp.setSortField("recordDate");
+        CompanyNewsSearchProperties cnsp = new CompanyNewsSearchProperties();
+        //cnsp.setStockExchange(company.getStockExchange());
+        //cnsp.setStockSymbol(company.getStockSymbol());
+        cnsp.setSortField("recordDate");
+        cnsp.setSortOrder("DESC");
+        cnsp.setNumResults(100);
 
-                //this.companyNewsServiceImpl.submitCompanyToDownloadQueue(company);
-                List<CompanyNewsItem> cnis = this.companyNewsSearchRepo.searchForCompanyNews(cnsp);
-                if (cnis != null) {
-                    companyNewsItems.addAll(cnis);
-                }
-            }
+        //this.companyNewsServiceImpl.submitCompanyToDownloadQueue(company);
+        List<CompanyNewsItem> cnis = this.companyNewsSearchRepo.searchForCompanyNews(cnsp);
+        if (cnis != null) {
+            companyNewsItems.addAll(cnis);
         }
         restResponse.setObject(companyNewsItems);
         return restResponse;
 
     }
-    
+
     @RequestMapping(value = "/sector/{sector}", method = RequestMethod.GET, produces = "application/json")
     public RestResponse getNewsBySector(@PathVariable("sector") String _sector) {
         RestResponse restResponse = new RestResponse();
@@ -106,8 +103,8 @@ public class NewsRestController {
         restResponse.setObject(companyNewsItems);
         return restResponse;
 
-    }    
-    
+    }
+
     @RequestMapping(value = "/company/{id}", method = RequestMethod.GET, produces = "application/json")
     public RestResponse getCompanyNewsForCompany(@PathVariable("id") String _id) {
         RestResponse restResponse = new RestResponse();

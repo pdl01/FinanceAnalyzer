@@ -199,6 +199,8 @@ public class CompanyNewsSearchRepo extends ElasticSearchManager implements Compa
             logger.severe("Cannot convert publishedDate from search to java date");
         }
 
+        cni.setSymbol(symbol);
+        cni.setExchange(exchange);
         cni.setSubject(subject);
         cni.setBody(body);
         cni.setUrl(url);

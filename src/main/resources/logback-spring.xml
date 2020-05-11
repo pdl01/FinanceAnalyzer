@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-    <springProperty scope="context" name="LOG_PATH" source="log.path"/>
-    <property name="LOGS" value="${LOG_PATH}/logs" />
+    <include resource="org/springframework/boot/logging/logback/base.xml"/>
+    <springProperty scope="context" name="app_home" source ="app_home"/>
+    <property name="LOG_PATH" value="${app_home}/logs"/>
+    <property name="LOGS" value="${LOG_PATH}" />
  
     <appender name="Console"
         class="ch.qos.logback.core.ConsoleAppender">
@@ -23,7 +25,7 @@
         <rollingPolicy
             class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- rollover daily and when the file reaches 10 MegaBytes -->
-            <fileNamePattern>${LOGS}/archived/fabackend-%d{yyyy-MM-dd}.%i.log
+            <fileNamePattern>${LOGS}/fabackend-%d{yyyy-MM-dd}.%i.log
             </fileNamePattern>
             <timeBasedFileNamingAndTriggeringPolicy
                 class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">

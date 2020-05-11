@@ -10,11 +10,12 @@ import financialanalyzer.objects.Company;
 import financialanalyzer.systemactivity.SystemActivityManager;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
 import financialanalyzer.companynames.CompanyNameProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -22,7 +23,7 @@ import financialanalyzer.companynames.CompanyNameProvider;
  */
 @Component
 public class StockHistoryDowloadServiceImpl implements StockHistoryDownloadService {
-    private static final Logger LOGGER = Logger.getLogger(StockHistoryDowloadServiceImpl.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(StockHistoryDowloadServiceImpl.class.getName());
 
     @Autowired
     private StockHistorySearchRepo stockHistorySearchRepoImpl;
@@ -51,7 +52,7 @@ public class StockHistoryDowloadServiceImpl implements StockHistoryDownloadServi
         
         StockHistoryProvider shProvider = this.stockHistoryProviderRegistry.getPreferredProvider();
         if (shProvider == null) {
-            LOGGER.severe("Unable to locate a StockHistory Provider");
+            LOGGER.error("Unable to locate a StockHistory Provider");
             return null;
         }
         

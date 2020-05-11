@@ -16,7 +16,8 @@ import financialanalyzer.objects.CompanySearchProperties;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,7 +32,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/news")
 public class NewsRestController {
 
-    private static final Logger logger = Logger.getLogger(NewsRestController.class.getName());
+    private static final Logger logger = LoggerFactory.getLogger(NewsRestController.class.getName());
     @Autowired
     private CompanyRepo companySearchRepo;
     @Autowired

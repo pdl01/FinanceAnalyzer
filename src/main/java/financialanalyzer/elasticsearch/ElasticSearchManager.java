@@ -3,10 +3,11 @@ package financialanalyzer.elasticsearch;
 
 import financialanalyzer.config.ElasticSearchConfiguration;
 import java.io.IOException;
-import java.util.logging.Logger;
 import org.apache.http.HttpHost;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -15,7 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public abstract class ElasticSearchManager {
     
-    private static final Logger logger = Logger.getLogger(ElasticSearchManager.class.getName());
+    private static final Logger logger = LoggerFactory.getLogger(ElasticSearchManager.class.getName());
 
     @Autowired
     protected ElasticSearchConfiguration elasticSearchConfiguration;
@@ -27,7 +28,7 @@ public abstract class ElasticSearchManager {
                     RestClient.builder(
                             new HttpHost(this.elasticSearchConfiguration.getElasticsearch_primary_host(), Integer.parseInt(this.elasticSearchConfiguration.getElasticsearch_primary_port()), this.elasticSearchConfiguration.getElasticsearch_primary_protocol()), new HttpHost(this.elasticSearchConfiguration.getElasticsearch_secondary_host(), Integer.parseInt(this.elasticSearchConfiguration.getElasticsearch_secondary_port()), this.elasticSearchConfiguration.getElasticsearch_secondary_protocol())));
         } catch (Exception e) {
-            logger.severe(e.getMessage());
+            logger.error(e.getMessage());
         }
 
         return client;
@@ -38,7 +39,7 @@ public abstract class ElasticSearchManager {
             try {
                 client.close();
             } catch (IOException ex) {
-                logger.severe(ex.getMessage());
+                logger.error(ex.getMessage());
             }
         }
     }    

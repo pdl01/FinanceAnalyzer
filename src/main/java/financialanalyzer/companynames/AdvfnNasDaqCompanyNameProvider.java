@@ -10,7 +10,9 @@ import financialanalyzer.objects.Company;
 import financialanalyzer.stockhistory.StockHistory;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.springframework.stereotype.Component;
 
 /**
@@ -20,7 +22,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class AdvfnNasDaqCompanyNameProvider extends AbstractCompanyNameProvider implements CompanyNameProvider {
 
-    private static final Logger LOGGER = Logger.getLogger(AdvfnNasDaqCompanyNameProvider.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(AdvfnNasDaqCompanyNameProvider.class.getName());
     public static final String IDENTIFIER = "nasdaq";
     private static String download_url = "https://old.nasdaq.com/screening/companies-by-name.aspx?letter=0&exchange=nasdaq&render=download";
     //private static String latest_filename = AppConfig.companyDownloadDir + "/nasdaq_latest.csv";

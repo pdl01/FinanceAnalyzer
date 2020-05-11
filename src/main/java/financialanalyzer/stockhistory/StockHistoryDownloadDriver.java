@@ -10,11 +10,12 @@ import financialanalyzer.objects.CompanySearchProperties;
 import financialanalyzer.companynames.CompanySearchRepo;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import financialanalyzer.companynames.CompanyNameProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -23,7 +24,7 @@ import financialanalyzer.companynames.CompanyNameProvider;
 @Component
 public class StockHistoryDownloadDriver {
 
-    private static final Logger LOGGER = Logger.getLogger(StockHistoryDownloadDriver.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(StockHistoryDownloadDriver.class.getName());
     @Autowired
     private StockHistorySearchRepo stockHistorySearchRepo;
 

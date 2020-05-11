@@ -8,6 +8,7 @@ package financialanalyzer.application;
 import financialanalyzer.config.AppConfig;
 import java.io.File;
 import javax.annotation.PostConstruct;
+import org.slf4j.FactoryFriend;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,6 +61,10 @@ public class FinancialAnalyzerApplication implements ApplicationRunner {
         this.createDirIfNotExists(appConfig.getCompanyDownloadDir());
         this.createDirIfNotExists(appConfig.getCompanyNewsDownloadDir());
         this.createDirIfNotExists(appConfig.getStockHistoryDownloadDir());
+        this.createDirIfNotExists(appConfig.getLogDir());
+        
+        System.setProperty("log.path", appConfig.getLogDir());
+        FactoryFriend.reset();
         logger.info("Finished Initializing FinancialAnalyzer");
     }
 

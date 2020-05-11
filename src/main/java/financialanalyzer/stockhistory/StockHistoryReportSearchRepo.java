@@ -12,8 +12,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
@@ -25,6 +24,8 @@ import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.sort.SortOrder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 /**
@@ -34,7 +35,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class StockHistoryReportSearchRepo extends ElasticSearchManager {
 
-    private static final Logger logger = Logger.getLogger(StockHistoryReportSearchRepo.class.getName());
+    private static final Logger logger = LoggerFactory.getLogger(StockHistoryReportSearchRepo.class.getName());
     public static final String STOCK_HISTORY_INDEX = "stockhistories";
     private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
     
@@ -67,7 +68,7 @@ public class StockHistoryReportSearchRepo extends ElasticSearchManager {
             try {
                 boolQuery.must(QueryBuilders.matchQuery("recordDate", sdf.parse(_shsp.getSearchDate())));
             } catch (ParseException ex) {
-                logger.log(Level.SEVERE, null, ex);
+                logger.error("Parse Error", null, ex);
             }
 
         }
@@ -104,7 +105,7 @@ public class StockHistoryReportSearchRepo extends ElasticSearchManager {
                 // do something with the SearchHit
             }
         } catch (IOException ex) {
-            logger.severe(ex.getMessage());
+            logger.error(ex.getMessage());
         }
 
         this.closeClient(client);
@@ -140,7 +141,7 @@ public class StockHistoryReportSearchRepo extends ElasticSearchManager {
         try {
             sh.setRecordDate(sdf.parse(recordDate));    
         } catch (Exception e) {
-            logger.severe("Cannot convert recordDate from search to java date");
+            logger.error("Cannot convert recordDate from search to java date");
         }
         
         sh.setActual_gain(actual_gain);

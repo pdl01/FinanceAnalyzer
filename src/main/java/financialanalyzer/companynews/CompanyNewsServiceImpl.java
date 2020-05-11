@@ -10,7 +10,8 @@ import financialanalyzer.objects.Company;
 import financialanalyzer.sentimentanalysis.SentimentAnalysisManager;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
@@ -22,7 +23,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class CompanyNewsServiceImpl implements CompanyNewsService {
 
-    private static final Logger LOGGER = Logger.getLogger(CompanyNewsServiceImpl.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(CompanyNewsServiceImpl.class.getName());
 
     @Autowired
     private SentimentAnalysisManager companyNewsSentimentAnalysisManagerImpl;
@@ -49,7 +50,7 @@ public class CompanyNewsServiceImpl implements CompanyNewsService {
                     try {
                         cnisItemClone = (CompanyNewsItem) cnis_item.clone();
                     } catch (Exception e) {
-                        LOGGER.severe(e.getMessage());
+                        LOGGER.error(e.getMessage());
                     }
 
                     if (cnisItemClone != null) {

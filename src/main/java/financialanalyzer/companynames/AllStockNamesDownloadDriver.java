@@ -3,7 +3,9 @@ package financialanalyzer.companynames;
 
 import financialanalyzer.objects.Company;
 import java.util.List;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -14,7 +16,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class AllStockNamesDownloadDriver {
-    private static final Logger LOGGER = Logger.getLogger(AllStockNamesDownloadDriver.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(AllStockNamesDownloadDriver.class.getName());
     
     @Autowired
     private CompanyRepo companySearchRepo;

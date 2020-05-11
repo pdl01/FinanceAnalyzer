@@ -31,8 +31,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -41,7 +41,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public abstract class AbstractCompanyNameProvider {
 
-    private static final Logger LOGGER = Logger.getLogger(AdvfnAMEXCompanyNameProvider.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(AdvfnAMEXCompanyNameProvider.class.getName());
 
     @Autowired
     protected HttpFetcher httpFetcher;
@@ -103,7 +103,7 @@ public abstract class AbstractCompanyNameProvider {
             }
             return false;
         } catch (Exception e) {
-            LOGGER.severe(e.getMessage());
+            LOGGER.error(e.getMessage());
             return false;
         }
     }
@@ -134,7 +134,7 @@ public abstract class AbstractCompanyNameProvider {
                 //System.out.println("Country [id= " + line[0] + ", code= " + line[1] + " , name=" + line[2] + "]");
             }
         } catch (IOException e) {
-            LOGGER.severe("Unable to process csv:" + e.getMessage());
+            LOGGER.error("Unable to process csv:" + e.getMessage());
             e.printStackTrace();
         }
 
@@ -163,12 +163,12 @@ public abstract class AbstractCompanyNameProvider {
             LOGGER.info("Completed Download of stock histories for :" + _symbol);
 
         } catch (Exception ex) {
-            LOGGER.log(Level.SEVERE, "Exception fetching stock data for:" + _symbol, ex);
-
+            LOGGER.error("Exception fetching stock data for:" + _symbol, ex);
+            
         }
 
         if (stockhistorypage.getStatusCode() != 200) {
-            LOGGER.log(Level.SEVERE, "Non Success Error code when fetching stock data for:" + _symbol + ":" + stockhistorypage.getStatusCode());
+            LOGGER.error("Non Success Error code when fetching stock data for:" + _symbol + ":" + stockhistorypage.getStatusCode());
             return null;
         }
 
@@ -185,7 +185,7 @@ public abstract class AbstractCompanyNameProvider {
         List<StockHistory> stockHistories = new ArrayList<>();
         ObjectMapper mapper = new ObjectMapper();
         if (_jsonData == null) {
-            LOGGER.log(Level.SEVERE, "NULL stock history data passed into processor for " + _symbol);
+            LOGGER.error("NULL stock history data passed into processor for " + _symbol);
 
             return stockHistories;
         }
@@ -193,12 +193,12 @@ public abstract class AbstractCompanyNameProvider {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             HashMap<String, Object> map = mapper.readValue(_jsonData, HashMap.class);
             if (map == null) {
-                LOGGER.log(Level.SEVERE, "Unable to process feed for " + _symbol);
+                LOGGER.error( "Unable to process feed for " + _symbol);
                 return null;
             }
             HashMap<String, Object> dailyMap = (HashMap<String, Object>) map.get("Time Series (Daily)");
             if (dailyMap == null) {
-                LOGGER.log(Level.SEVERE, "Unable to get Root feed element for " + _symbol);
+                LOGGER.error("Unable to get Root feed element for " + _symbol);
                 return null;
             }
             Set<String> dailyMapKeys = dailyMap.keySet();
@@ -220,11 +220,11 @@ public abstract class AbstractCompanyNameProvider {
                 stockHistories.add(sh);
             }
         } catch (ParseException ex) {
-            LOGGER.log(Level.SEVERE, "Exception processing feed for :" + _symbol, ex);
+            LOGGER.error( "Exception processing feed for :" + _symbol, ex);
         } catch (IOException ex) {
-            LOGGER.log(Level.SEVERE, "Exception processing feed for :" + _symbol, ex);
+            LOGGER.error( "Exception processing feed for :" + _symbol, ex);
         } catch (Exception ex) {
-            LOGGER.log(Level.SEVERE, "Exception processing feed for :" + _symbol, ex);
+            LOGGER.error("Exception processing feed for :" + _symbol, ex);
         }
         LOGGER.info("Completed processTimeHistoryAlphavantageResult for " + _symbol);
         return stockHistories;
@@ -263,14 +263,14 @@ public abstract class AbstractCompanyNameProvider {
                 //System.out.println("Country [id= " + line[0] + ", code= " + line[1] + " , name=" + line[2] + "]");
             }
         } catch (ParseException e) {
-            LOGGER.severe("Unable to parse date in csv:" + e.getMessage());
+            LOGGER.error("Unable to parse date in csv:" + e.getMessage());
             e.printStackTrace();
         } catch (IOException e) {
 
-            LOGGER.severe("Unable to process csv:" + e.getMessage());
+            LOGGER.error("Unable to process csv:" + e.getMessage());
             e.printStackTrace();
         } catch (Exception e) {
-            LOGGER.severe(_symbol + " : Unable to process csv:" + e.getMessage());
+            LOGGER.error(_symbol + " : Unable to process csv:" + e.getMessage());
             e.printStackTrace();
         }
 

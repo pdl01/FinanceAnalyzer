@@ -5,13 +5,10 @@
  */
 package financialanalyzer.companynames;
 
-import financialanalyzer.companynews.BingCompanyNewsProvider;
-import financialanalyzer.config.AppConfig;
 import financialanalyzer.objects.Company;
-import financialanalyzer.stockhistory.StockHistory;
-import java.util.Date;
 import java.util.List;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 /**
@@ -21,7 +18,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class AdvfnAMEXCompanyNameProvider extends AbstractCompanyNameProvider implements CompanyNameProvider {
 
-    private static final Logger LOGGER = Logger.getLogger(AdvfnAMEXCompanyNameProvider.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(AdvfnAMEXCompanyNameProvider.class.getName());
 
     private static String download_url = "https://old.nasdaq.com/screening/companies-by-name.aspx?letter=0&exchange=amex&render=download";
     //private static String latest_filename = AppConfig.companyDownloadDir + "/amex_latest.csv";

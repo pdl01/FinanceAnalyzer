@@ -12,7 +12,8 @@ import financialanalyzer.stockhistory.StockHistorySearchProperties;
 import financialanalyzer.stockhistory.StockHistoryRepo;
 import financialanalyzer.stockhistory.StockHistorySearchRepo;
 import java.util.List;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -23,7 +24,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class StockPricePredictionServiceImpl implements StockPricePredictionService {
 
-    private static final Logger LOGGER = Logger.getLogger(StockPricePredictionServiceImpl.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(StockPricePredictionServiceImpl.class.getName());
     
     @Autowired
     private StockHistoryRepo stockHistorySearchRepo;

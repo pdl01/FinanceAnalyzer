@@ -55,7 +55,9 @@ public class AppConfig {
     private String preferredCompanyNameProvider;
 
     public final static SimpleDateFormat standardDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-
+    public String getLogDir() {
+        return this.applicationHomeDir + File.separator + "logs";
+    }
     public String getStockHistoryDownloadDir() {
         return this.applicationHomeDir + File.separator + "work" + File.separator + "downloads" + File.separator + "stockhistory";
         //return stockHistoryDownloadDir;

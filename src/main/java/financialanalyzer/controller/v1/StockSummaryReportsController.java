@@ -17,8 +17,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,7 +33,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/reports/stocks")
 public class StockSummaryReportsController {
 
-    private static final Logger logger = Logger.getLogger(StockSummaryReportsController.class.getName());
+    private static final Logger logger = LoggerFactory.getLogger(StockSummaryReportsController.class.getName());
 
     private final static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
@@ -138,7 +138,7 @@ public class StockSummaryReportsController {
             String startDateString = sdf.format(endDateCalendar.getTime());
             return startDateString;
         } catch (ParseException ex) {
-            Logger.getLogger(StockSummaryReportsController.class.getName()).log(Level.SEVERE, null, ex);
+            logger.error("Parse Exception", ex);
             return null;
         }
 

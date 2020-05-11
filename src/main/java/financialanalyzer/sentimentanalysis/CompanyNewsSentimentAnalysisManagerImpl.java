@@ -7,7 +7,6 @@ package financialanalyzer.sentimentanalysis;
 
 import financialanalyzer.companynews.CompanyNewsServiceImpl;
 import java.util.List;
-import java.util.logging.Logger;
 import org.apache.commons.text.similarity.JaccardSimilarity;
 import org.springframework.beans.factory.annotation.Autowired;
 import financialanalyzer.config.AppConfig;
@@ -17,6 +16,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 /**
@@ -26,7 +27,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class CompanyNewsSentimentAnalysisManagerImpl implements SentimentAnalysisManager {
 
-    private static final Logger LOGGER = Logger.getLogger(CompanyNewsSentimentAnalysisManagerImpl.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(CompanyNewsSentimentAnalysisManagerImpl.class.getName());
 
     @Autowired
     private AppConfig appConfig;
@@ -57,7 +58,7 @@ public class CompanyNewsSentimentAnalysisManagerImpl implements SentimentAnalysi
         try {
             content = new String(Files.readAllBytes(Paths.get(filePath)));
         } catch (IOException e) {
-           LOGGER.severe("Unable to read sentiment file:"+e.getMessage());
+           LOGGER.error("Unable to read sentiment file:"+e.getMessage());
         }
         return content;
     }

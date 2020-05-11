@@ -11,7 +11,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexResponse;
@@ -26,6 +25,8 @@ import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.sort.SortOrder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 /**
@@ -35,7 +36,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class StockHistorySearchRepo extends ElasticSearchManager implements StockHistoryRepo {
 
-    private static final Logger logger = Logger.getLogger(StockHistorySearchRepo.class.getName());
+    private static final Logger logger = LoggerFactory.getLogger(StockHistorySearchRepo.class.getName());
     private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
     @Override
@@ -74,7 +75,7 @@ public class StockHistorySearchRepo extends ElasticSearchManager implements Stoc
                 indexedSuccessfully = true;
             } catch (IOException ex) {
                 //ex.printStackTrace();
-                logger.severe(ex.getMessage());
+                logger.error(ex.getMessage());
             }
             retryCounter++;
         }
@@ -102,10 +103,10 @@ public class StockHistorySearchRepo extends ElasticSearchManager implements Stoc
             //client.
             //CreateIndexResponse  createIndexResponse = client.indices().indices().create(request);
         } catch (IOException ex) {
-            logger.severe("Error when deleting stock history " + ex.getMessage());
+            logger.error("Error when deleting stock history " + ex.getMessage());
 
         } catch (Exception ex) {
-            logger.severe("Error when deleting stock history " + ex.getMessage());
+            logger.error("Error when deleting stock history " + ex.getMessage());
 
         }
 
@@ -176,7 +177,7 @@ public class StockHistorySearchRepo extends ElasticSearchManager implements Stoc
                 // do something with the SearchHit
             }
         } catch (IOException ex) {
-            logger.severe(ex.getMessage());
+            logger.error(ex.getMessage());
         }
 
         this.closeClient(client);
@@ -210,7 +211,7 @@ public class StockHistorySearchRepo extends ElasticSearchManager implements Stoc
         try {
             sh.setRecordDate(sdf.parse(recordDate));
         } catch (Exception e) {
-            logger.severe("Cannot convert recordDate from search to java date");
+            logger.error("Cannot convert recordDate from search to java date");
         }
 
         sh.setActual_gain(actual_gain);

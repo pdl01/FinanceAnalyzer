@@ -14,8 +14,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexResponse;
@@ -30,6 +29,8 @@ import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.sort.SortOrder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 /**
@@ -39,7 +40,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class SystemActivitySearchRepo extends ElasticSearchManager implements SystemActivityRepo {
 
-    private static final Logger logger = Logger.getLogger(SystemActivitySearchRepo.class.getName());
+    private static final Logger logger = LoggerFactory.getLogger(SystemActivitySearchRepo.class.getName());
     private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
     @Override
@@ -67,7 +68,7 @@ public class SystemActivitySearchRepo extends ElasticSearchManager implements Sy
             //logger.info(indexResponse.getResult().name());
         } catch (IOException ex) {
             //ex.printStackTrace();
-            logger.severe(ex.getMessage());
+            logger.error(ex.getMessage());
         }
         this.closeClient(client);
         return _item;
@@ -89,10 +90,10 @@ public class SystemActivitySearchRepo extends ElasticSearchManager implements Sy
             //client.
             //CreateIndexResponse  createIndexResponse = client.indices().indices().create(request);
         } catch (IOException ex) {
-            logger.severe("Error when deleting stock history " + ex.getMessage());
+            logger.error("Error when deleting stock history " + ex.getMessage());
 
         } catch (Exception ex) {
-            logger.severe("Error when deleting stock history " + ex.getMessage());
+            logger.error("Error when deleting stock history " + ex.getMessage());
 
         }
 
@@ -158,7 +159,7 @@ public class SystemActivitySearchRepo extends ElasticSearchManager implements Sy
                 // do something with the SearchHit
             }
         } catch (IOException ex) {
-            logger.severe(ex.getMessage());
+            logger.error(ex.getMessage());
         }
 
         this.closeClient(client);
@@ -188,7 +189,7 @@ public class SystemActivitySearchRepo extends ElasticSearchManager implements Sy
         try {
             sa.setRecordDate(sdf.parse(recordDate));    
         } catch (Exception e) {
-            logger.severe("Cannot convert recordDate from search to java date");
+            logger.error("Cannot convert recordDate from search to java date");
         }
 
         return sa;

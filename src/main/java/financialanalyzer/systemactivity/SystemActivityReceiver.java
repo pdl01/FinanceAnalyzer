@@ -8,9 +8,10 @@ package financialanalyzer.systemactivity;
 import financialanalyzer.companynews.CompanyNewsItem;
 import financialanalyzer.companynews.CompanyNewsReceiver;
 import financialanalyzer.config.ActiveMQConfig;
-import java.util.logging.Logger;
 import javax.jms.Message;
 import javax.jms.Session;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.messaging.MessageHeaders;
@@ -25,7 +26,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class SystemActivityReceiver {
 
-    private static final Logger LOGGER = Logger.getLogger(SystemActivityReceiver.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(SystemActivityReceiver.class.getName());
     
     @Autowired
     private SystemActivityRepo systemActivitySearchRepo;

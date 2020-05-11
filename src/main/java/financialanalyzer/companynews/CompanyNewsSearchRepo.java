@@ -15,8 +15,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchRequest;
@@ -30,6 +29,8 @@ import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.sort.SortOrder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 /**
@@ -39,7 +40,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class CompanyNewsSearchRepo extends ElasticSearchManager implements CompanyNewsRepo {
 
-    private static final Logger logger = Logger.getLogger(CompanyNewsSearchRepo.class.getName());
+    private static final Logger logger = LoggerFactory.getLogger(CompanyNewsSearchRepo.class.getName());
     private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
     @Override
@@ -76,7 +77,7 @@ public class CompanyNewsSearchRepo extends ElasticSearchManager implements Compa
                 indexedSuccessfully = true;
             } catch (IOException ex) {
                 //ex.printStackTrace();
-                logger.severe(ex.getMessage());
+                logger.error(ex.getMessage());
                 indexedSuccessfully = false;
             }
         }
@@ -95,7 +96,7 @@ public class CompanyNewsSearchRepo extends ElasticSearchManager implements Compa
         List<CompanyNewsItem> cnis = new ArrayList<>();
         RestHighLevelClient client = this.buildClient();
         if (client == null) {
-            logger.severe("Client is null");
+            logger.error("Client is null");
             return cnis;
         }
 
@@ -156,7 +157,7 @@ public class CompanyNewsSearchRepo extends ElasticSearchManager implements Compa
                 // do something with the SearchHit
             }
         } catch (IOException ex) {
-            logger.severe(ex.getMessage());
+            logger.error(ex.getMessage());
         }
 
         this.closeClient(client);
@@ -189,14 +190,14 @@ public class CompanyNewsSearchRepo extends ElasticSearchManager implements Compa
         try {
             cni.setRecordDate(sdf.parse(recordDate));
         } catch (Exception e) {
-            logger.severe("Cannot convert recordDate from search to java date");
+            logger.error("Cannot convert recordDate from search to java date");
         }
         cni.setPublishedDateAsString(publishedDate);
 
         try {
             cni.setPublishedDate(sdf.parse(publishedDate));
         } catch (Exception e) {
-            logger.severe("Cannot convert publishedDate from search to java date");
+            logger.error("Cannot convert publishedDate from search to java date");
         }
 
         cni.setSymbol(symbol);

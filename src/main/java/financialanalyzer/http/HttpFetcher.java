@@ -8,7 +8,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.util.logging.Logger;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
@@ -16,6 +15,8 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 /**
@@ -25,7 +26,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class HttpFetcher {
 
-    private static final Logger LOGGER = Logger.getLogger(HttpFetcher.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(HttpFetcher.class.getName());
     private static final int BUFFER_SIZE = 4096;
     private static final String[] agents = {
         "Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:56.0) Gecko/20100101 Firefox/56.0",
@@ -55,7 +56,7 @@ public class HttpFetcher {
             SSLSocketFactory newFactory = sc.getSocketFactory();
             connection.setSSLSocketFactory(newFactory);
         } catch (Exception e) {
-            LOGGER.severe(e.getMessage());
+            LOGGER.error(e.getMessage());
         }
         return oldFactory;
     }
@@ -122,11 +123,11 @@ public class HttpFetcher {
                 inputStream.close();
                 return true;
             } else {
-                LOGGER.severe("Response:" + responseCode);
+                LOGGER.error("Response:" + responseCode);
                 return false;
             }
         } catch (Exception e) {
-            LOGGER.severe(e.getMessage());
+            LOGGER.error(e.getMessage());
         } finally {
             if (httpConn != null) {
                 httpConn.disconnect();
@@ -172,7 +173,7 @@ public class HttpFetcher {
             htmlPage.setTitle(title);
             return htmlPage;
         } catch (Exception e) {
-            LOGGER.severe(e.getMessage());
+            LOGGER.error(e.getMessage());
         }
 
         return null;

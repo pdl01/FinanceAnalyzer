@@ -7,12 +7,12 @@ import financialanalyzer.objects.Company;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -23,7 +23,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class BingCompanyNewsProvider implements CompanyNewsProvider {
 
-    private static final Logger LOGGER = Logger.getLogger(BingCompanyNewsProvider.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(BingCompanyNewsProvider.class.getName());
     public static final String PROVIDER_IDENTIFIER = "bing";
 
     @Autowired
@@ -96,7 +96,7 @@ public class BingCompanyNewsProvider implements CompanyNewsProvider {
             LOGGER.info("Completed Download of company News index for :" + _company.getStockSymbol());
 
         } catch (Exception ex) {
-            LOGGER.log(Level.SEVERE, "Exception fetching company news for:" + _company.getStockSymbol(), ex);
+            LOGGER.error("Exception fetching company news for:" + _company.getStockSymbol(), ex);
         }
 
         return cnis;

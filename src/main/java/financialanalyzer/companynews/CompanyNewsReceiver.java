@@ -10,9 +10,10 @@ import financialanalyzer.objects.Company;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Logger;
 import javax.jms.Message;
 import javax.jms.Session;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.messaging.MessageHeaders;
@@ -27,7 +28,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class CompanyNewsReceiver {
 
-    private static final Logger LOGGER = Logger.getLogger(CompanyNewsReceiver.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(CompanyNewsReceiver.class.getName());
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
     @Autowired

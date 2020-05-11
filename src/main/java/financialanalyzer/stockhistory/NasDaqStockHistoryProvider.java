@@ -24,11 +24,12 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Logger;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -39,7 +40,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class NasDaqStockHistoryProvider implements StockHistoryProvider {
 
-    private static final Logger LOGGER = Logger.getLogger(NasDaqStockHistoryProvider.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(NasDaqStockHistoryProvider.class.getName());
 
     private static final String IDENTIFIER="nasdaq";
     
@@ -174,7 +175,7 @@ public class NasDaqStockHistoryProvider implements StockHistoryProvider {
             }
             return false;
         } catch (Exception e) {
-            LOGGER.severe(e.getMessage());
+            LOGGER.error(e.getMessage());
             e.printStackTrace();
             return false;
         }
@@ -213,14 +214,14 @@ public class NasDaqStockHistoryProvider implements StockHistoryProvider {
                 //System.out.println("Country [id= " + line[0] + ", code= " + line[1] + " , name=" + line[2] + "]");
             }
         } catch (ParseException e) {
-            LOGGER.severe("Unable to parse date in csv:" + e.getMessage());
+            LOGGER.error("Unable to parse date in csv:" + e.getMessage());
             e.printStackTrace();
         } catch (IOException e) {
 
-            LOGGER.severe("Unable to process csv:" + e.getMessage());
+            LOGGER.error("Unable to process csv:" + e.getMessage());
             e.printStackTrace();
         } catch (Exception e) {
-            LOGGER.severe(_symbol + " : Unable to process csv:" + e.getMessage());
+            LOGGER.error(_symbol + " : Unable to process csv:" + e.getMessage());
             e.printStackTrace();
         }
 

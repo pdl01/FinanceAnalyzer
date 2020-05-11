@@ -13,7 +13,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexResponse;
@@ -28,6 +27,8 @@ import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.sort.SortOrder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 /**
@@ -37,7 +38,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class CompanySearchRepo extends ElasticSearchManager implements CompanyRepo {
 
-    private static final Logger logger = Logger.getLogger(CompanySearchRepo.class.getName());
+    private static final Logger logger = LoggerFactory.getLogger(CompanySearchRepo.class.getName());
 
     @Override
     public Company submit(Company _company) {
@@ -63,7 +64,7 @@ public class CompanySearchRepo extends ElasticSearchManager implements CompanyRe
             //logger.info(indexResponse.getResult().name());
         } catch (IOException ex) {
             //ex.printStackTrace();
-            logger.severe(ex.getMessage());
+            logger.error(ex.getMessage());
         }
         this.closeClient(client);
         return _company;
@@ -84,10 +85,10 @@ public class CompanySearchRepo extends ElasticSearchManager implements CompanyRe
             //client.
             //CreateIndexResponse  createIndexResponse = client.indices().indices().create(request);
         } catch (IOException ex) {
-            logger.severe("Error when deleting company " + ex.getMessage());
+            logger.error("Error when deleting company " + ex.getMessage());
 
         } catch (Exception ex) {
-            logger.severe("Error when deleting company " + ex.getMessage());
+            logger.error("Error when deleting company " + ex.getMessage());
 
         }
 
@@ -153,7 +154,7 @@ public class CompanySearchRepo extends ElasticSearchManager implements CompanyRe
                 // do something with the SearchHit
             }
         } catch (IOException ex) {
-            logger.severe(ex.getMessage());
+            logger.error(ex.getMessage());
         }
 
         this.closeClient(client);

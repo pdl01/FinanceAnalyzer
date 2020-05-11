@@ -11,7 +11,8 @@ import financialanalyzer.objects.Company;
 import financialanalyzer.stockhistory.StockHistory;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 /**
@@ -21,7 +22,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class AdvfnNYSECompanyNameProvider extends AbstractCompanyNameProvider implements CompanyNameProvider {
 
-    private static final Logger LOGGER = Logger.getLogger(AdvfnNYSECompanyNameProvider.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(AdvfnNYSECompanyNameProvider.class.getName());
     public static final String IDENTIFIER = "nyse";
 
     private static String download_url = "https://old.nasdaq.com/screening/companies-by-name.aspx?letter=0&exchange=nyse&render=download";

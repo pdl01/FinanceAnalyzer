@@ -14,7 +14,8 @@ import org.springframework.context.annotation.PropertySource;
  * @author pldor
  */
 @Configuration
-@PropertySource(value = "file:${app_home}/config/application.properties")
+@PropertySource(value = "classpath:application-${spring.profiles.active}.properties",ignoreResourceNotFound = true)
+@PropertySource(value = "file:${app_home}/config/application-${spring.profiles.active}.properties",ignoreResourceNotFound = true)
 public class ElasticSearchConfiguration {
     @Value("${elasticsearch_primary_host}")
     private String elasticsearch_primary_host;

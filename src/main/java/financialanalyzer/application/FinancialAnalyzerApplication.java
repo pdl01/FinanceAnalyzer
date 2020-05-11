@@ -5,6 +5,13 @@
  */
 package financialanalyzer.application;
 
+import financialanalyzer.config.AppConfig;
+import java.io.File;
+import javax.annotation.PostConstruct;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
@@ -27,6 +34,11 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 @EnableJms
 public class FinancialAnalyzerApplication implements ApplicationRunner {
 
+    private static final Logger logger = LoggerFactory.getLogger(FinancialAnalyzerApplication.class.getName());
+
+    @Autowired
+    private AppConfig appConfig;
+
     public static void main(String[] args) {
         SpringApplication app = new SpringApplication(FinancialAnalyzerApplication.class);
         //app.setWebApplicationType(WebApplicationType.NONE);
@@ -38,6 +50,25 @@ public class FinancialAnalyzerApplication implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) throws Exception {
         //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @PostConstruct
+    private void init() {
+        logger.info("Initializing FinancialAnalyzer");
+        logger.debug(this.appConfig.getCompanyDownloadDir());
+        this.createDirIfNotExists(appConfig.getApplicationHomeDir());
+        this.createDirIfNotExists(appConfig.getCompanyDownloadDir());
+        this.createDirIfNotExists(appConfig.getCompanyNewsDownloadDir());
+        this.createDirIfNotExists(appConfig.getStockHistoryDownloadDir());
+        logger.info("Finished Initializing FinancialAnalyzer");
+    }
+
+    private void createDirIfNotExists(String _fileDir) {
+        File dirFile = new File(_fileDir);
+
+        if (!dirFile.isDirectory() && !dirFile.isFile()) {
+            dirFile.mkdirs();
+        }
     }
 
 }

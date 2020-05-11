@@ -5,6 +5,7 @@
  */
 package financialanalyzer.config;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
@@ -15,27 +16,34 @@ import org.springframework.context.annotation.PropertySource;
  * @author pldor
  */
 @Configuration
-@PropertySource(value = "file:${app_home}/config/application.properties")
+@PropertySource(value = "classpath:application-${spring.profiles.active}.properties",ignoreResourceNotFound = true)
+@PropertySource(value = "file:${app_home}/config/application-${spring.profiles.active}.properties",ignoreResourceNotFound = true)
 public class AppConfig {
     
-    @Value("${dir.download.stockHistory}")
-    private String stockHistoryDownloadDir;
-    //public final static String stockHistoryDownloadDir = "/tmp/fa/work/stockdownloads";
-    
-    @Value("${dir.download.companies}")
-    private String companyDownloadDir;
-    //public final static String companyDownloadDir = "/tmp/fa/work/companydownloads";
-    
-    @Value("${dir.download.companyreport}")
-    private String companyReportDir;
-    //public final static String companyReportDownloadDir = "/tmp/fa/work/companyReportDownloads";
-    
-    @Value("${dir.download.companynews}")
-    private String companyNewsDownloadDir;
-    //public final static String companyNewsDownloadDir = "/tmp/fa/work/companyNewsDownloads";
+    @Value("${app_home}")
+    private String applicationHomeDir;
 
-    @Value("${dir.sentimentanalysis.companynews.positive}")
-    private String companyNewsPostiveSentimentAnalysisRefDir;
+    public String getApplicationHomeDir() {
+        return applicationHomeDir;
+    }
+
+    //@Value("${dir.download.stockHistory}")
+    //private String stockHistoryDownloadDir;
+    //public final static String stockHistoryDownloadDir = "/tmp/fa/work/stockdownloads";
+    //@Value("${dir.download.companies}")
+    //private String companyDownloadDir;
+    //public final static String companyDownloadDir = "/tmp/fa/work/companydownloads";
+    //@Value("${dir.download.companyreport}")
+    //private String companyReportDir;
+    //public final static String companyReportDownloadDir = "/tmp/fa/work/companyReportDownloads";
+    //@Value("${dir.download.companynews}")
+    //private String companyNewsDownloadDir;
+    //public final static String companyNewsDownloadDir = "/tmp/fa/work/companyNewsDownloads";
+    //@Value("${dir.sentimentanalysis.companynews.positive}")
+    //private String companyNewsPostiveSentimentAnalysisRefDir;
+    public void setApplicationHomeDir(String applicationHomeDir) {
+        this.applicationHomeDir = applicationHomeDir;
+    }
 
     @Value("${provider.stockhistory.preferred: default}")
     private String preferredStockHistoryProvider;
@@ -49,44 +57,46 @@ public class AppConfig {
     public final static SimpleDateFormat standardDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
     public String getStockHistoryDownloadDir() {
-        return stockHistoryDownloadDir;
+        return this.applicationHomeDir + File.separator + "work" + File.separator + "downloads" + File.separator + "stockhistory";
+        //return stockHistoryDownloadDir;
     }
 
-    public void setStockHistoryDownloadDir(String stockHistoryDownloadDir) {
-        this.stockHistoryDownloadDir = stockHistoryDownloadDir;
-    }
+    //public void setStockHistoryDownloadDir(String stockHistoryDownloadDir) {
+    //    this.stockHistoryDownloadDir = stockHistoryDownloadDir;
+    //}
 
     public String getCompanyDownloadDir() {
-        return companyDownloadDir;
+        return this.applicationHomeDir + File.separator + "work" + File.separator + "downloads" + File.separator + "company";
+        //return companyDownloadDir;
     }
 
-    public void setCompanyDownloadDir(String companyDownloadDir) {
-        this.companyDownloadDir = companyDownloadDir;
-    }
+    //public void setCompanyDownloadDir(String companyDownloadDir) {
+    //    this.companyDownloadDir = companyDownloadDir;
+    //}
 
     public String getCompanyReportDir() {
-        return companyReportDir;
+        return this.applicationHomeDir + File.separator + "work" + File.separator + "downloads" + File.separator + "companyreports";
     }
 
-    public void setCompanyReportDir(String companyReportDir) {
-        this.companyReportDir = companyReportDir;
-    }
+    //public void setCompanyReportDir(String companyReportDir) {
+    //    this.companyReportDir = companyReportDir;
+    //}
 
     public String getCompanyNewsDownloadDir() {
-        return companyNewsDownloadDir;
+        return this.applicationHomeDir + File.separator + "work" + File.separator + "downloads" + File.separator + "companynews";
     }
 
     public String getCompanyNewsPostiveSentimentAnalysisRefDir() {
-        return companyNewsPostiveSentimentAnalysisRefDir;
+        return this.applicationHomeDir + File.separator + "sentimentanalysis" + File.separator + "companynews" + File.separator + "postive";
     }
 
-    public void setCompanyNewsPostiveSentimentAnalysisRefDir(String companyNewsPostiveSentimentAnalysisRefDir) {
-        this.companyNewsPostiveSentimentAnalysisRefDir = companyNewsPostiveSentimentAnalysisRefDir;
-    }
+    //public void setCompanyNewsPostiveSentimentAnalysisRefDir(String companyNewsPostiveSentimentAnalysisRefDir) {
+    //    this.companyNewsPostiveSentimentAnalysisRefDir = companyNewsPostiveSentimentAnalysisRefDir;
+    //}
 
-    public void setCompanyNewsDownloadDir(String companyNewsDownloadDir) {
-        this.companyNewsDownloadDir = companyNewsDownloadDir;
-    }
+    //public void setCompanyNewsDownloadDir(String companyNewsDownloadDir) {
+    //    this.companyNewsDownloadDir = companyNewsDownloadDir;
+    //}
 
     public String getPreferredStockHistoryProvider() {
         return preferredStockHistoryProvider;

@@ -42,8 +42,8 @@ public class NasDaqStockHistoryProvider implements StockHistoryProvider {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(NasDaqStockHistoryProvider.class.getName());
 
-    private static final String IDENTIFIER="nasdaq";
-    
+    private static final String IDENTIFIER = "nasdaq";
+
     @Autowired
     protected AppConfig appConfig;
 
@@ -90,19 +90,19 @@ public class NasDaqStockHistoryProvider implements StockHistoryProvider {
         File downloadDirecory = new File(downloadDirectoryPath);
         downloadDirecory.mkdirs();
         String downloadFileName = downloadDirectoryPath + File.separator + _symbol + "-" + max_date + ".csv";
-        
-        File downloadFile=new File(downloadFileName);
+
+        File downloadFile = new File(downloadFileName);
         if (downloadFile.exists()) {
             return null;
         }
-        
+
         boolean downloaded = false;
         int retryCounter = 0;
         while (!downloaded && retryCounter < 3) {
-            LOGGER.info("Download Attempt:"+retryCounter);
+            LOGGER.info("Download Attempt:" + retryCounter);
             downloaded = this.httpFetcher.downloadToFile(resolvedURL, downloadFileName);
             retryCounter++;
-        
+
         }
 
 //boolean downloaded = this.downloadCSVForExchangeFromNasDaq(resolvedURL, downloadFile);
@@ -110,6 +110,10 @@ public class NasDaqStockHistoryProvider implements StockHistoryProvider {
         if (downloaded) {
             List<StockHistory> shs = new ArrayList<>();
             shs = processStockHistoryExchangeCVS(_exchange, _symbol, _date, downloadFileName);
+            File downloadedFile = new File(downloadFileName);
+            if (downloadedFile.exists()) {
+                downloadedFile.delete();
+            }
             return shs;
         }
         return null;
@@ -232,6 +236,5 @@ public class NasDaqStockHistoryProvider implements StockHistoryProvider {
     public String getIdentifier() {
         return IDENTIFIER;
     }
-    
-    
+
 }

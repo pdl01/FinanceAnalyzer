@@ -67,7 +67,7 @@ public class StockHistorySearchRepo extends ElasticSearchManager implements Stoc
         while (!indexedSuccessfully && retryCounter < 3) {
 
             try {
-                logger.info("Index Attempt:"+retryCounter);
+                logger.info("Index Attempt:"+retryCounter+":"+this.getKey(_item));
                 IndexResponse indexResponse = client.index(indexRequest);
                 //logger.info(indexResponse.getIndex());
                 //logger.info(indexResponse.getResult().name());

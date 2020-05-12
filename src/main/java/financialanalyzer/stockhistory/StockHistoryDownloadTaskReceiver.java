@@ -48,6 +48,7 @@ public class StockHistoryDownloadTaskReceiver {
         } else {
             shs = this.stockHistoryDownloadServiceImpl.fetchDataForCompany(company, _stockHistoryDownloadTask.getRetrieveDate());
         }
+        /*
         if (shs != null) {
             LOGGER.info("Submitting stock history data for :" + company.getStockSymbol());
             for (StockHistory shs_item : shs) {
@@ -57,6 +58,7 @@ public class StockHistoryDownloadTaskReceiver {
             LOGGER.info("Completed submitting stock history data for :" + company.getStockSymbol());
 
         }
+        */
 
         LOGGER.info("Finished Processing " + _stockHistoryDownloadTask.getSymbol());
 

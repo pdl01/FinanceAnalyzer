@@ -5,8 +5,6 @@
  */
 package financialanalyzer.controller.v1;
 
-import financialanalyzer.companynews.CompanyNewsItem;
-import financialanalyzer.companynews.CompanyNewsService;
 import financialanalyzer.companynames.AllStockNamesDownloadDriver;
 import financialanalyzer.stockhistory.StockHistoryDownloadDriver;
 import financialanalyzer.stockhistory.StockHistoryDownloadService;
@@ -15,16 +13,12 @@ import financialanalyzer.objects.CompanySearchProperties;
 import financialanalyzer.stockhistory.StockHistory;
 import financialanalyzer.stockhistory.StockHistorySearchProperties;
 import financialanalyzer.companynames.CompanyRepo;
-import financialanalyzer.companynews.CompanyNewsDownloadDriver;
-import financialanalyzer.companynews.CompanyNewsRepo;
-import financialanalyzer.companynews.CompanyNewsSearchProperties;
 import financialanalyzer.stockhistory.StockHistoryRepo;
 import financialanalyzer.systemactivity.SystemActivity;
 import financialanalyzer.systemactivity.SystemActivityManager;
 import financialanalyzer.systemactivity.SystemActivityRepo;
 import financialanalyzer.systemactivity.SystemActivitySearchProperties;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

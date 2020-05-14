@@ -52,7 +52,7 @@ public class NewsRestController {
         return this.getNewsStartingWithInRange(_start, 25);
     }
     
-    @RequestMapping(value = "/latest/{start}{numberOfItems}/", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "/latest/{start}/{numberOfItems}", method = RequestMethod.GET, produces = "application/json")
     public RestResponse getNewsStartingWithInRange(@PathVariable("start") int _start, @PathVariable("numberOfItems") int _numberOfItems) {
         RestResponse restResponse = new RestResponse();
         CompanySearchProperties csp = new CompanySearchProperties();
@@ -66,7 +66,7 @@ public class NewsRestController {
         //cnsp.setStockSymbol(company.getStockSymbol());
         cnsp.setSortField("recordDate");
         cnsp.setSortOrder("DESC");
-        cnsp.setStartResults(0);
+        cnsp.setStartResults(_start);
         cnsp.setNumResults(_numberOfItems);
 
         //this.companyNewsServiceImpl.submitCompanyToDownloadQueue(company);
@@ -153,4 +153,21 @@ public class NewsRestController {
         return this.getCompanyNewsForCompanyStartingWith(_id, 0);
         
     }
+    
+    @RequestMapping(value = "/symbol/{symbol}/fetch", method = RequestMethod.POST, produces = "application/json")
+    public RestResponse fetchNewsForCompany(@PathVariable("symbol") String symbol) {
+        RestResponse restResponse = new RestResponse();
+        CompanySearchProperties csp = new CompanySearchProperties();
+        csp.setStockSymbol(symbol);
+        List<Company> companies = this.companySearchRepo.searchForCompany(csp);
+        if (companies != null) {
+            companies.forEach(company_item -> {
+                this.companyNewsServiceImpl.submitCompanyToDownloadQueue(company_item);
+                //this.stockHistoryDownloadServiceImpl.queueCompanyForFetch(company_item, null, false);//fetchDataForCompany(company_item);
+            });
+        }
+        //restResponse.setObject(company);
+        return restResponse;
+    }    
+    
 }

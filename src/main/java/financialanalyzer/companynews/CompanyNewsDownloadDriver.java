@@ -34,7 +34,7 @@ public class CompanyNewsDownloadDriver {
     private CompanyNewsService companyNewsServiceImpl;
     
 
-    @Scheduled(cron = "0 0 22 * * ?")
+    @Scheduled(cron = "0 0 2 * * ?",zone="UTC")
     public void fetchDaily() {
         LOGGER.info("Starting fetchDaily");
 
@@ -43,6 +43,14 @@ public class CompanyNewsDownloadDriver {
         LOGGER.info("Completed fetchDaily");
     }
 
+    public void processCompaniesThatHaveNoNewsItems(){
+        LOGGER.info("Starting processCompaniesThatHaveNoNewsItems");
+        //get the companies 
+        //find out which ones have no data
+        LOGGER.info("Completed processCompaniesThatHaveNoNewsItems");
+    }
+    
+    
     public void fetchLatestData(Date _date) {
         String[] exchangeArray = {CompanyNameProvider.EXCHANGE_AMEX, CompanyNameProvider.EXCHANGE_NASDAQ, CompanyNameProvider.EXCHANGE_NYSE};
 

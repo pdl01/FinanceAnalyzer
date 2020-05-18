@@ -6,11 +6,7 @@
 package financialanalyzer.companynews;
 
 import financialanalyzer.elasticsearch.ElasticSearchManager;
-import financialanalyzer.stockhistory.StockHistory;
-import financialanalyzer.stockhistory.StockHistorySearchProperties;
-import financialanalyzer.stockhistory.StockHistoryReportSearchRepo;
 import java.io.IOException;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -208,6 +204,68 @@ public class CompanyNewsSearchRepo extends ElasticSearchManager implements Compa
         cni.setSentiment(sentiment);
 
         return cni;
+    }
+
+    @Override
+    public long getNumberOfNewsItemsForCompany(CompanyNewsSearchProperties _sp) {
+        logger.info("Beginning Search");
+        List<CompanyNewsItem> cnis = new ArrayList<>();
+        RestHighLevelClient client = this.buildClient();
+        if (client == null) {
+            logger.error("Client is null");
+            return -1;
+        }
+
+        SearchRequest searchRequest = new SearchRequest("companynews");
+        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+        //searchSourceBuilder.query(QueryBuilders.matchAllQuery());
+        QueryBuilder matchQueryBuilder = null;
+        BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
+
+        if (_sp.getStockExchange() != null) {
+            boolQuery.must(QueryBuilders.matchQuery("exchange", _sp.getStockExchange()));
+
+        }
+        if (_sp.getStockSymbol() != null) {
+            boolQuery.must(QueryBuilders.matchQuery("symbol", _sp.getStockSymbol()));
+        }
+        if (_sp.getCompanyNewsItemId() != null) {
+            boolQuery.must(QueryBuilders.matchQuery("_id", _sp.getCompanyNewsItemId()));
+        }
+        if (_sp.getSearchDate() != null) {
+            //try {
+            boolQuery.must(QueryBuilders.matchQuery("recordDate", _sp.getSearchDate()));
+            //} catch (ParseException ex) {
+            //    logger.log(Level.SEVERE, null, ex);
+            //}
+
+        }
+
+        //.fuzziness(Fuzziness.AUTO);
+        searchSourceBuilder.query(boolQuery).from(_sp.getStartResults()).size(_sp.getNumResults());
+
+        if (_sp.getSortField() != null) {
+            //TODO sort based on dimension type
+            if ("ASC".equalsIgnoreCase(_sp.getSortOrder())) {
+                searchSourceBuilder.sort(_sp.getSortField(), SortOrder.ASC);
+            } else {
+                searchSourceBuilder.sort(_sp.getSortField(), SortOrder.DESC);
+            }
+        }
+
+        searchRequest.source(searchSourceBuilder);
+
+        try {
+            SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
+            return searchResponse.getHits().getTotalHits();
+            
+        } catch (IOException ex) {
+            logger.error(ex.getMessage());
+        }
+
+        this.closeClient(client);
+        logger.info("Returning frm search");
+        return -1;
     }
 
 }

@@ -59,8 +59,6 @@ public class CompanyRestController {
     @Autowired
     private SystemActivityRepo systemActivitySearchRepo;
 
-
-    
     @RequestMapping(value = "/symbol/{symbol}", method = RequestMethod.GET, produces = "application/json")
     public RestResponse getCompaniesBySymbol(@PathVariable("symbol") String symbol) {
         RestResponse restResponse = new RestResponse();
@@ -127,8 +125,6 @@ public class CompanyRestController {
         return restResponse;
     }
 
-
-
     @RequestMapping(value = "/symbol/{symbol}/stock/fetch", method = RequestMethod.POST, produces = "application/json")
     public RestResponse fetchStockInformation(@PathVariable("symbol") String symbol) {
         RestResponse restResponse = new RestResponse();
@@ -144,11 +140,18 @@ public class CompanyRestController {
         return restResponse;
     }
 
-    @RequestMapping(value = "/company/{id}/stock", method = RequestMethod.GET, produces = "application/json")
-    public RestResponse getStockInformationForCompany(@PathVariable("id") String _id) {
+    @RequestMapping(value = "/company/{id}/stock/{start}", method = RequestMethod.GET, produces = "application/json")
+    public RestResponse getStockInformationForCompanyStartingWith(@PathVariable("id") String _id, @PathVariable("start") int _start) {
+        return this.getStockInformationForCompanyStartingWithInRange(_id, 0,25);
+    }
+
+    @RequestMapping(value = "/company/{id}/stock/{start}/{numberOfItems}", method = RequestMethod.GET, produces = "application/json")
+    public RestResponse getStockInformationForCompanyStartingWithInRange(@PathVariable("id") String _id, @PathVariable("start") int _start, @PathVariable("numberOfItems") int _numberOfItems) {
         RestResponse restResponse = new RestResponse();
         CompanySearchProperties csp = new CompanySearchProperties();
-        csp.setCompanyId(_id);;
+        csp.setCompanyId(_id);
+        csp.setStartResults(_start);
+        csp.setNumResults(_numberOfItems);
         List<Company> companies = this.companySearchRepo.searchForCompany(csp);
         List<StockHistory> stockhistories = new ArrayList<>();
         if (companies != null) {
@@ -168,6 +171,11 @@ public class CompanyRestController {
         restResponse.setObject(stockhistories);
 
         return restResponse;
+    }
+
+    @RequestMapping(value = "/company/{id}/stock", method = RequestMethod.GET, produces = "application/json")
+    public RestResponse getStockInformationForCompany(@PathVariable("id") String _id) {
+        return this.getStockInformationForCompanyStartingWith(_id, 0);
     }
 
     @RequestMapping(value = "/company/{id}/systemActivity", method = RequestMethod.GET, produces = "application/json")
@@ -193,7 +201,5 @@ public class CompanyRestController {
         restResponse.setObject(systemActivities);
         return restResponse;
     }
-
-
 
 }

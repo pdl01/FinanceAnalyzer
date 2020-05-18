@@ -81,6 +81,7 @@ public class StockSummaryReportsController {
         return new TopVolumesByAmountGenerator();
     }
 
+    /*
     private ReportSummary getTopVolumesByAmount(String _endDate, int _numOfDays) {
         ReportSummary report = new ReportSummary();
         report.setName("Top Volumes By Amount");
@@ -97,6 +98,7 @@ public class StockSummaryReportsController {
         return report;
     }
 
+   
     private ReportSummary getTopGainersByAmount(String _endDate, int _numOfDays) {
         ReportSummary report = new ReportSummary();
         report.setName("Top Gainers By Amount");
@@ -128,7 +130,7 @@ public class StockSummaryReportsController {
         report.setStartDate(this.getStartDate(_endDate, _numOfDays));
         return report;
     }
-
+     */
     private String getStartDate(String _endDateString, int _numOfDays) {
         try {
             Date endDate = sdf.parse(_endDateString);
@@ -144,13 +146,20 @@ public class StockSummaryReportsController {
 
     }
 
-    @RequestMapping(value = "/dailyReport/volumes/{endDate}", method = RequestMethod.GET, produces = "application/json")
-    public RestResponse getHighVolumes(@PathVariable("endDate") String endDate) {
+    @RequestMapping(value = "/dailyReport/volumes/{endDate}/{start}", method = RequestMethod.GET, produces = "application/json")
+    public RestResponse getHighVolumesStartingWith(@PathVariable("endDate") String endDate, @PathVariable("start") int _start) {
+        return this.getHighVolumesStartingWithNumResults(endDate, _start, 25);
+    }
+
+    @RequestMapping(value = "/dailyReport/volumes/{endDate}/{start}/{numberOfItems}", method = RequestMethod.GET, produces = "application/json")
+    public RestResponse getHighVolumesStartingWithNumResults(@PathVariable("endDate") String endDate, @PathVariable("start") int _start, @PathVariable("numberOfItems") int _numberOfItems) {
         RestResponse restResponse = new RestResponse();
         List<StockHistory> stockHistories = new ArrayList<>();
 
         StockHistorySearchProperties shsp = new StockHistorySearchProperties();
         shsp.setSearchDate(endDate);
+        shsp.setStartResults(_start);
+        shsp.setNumResults(_numberOfItems);
         shsp.setSortField("volume");
         shsp.setSortOrder("DESC");
         List<StockHistory> shs = this.stockHistorySearchRepo.searchForStockHistory(shsp);
@@ -162,13 +171,25 @@ public class StockSummaryReportsController {
         return restResponse;
     }
 
-    @RequestMapping(value = "/dailyReport/gainers-amount/{endDate}", method = RequestMethod.GET, produces = "application/json")
-    public RestResponse getTopGainersByAmount(@PathVariable("endDate") String endDate) {
+    @RequestMapping(value = "/dailyReport/volumes/{endDate}", method = RequestMethod.GET, produces = "application/json")
+    public RestResponse getHighVolumes(@PathVariable("endDate") String endDate) {
+        return this.getHighVolumesStartingWith(endDate, 0);
+    }
+
+    @RequestMapping(value = "/dailyReport/gainers-amount/{endDate}/{start}", method = RequestMethod.GET, produces = "application/json")
+    public RestResponse getTopGainersByAmountStartingWith(@PathVariable("endDate") String endDate, @PathVariable("start") int _start) {
+        return this.getTopGainersByAmountStartingWithNumResults(endDate, _start, 25);
+    }
+
+    @RequestMapping(value = "/dailyReport/gainers-amount/{endDate}/{start}/{numberOfItems}", method = RequestMethod.GET, produces = "application/json")
+    public RestResponse getTopGainersByAmountStartingWithNumResults(@PathVariable("endDate") String endDate, @PathVariable("start") int _start, @PathVariable("numberOfItems") int _numberOfItems) {
         RestResponse restResponse = new RestResponse();
         List<StockHistory> stockHistories = new ArrayList<>();
 
         StockHistorySearchProperties shsp = new StockHistorySearchProperties();
         shsp.setSearchDate(endDate);
+        shsp.setStartResults(_start);
+        shsp.setNumResults(_numberOfItems);
         shsp.setSortField("actual_gain");
         shsp.setSortOrder("DESC");
         List<StockHistory> shs = this.stockHistorySearchRepo.searchForStockHistory(shsp);
@@ -178,33 +199,57 @@ public class StockSummaryReportsController {
 
         restResponse.setObject(stockHistories);
         return restResponse;
+
+    }
+
+    @RequestMapping(value = "/dailyReport/gainers-amount/{endDate}", method = RequestMethod.GET, produces = "application/json")
+    public RestResponse getTopGainersByAmount(@PathVariable("endDate") String endDate) {
+        return this.getTopGainersByAmountStartingWith(endDate, 0);
+    }
+
+    @RequestMapping(value = "/dailyReport/gainers-percent/{endDate}/{start}/{numberOfItems}", method = RequestMethod.GET, produces = "application/json")
+    public RestResponse getTopGainersByPercentageStartingWithNumResults(@PathVariable("endDate") String endDate, @PathVariable("start") int _start, @PathVariable("numberOfItems") int _numberOfItems) {
+        RestResponse restResponse = new RestResponse();
+        List<StockHistory> stockHistories = new ArrayList<>();
+
+        StockHistorySearchProperties shsp = new StockHistorySearchProperties();
+        shsp.setSearchDate(endDate);
+        shsp.setStartResults(_start);
+        shsp.setNumResults(_numberOfItems);
+        shsp.setSortField("percent_gain");
+        shsp.setSortOrder("DESC");
+        List<StockHistory> shs = this.stockHistorySearchRepo.searchForStockHistory(shsp);
+        if (shs != null) {
+            stockHistories.addAll(shs);
+        }
+
+        restResponse.setObject(stockHistories);
+        return restResponse;
+
+    }
+
+    @RequestMapping(value = "/dailyReport/gainers-percent/{endDate}/{start}", method = RequestMethod.GET, produces = "application/json")
+    public RestResponse getTopGainersByPercentageStartingWith(@PathVariable("endDate") String endDate, @PathVariable("start") int _start) {
+        return this.getTopGainersByPercentageStartingWithNumResults(endDate, _start, 25);
+
     }
 
     @RequestMapping(value = "/dailyReport/gainers-percent/{endDate}", method = RequestMethod.GET, produces = "application/json")
     public RestResponse getTopGainersByPercentage(@PathVariable("endDate") String endDate) {
-        RestResponse restResponse = new RestResponse();
-        List<StockHistory> stockHistories = new ArrayList<>();
+        return this.getTopGainersByPercentageStartingWith(endDate, 0);
 
-        StockHistorySearchProperties shsp = new StockHistorySearchProperties();
-        shsp.setSearchDate(endDate);
-        shsp.setSortField("percent_gain");
-        shsp.setSortOrder("DESC");
-        List<StockHistory> shs = this.stockHistorySearchRepo.searchForStockHistory(shsp);
-        if (shs != null) {
-            stockHistories.addAll(shs);
-        }
-
-        restResponse.setObject(stockHistories);
-        return restResponse;
     }
 
-    @RequestMapping(value = "/dailyReport/losers-amount/{endDate}", method = RequestMethod.GET, produces = "application/json")
-    public RestResponse getTopLosersByAmount(@PathVariable("endDate") String endDate) {
+    @RequestMapping(value = "/dailyReport/losers-amount/{endDate}/{start}/{numberOfItems}", method = RequestMethod.GET, produces = "application/json")
+    public RestResponse getTopLosersByAmountStartingWithNumResults(@PathVariable("endDate") String endDate, @PathVariable("start") int _start, @PathVariable("numberOfItems") int _numberOfItems) {
         RestResponse restResponse = new RestResponse();
         List<StockHistory> stockHistories = new ArrayList<>();
 
         StockHistorySearchProperties shsp = new StockHistorySearchProperties();
         shsp.setSearchDate(endDate);
+        shsp.setStartResults(_start);
+        shsp.setNumResults(_numberOfItems);
+
         shsp.setSortField("actual_gain");
         shsp.setSortOrder("ASC");
         List<StockHistory> shs = this.stockHistorySearchRepo.searchForStockHistory(shsp);
@@ -216,13 +261,25 @@ public class StockSummaryReportsController {
         return restResponse;
     }
 
-    @RequestMapping(value = "/dailyReport/losers-percent/{endDate}", method = RequestMethod.GET, produces = "application/json")
-    public RestResponse getTopLosersByPercentage(@PathVariable("endDate") String endDate) {
+    @RequestMapping(value = "/dailyReport/losers-amount/{endDate}/{start}", method = RequestMethod.GET, produces = "application/json")
+    public RestResponse getTopLosersByAmountStartingWith(@PathVariable("endDate") String endDate, @PathVariable("start") int _start) {
+        return this.getTopLosersByAmountStartingWithNumResults(endDate, _start, 25);
+    }
+
+    @RequestMapping(value = "/dailyReport/losers-amount/{endDate}", method = RequestMethod.GET, produces = "application/json")
+    public RestResponse getTopLosersByAmount(@PathVariable("endDate") String endDate) {
+        return this.getTopLosersByAmountStartingWith(endDate, 0);
+    }
+
+        @RequestMapping(value = "/dailyReport/losers-percent/{endDate}/{start}/{numberOfItems}", method = RequestMethod.GET, produces = "application/json")
+    public RestResponse getTopLosersByPercentageStartingWithNumResults(@PathVariable("endDate") String endDate, @PathVariable("start") int _start, @PathVariable("numberOfItems") int _numberOfItems) {
         RestResponse restResponse = new RestResponse();
         List<StockHistory> stockHistories = new ArrayList<>();
 
         StockHistorySearchProperties shsp = new StockHistorySearchProperties();
         shsp.setSearchDate(endDate);
+        shsp.setStartResults(_start);
+        shsp.setNumResults(_numberOfItems);
         shsp.setSortField("percent_gain");
         shsp.setSortOrder("ASC");
         List<StockHistory> shs = this.stockHistorySearchRepo.searchForStockHistory(shsp);
@@ -232,6 +289,15 @@ public class StockSummaryReportsController {
 
         restResponse.setObject(stockHistories);
         return restResponse;
+    }
+        @RequestMapping(value = "/dailyReport/losers-percent/{endDate}/{start}", method = RequestMethod.GET, produces = "application/json")
+    public RestResponse getTopLosersByPercentageStartingWith(@PathVariable("endDate") String endDate, @PathVariable("start") int _start) {
+        return this.getTopLosersByPercentageStartingWithNumResults(endDate, _start,25);
+    }
+    
+    @RequestMapping(value = "/dailyReport/losers-percent/{endDate}", method = RequestMethod.GET, produces = "application/json")
+    public RestResponse getTopLosersByPercentage(@PathVariable("endDate") String endDate) {
+        return this.getTopLosersByPercentageStartingWith(endDate, 0);
     }
 
 }

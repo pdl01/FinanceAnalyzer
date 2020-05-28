@@ -6,8 +6,10 @@ import financialanalyzer.companynews.CompanyNewsItem;
 import financialanalyzer.companynews.CompanyNewsRepo;
 import financialanalyzer.companynews.CompanyNewsSearchProperties;
 import financialanalyzer.companynews.CompanyNewsService;
+import financialanalyzer.companynews.NewsItemRating;
 import financialanalyzer.objects.Company;
 import financialanalyzer.objects.CompanySearchProperties;
+import financialanalyzer.objects.NewsItemForm;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -15,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -208,7 +211,19 @@ public class NewsRestController {
         restResponse.setObject(companyNewsItems);
         return restResponse;
     }
-
-    
+    @RequestMapping(value = "/userrating", method = RequestMethod.POST, produces = "application/json")
+    public RestResponse saveUserRatingForNewsItems(@RequestBody NewsItemForm _newsItemForm) {
+        RestResponse restResponse = new RestResponse();
+        CompanyNewsSearchProperties cnsp = new CompanyNewsSearchProperties();
+        cnsp.setId(_newsItemForm.getId());
+        List<CompanyNewsItem> cniList = this.companyNewsSearchRepo.searchForCompanyNews(cnsp);
+        if (cniList != null && cniList.size() == 1) {
+            CompanyNewsItem cni = cniList.get(0);
+            cni.setUserRating(NewsItemRating.valueOf(_newsItemForm.getRating()));
+            this.companyNewsSearchRepo.updateUserRatingForNewsItem(cni);
+        }
+        
+        return restResponse;
+    }
     
 }

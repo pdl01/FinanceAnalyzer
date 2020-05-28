@@ -22,4 +22,8 @@ public interface CompanyNewsRepo {
     public List<CompanyNewsItem> searchForCompanyNews(CompanyNewsSearchProperties _sp);
     
     public long getNumberOfNewsItemsForCompany(CompanyNewsSearchProperties _sp);
+    
+    public boolean updateUserRatingForNewsItem(CompanyNewsItem _item);
+    public boolean updateSystemRatingForNewsItems(CompanyNewsItem _item);
+    
 }

@@ -5,11 +5,14 @@
  */
 package financialanalyzer.sentimentanalysis;
 
+import financialanalyzer.companynews.CompanyNewsItem;
 import financialanalyzer.companynews.CompanyNewsServiceImpl;
+import financialanalyzer.companynews.NewsItemRating;
 import java.util.List;
 import org.apache.commons.text.similarity.JaccardSimilarity;
 import org.springframework.beans.factory.annotation.Autowired;
 import financialanalyzer.config.AppConfig;
+import financialanalyzer.objects.Company;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -38,15 +41,15 @@ public class CompanyNewsSentimentAnalysisManagerImpl implements SentimentAnalysi
     private void loadPostiveCompanyNewsReference() {
         this.positiveCompanyNewsReference = new ArrayList<>();
         File dirPositive = new File(this.appConfig.getCompanyNewsPostiveSentimentAnalysisRefDir());
-        File [] files = dirPositive.listFiles();
-        for (int i = 0; i < files.length; i++){
-            if (files[i].isFile()){ //this line weeds out other directories/folders
+        File[] files = dirPositive.listFiles();
+        for (int i = 0; i < files.length; i++) {
+            if (files[i].isFile()) { //this line weeds out other directories/folders
                 String s = this.readAllBytesJava7(files[i].getAbsolutePath());
                 this.positiveCompanyNewsReference.add(s);
                 //System.out.println(files[i]);
             }
         }
-    
+
     }
 
     private void loadNegativeCompanyNewsReference() {
@@ -58,7 +61,7 @@ public class CompanyNewsSentimentAnalysisManagerImpl implements SentimentAnalysi
         try {
             content = new String(Files.readAllBytes(Paths.get(filePath)));
         } catch (IOException e) {
-           LOGGER.error("Unable to read sentiment file:"+e.getMessage());
+            LOGGER.error("Unable to read sentiment file:" + e.getMessage());
         }
         return content;
     }
@@ -72,7 +75,7 @@ public class CompanyNewsSentimentAnalysisManagerImpl implements SentimentAnalysi
         for (String refItem : this.positiveCompanyNewsReference) {
             JaccardSimilarity js = new JaccardSimilarity();
             Double itemX = js.apply(_input, refItem);
-            totalX = totalX+itemX;
+            totalX = totalX + itemX;
             LOGGER.info("similarity Score:" + itemX);
 
         }
@@ -87,4 +90,21 @@ public class CompanyNewsSentimentAnalysisManagerImpl implements SentimentAnalysi
         return 0.0d;
     }
 
+    @Override
+    public boolean doesNewsArticleRelateToSymbol(CompanyNewsItem _cni) {
+
+        return _cni.getBody().toLowerCase().contains(_cni.getSymbol().toLowerCase());
+
+    }
+
+    @Override
+    public NewsItemRating developSystemRating(CompanyNewsItem _item) {
+        if (!doesNewsArticleRelateToSymbol(_item)) {
+            return NewsItemRating.UNRELATED;
+        }
+        //TODO: perform sentimentanalsysi
+        return null;
+    }
+    
+    
 }

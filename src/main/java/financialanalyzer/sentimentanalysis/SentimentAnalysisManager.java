@@ -5,6 +5,10 @@
  */
 package financialanalyzer.sentimentanalysis;
 
+import financialanalyzer.companynews.CompanyNewsItem;
+import financialanalyzer.companynews.NewsItemRating;
+import financialanalyzer.objects.Company;
+import java.util.List;
 import org.springframework.stereotype.Component;
 
 /**
@@ -13,7 +17,11 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public interface SentimentAnalysisManager {
-    public double getPositiveSentimentAnalysisIndex(String _input,String _dataSetId); 
-    public double getNegativeSentimentAnalysisIndex(String _input,String _dataSetId); 
 
+    public NewsItemRating developSystemRating(CompanyNewsItem _item);
+    public double getPositiveSentimentAnalysisIndex(String _input, String _dataSetId);
+
+    public double getNegativeSentimentAnalysisIndex(String _input, String _dataSetId);
+
+    public boolean doesNewsArticleRelateToSymbol(CompanyNewsItem _cni);
 }

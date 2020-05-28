@@ -9,6 +9,7 @@ public abstract class AbstractSearchProperties {
     protected int numResults = 100;
     protected int startResults = 0;
 
+    protected String id;
     protected String companyName;
     protected String stockExchange;
     protected String stockSymbol;
@@ -17,6 +18,14 @@ public abstract class AbstractSearchProperties {
 
     protected String sortField;
     protected String sortOrder;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public String getSortField() {
         return sortField;

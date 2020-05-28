@@ -45,7 +45,7 @@ public class CompanyNewsReceiver {
         //get top 10 news urls about the company
 
         List<CompanyNewsItem> cnis = this.companyNewsServiceImpl.fetchCompanyNewsItems(_company, 10);
-
+        boolean addedNewsItem = false;
         if (cnis != null && cnis.size() > 0) {
             for (CompanyNewsItem cni : cnis) {
                 //check if it exists already; if it does don't update
@@ -54,14 +54,20 @@ public class CompanyNewsReceiver {
 
                 List<CompanyNewsItem> alreadyIngestedNewsItems = this.companyNewsSearchRepo.searchForCompanyNews(cnsp);
                 if (alreadyIngestedNewsItems == null || (alreadyIngestedNewsItems != null && alreadyIngestedNewsItems.size() == 0)) {
+                    addedNewsItem = true;
                     cni.setRecordDate(new Date());
                     cni.setPublishedDate(new Date());
                     this.companyNewsSearchRepo.submit(cni);
+                    
                     //TODO:trigger sentimient analysis update
                 }
             }
 
         }
+        if (addedNewsItem) {
+            this.companyNewsServiceImpl.submitCompanyToSentimentAnalysisQueue(_company);
+        }
+        
         //save the url and text and do some sentiment analysis (good/bad news)
         //save the item to the repo
 

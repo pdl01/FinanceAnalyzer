@@ -13,6 +13,7 @@ import java.util.Date;
  */
 public class CompanyNewsItem implements Cloneable {
 
+    
     private String id;
     private String url;
     private String subject;
@@ -24,6 +25,8 @@ public class CompanyNewsItem implements Cloneable {
     private String recordDateAsString;
     private Date recordDate;
     private String sentiment;
+    private NewsItemRating userRating;
+    private NewsItemRating systemRating;
 
     public String getId() {
         return id;
@@ -116,6 +119,22 @@ public class CompanyNewsItem implements Cloneable {
 
     public void setRecordDateAsString(String recordDateAsString) {
         this.recordDateAsString = recordDateAsString;
+    }
+
+    public NewsItemRating getUserRating() {
+        return userRating;
+    }
+
+    public void setUserRating(NewsItemRating userRating) {
+        this.userRating = userRating;
+    }
+
+    public NewsItemRating getSystemRating() {
+        return systemRating;
+    }
+
+    public void setSystemRating(NewsItemRating systemRating) {
+        this.systemRating = systemRating;
     }
 
 }

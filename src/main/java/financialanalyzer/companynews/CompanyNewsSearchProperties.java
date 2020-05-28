@@ -14,7 +14,9 @@ import financialanalyzer.objects.AbstractSearchProperties;
 public class CompanyNewsSearchProperties extends AbstractSearchProperties {
 
     protected String companyNewsItemId;
-
+    protected NewsItemRating systemRating;
+    protected NewsItemRating userRating;
+ 
     public String getCompanyNewsItemId() {
         return companyNewsItemId;
     }
@@ -22,5 +24,23 @@ public class CompanyNewsSearchProperties extends AbstractSearchProperties {
     public void setCompanyNewsItemId(String companyNewsItemId) {
         this.companyNewsItemId = companyNewsItemId;
     }
+
+    public NewsItemRating getSystemRating() {
+        return systemRating;
+    }
+
+    public void setSystemRating(NewsItemRating systemRating) {
+        this.systemRating = systemRating;
+    }
+
+    public NewsItemRating getUserRating() {
+        return userRating;
+    }
+
+    public void setUserRating(NewsItemRating userRating) {
+        this.userRating = userRating;
+    }
+
+    
 
 }

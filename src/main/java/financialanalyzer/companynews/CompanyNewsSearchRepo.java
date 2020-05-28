@@ -16,6 +16,8 @@ import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.action.update.UpdateRequest;
+import org.elasticsearch.action.update.UpdateResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.index.query.BoolQueryBuilder;
@@ -59,7 +61,9 @@ public class CompanyNewsSearchRepo extends ElasticSearchManager implements Compa
                         "subject", _item.getSubject(),
                         "url", _item.getUrl(),
                         "body", _item.getBody(),
-                        "sentiment", _item.getSentiment()
+                        "sentiment", _item.getSentiment(),
+                        "userRating", _item.getUserRating().name(),
+                        "systemRating", _item.getSystemRating().name()
                 );
 
         int retryCounter = 0;
@@ -103,15 +107,26 @@ public class CompanyNewsSearchRepo extends ElasticSearchManager implements Compa
         BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
 
         if (_sp.getStockExchange() != null) {
+            logger.debug("search for exchange:" + _sp.getStockExchange());
+
             boolQuery.must(QueryBuilders.matchQuery("exchange", _sp.getStockExchange()));
 
         }
         if (_sp.getStockSymbol() != null) {
+            logger.debug("search for symbol:" + _sp.getStockSymbol());
             boolQuery.must(QueryBuilders.matchQuery("symbol", _sp.getStockSymbol()));
         }
         if (_sp.getCompanyNewsItemId() != null) {
+            logger.debug("search for id:" + _sp.getCompanyNewsItemId());
             boolQuery.must(QueryBuilders.matchQuery("_id", _sp.getCompanyNewsItemId()));
         }
+        if (_sp.getSystemRating() != null) {
+            boolQuery.must(QueryBuilders.matchQuery("systemRating", _sp.getSystemRating().name()));
+        }
+        if (_sp.getUserRating() != null) {
+            boolQuery.must(QueryBuilders.matchQuery("userRating", _sp.getUserRating().name()));
+        }
+
         if (_sp.getSearchDate() != null) {
             //try {
             boolQuery.must(QueryBuilders.matchQuery("recordDate", _sp.getSearchDate()));
@@ -144,11 +159,16 @@ public class CompanyNewsSearchRepo extends ElasticSearchManager implements Compa
             for (SearchHit hit : searchHits) {
                 //build some artificial items that will house basic info about the artifact, without hitting the main db again. (id,title)
                 if (hit.getType().equalsIgnoreCase("companynewsitem")) {
-                    String sourceAsString = hit.getSourceAsString();
+                    //String sourceAsString = hit.getSourceAsString();
                     Map<String, Object> sourceAsMap = hit.getSourceAsMap();
-                    CompanyNewsItem cni = this.buildCompanyNewsItemFromSourceMap(sourceAsMap);
+                    CompanyNewsItem cni = null;
+                    try {
+                        cni = this.buildCompanyNewsItemFromSourceMap(sourceAsMap);
+                        cnis.add(cni);
+                    } catch (Exception e) {
+                        logger.error("Error building item", e);
+                    }
 
-                    cnis.add(cni);
                 }
                 // do something with the SearchHit
             }
@@ -167,9 +187,18 @@ public class CompanyNewsSearchRepo extends ElasticSearchManager implements Compa
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
         String id = (String) _sourceAsMap.get("id");
+        logger.debug("building :" + id);
+        String recordDateFromData = ((String) _sourceAsMap.get("recordDate"));
+        String recordDate = "1900-01-01";
+        if (recordDateFromData != null) {
+            recordDate = recordDateFromData.substring(0, 10);
+        }
 
-        String recordDate = ((String) _sourceAsMap.get("recordDate")).substring(0, 10);
-        String publishedDate = ((String) _sourceAsMap.get("publishedDate")).substring(0, 10);
+        String publishedDateFromData = ((String) _sourceAsMap.get("publishedDate"));
+        String publishedDate = "1900-01-01";
+        if (publishedDateFromData != null) {
+            publishedDate = publishedDateFromData.substring(0, 10);
+        }
 
         String symbol = (String) _sourceAsMap.get("symbol");
         String exchange = (String) _sourceAsMap.get("exchange");
@@ -202,6 +231,14 @@ public class CompanyNewsSearchRepo extends ElasticSearchManager implements Compa
         cni.setBody(body);
         cni.setUrl(url);
         cni.setSentiment(sentiment);
+        String userRating = (String) _sourceAsMap.get("userRating");
+        if (userRating != null) {
+            cni.setUserRating(NewsItemRating.valueOf(userRating));
+        }
+        String systemRating = (String) _sourceAsMap.get("systemRating");
+        if (systemRating != null) {
+            cni.setSystemRating(NewsItemRating.valueOf(systemRating));
+        }
 
         return cni;
     }
@@ -221,6 +258,10 @@ public class CompanyNewsSearchRepo extends ElasticSearchManager implements Compa
         //searchSourceBuilder.query(QueryBuilders.matchAllQuery());
         QueryBuilder matchQueryBuilder = null;
         BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
+
+        if (_sp.getId() != null) {
+            boolQuery.must(QueryBuilders.matchQuery("id", _sp.getId()));
+        }
 
         if (_sp.getStockExchange() != null) {
             boolQuery.must(QueryBuilders.matchQuery("exchange", _sp.getStockExchange()));
@@ -258,7 +299,7 @@ public class CompanyNewsSearchRepo extends ElasticSearchManager implements Compa
         try {
             SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
             return searchResponse.getHits().getTotalHits();
-            
+
         } catch (IOException ex) {
             logger.error(ex.getMessage());
         }
@@ -266,6 +307,78 @@ public class CompanyNewsSearchRepo extends ElasticSearchManager implements Compa
         this.closeClient(client);
         logger.info("Returning frm search");
         return -1;
+    }
+
+    @Override
+    public boolean updateUserRatingForNewsItem(CompanyNewsItem _item) {
+        logger.info("processing submit");
+        if (_item == null) {
+            return false;
+        }
+        RestHighLevelClient client = this.buildClient();
+        if (client == null) {
+            return false;
+        }
+        logger.debug("Update user rating:"+_item.getId() + ":"+_item.getUserRating().name());
+        UpdateRequest updateRequest = new UpdateRequest("companynews", "companynewsitem", _item.getId())
+                .doc("id", _item.getId(),
+                        "userRating", _item.getUserRating().name()
+                );
+
+        int retryCounter = 0;
+        boolean indexedSuccessfully = false;
+        while (!indexedSuccessfully && retryCounter < 3) {
+
+            try {
+                UpdateResponse updateResponse = client.update(updateRequest);
+                //logger.info(indexResponse.getIndex());
+                //logger.info(indexResponse.getResult().name());
+                indexedSuccessfully = true;
+            } catch (IOException ex) {
+                //ex.printStackTrace();
+                logger.error(ex.getMessage());
+                indexedSuccessfully = false;
+            }
+        }
+        this.closeClient(client);
+        return indexedSuccessfully;
+    }
+
+    @Override
+    public boolean updateSystemRatingForNewsItems(CompanyNewsItem _item) {
+        logger.info("processing submit");
+        if (_item == null) {
+            return false;
+        }
+        RestHighLevelClient client = this.buildClient();
+        if (client == null) {
+            return false;
+        }
+        logger.debug("Update system rating:"+_item.getId() + ":"+_item.getSystemRating().name());
+        
+        UpdateRequest updateRequest = new UpdateRequest("companynews", "companynewsitem", _item.getId())
+                .doc("id", _item.getId(),
+                        "systemRating", _item.getSystemRating().name()
+                );
+
+        int retryCounter = 0;
+        boolean indexedSuccessfully = false;
+        while (!indexedSuccessfully && retryCounter < 3) {
+
+            try {
+                UpdateResponse updateResponse = client.update(updateRequest);
+                //logger.info(indexResponse.getIndex());
+                //logger.info(indexResponse.getResult().name());
+                indexedSuccessfully = true;
+            } catch (IOException ex) {
+                //ex.printStackTrace();
+                logger.error(ex.getMessage());
+                indexedSuccessfully = false;
+            }
+        }
+        this.closeClient(client);
+        return indexedSuccessfully;
+
     }
 
 }

@@ -150,8 +150,8 @@ public class CompanyRestController {
         RestResponse restResponse = new RestResponse();
         CompanySearchProperties csp = new CompanySearchProperties();
         csp.setCompanyId(_id);
-        csp.setStartResults(_start);
-        csp.setNumResults(_numberOfItems);
+        //csp.setStartResults(_start);
+        //csp.setNumResults(_numberOfItems);
         List<Company> companies = this.companySearchRepo.searchForCompany(csp);
         List<StockHistory> stockhistories = new ArrayList<>();
         if (companies != null) {
@@ -159,6 +159,8 @@ public class CompanyRestController {
                 StockHistorySearchProperties shsp = new StockHistorySearchProperties();
                 shsp.setStockExchange(company.getStockExchange());
                 shsp.setStockSymbol(company.getStockSymbol());
+                shsp.setNumResults(_numberOfItems);
+                shsp.setStartResults(_start);
                 shsp.setSortField("recordDate");
                 shsp.setSortOrder("DESC");
                 List<StockHistory> shs = this.stockHistorySearchRepo.searchForStockHistory(shsp);

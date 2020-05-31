@@ -6,10 +6,15 @@
 package financialanalyzer.companynews;
 
 import financialanalyzer.config.ActiveMQConfig;
+import financialanalyzer.http.HTMLPage;
+import financialanalyzer.http.HttpFetcher;
 import financialanalyzer.objects.Company;
 import financialanalyzer.sentimentanalysis.SentimentAnalysisManager;
 import java.util.ArrayList;
 import java.util.List;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +42,9 @@ public class CompanyNewsServiceImpl implements CompanyNewsService {
     @Autowired
     private CompanyNewsRepo companyNewsSearchRepo;
 
+    @Autowired
+    protected HttpFetcher httpFetcher;    
+    
     @Override
     public List<CompanyNewsItem> fetchCompanyNewsItems(Company _company, int _numberOfArticlesPerProvider) {
 
@@ -66,7 +74,6 @@ public class CompanyNewsServiceImpl implements CompanyNewsService {
 
                     }
 
-                   
                 }
 
             }
@@ -163,6 +170,44 @@ public class CompanyNewsServiceImpl implements CompanyNewsService {
     @Override
     public List<Company> getCompaniesThatHaveNoNewsItems() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public CompanyNewsItem buildCompanyNewsItemFromURL(String _url) {
+        
+        if (_url.contains("https://www.bloomberg.com")) {
+            return null;
+        }
+        
+        HTMLPage companyNewsItemPage = this.httpFetcher.getResponse(_url, false);
+        if (companyNewsItemPage != null && companyNewsItemPage.getContent() != null) {
+            CompanyNewsItem cni = new CompanyNewsItem();
+
+            cni.setUrl(_url);
+
+            //LOGGER.info(companyNewsItemPage.getContent());
+            Document newsDoc = Jsoup.parse(companyNewsItemPage.getContent());
+            Element newsTitle = newsDoc.selectFirst("title");
+            String newsTitleText = "Empty";
+            if (newsTitle != null) {
+                newsTitleText = newsTitle.text();
+
+            }
+            cni.setSubject(newsTitleText);
+            LOGGER.info(newsTitleText);
+            String bodyText = newsDoc.body().text();
+            String newsBodyText = "Empty";
+
+            if (bodyText != null && bodyText.length() > 2000) {
+                newsBodyText = bodyText;
+            } else if (bodyText != null) {
+                newsBodyText = bodyText;
+            }
+            cni.setBody(bodyText);
+            //LOGGER.info(newsBodyText);
+            return cni;
+        }
+        return null;
     }
 
 }

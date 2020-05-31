@@ -29,5 +29,6 @@ public interface CompanyNewsService {
     public List<Company> getCompaniesThatHaveNewsItemsWithNoSystemRating();
 
     public List<CompanyNewsItem> getNewsItemsWithNoSystemRatingForCompany(Company _company);
-
+    
+    public CompanyNewsItem buildCompanyNewsItemFromURL(String _url);
 }

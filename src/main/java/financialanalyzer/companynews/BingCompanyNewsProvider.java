@@ -29,6 +29,9 @@ public class BingCompanyNewsProvider implements CompanyNewsProvider {
     @Autowired
     protected HttpFetcher httpFetcher;
 
+    @Autowired 
+    protected CompanyNewsService companyNewsServiceImpl;
+    
     @Override
     public List<CompanyNewsItem> getCompanyNewsItems(Company _company, int _numberOfArticles) {
         LOGGER.info(this.getIdentifier()+":beginning getCompanyNewsItems");
@@ -56,38 +59,11 @@ public class BingCompanyNewsProvider implements CompanyNewsProvider {
                             //download the link to get the title, and text
                             LOGGER.info(dbsrLinkHref);
                             //download the link to get the title, and text
-                            if (!dbsrLinkHref.contains("https://www.bloomberg.com")) {
-
-                                HTMLPage companyNewsItemPage = this.httpFetcher.getResponse(dbsrLinkHref, false);
-                                if (companyNewsItemPage != null && companyNewsItemPage.getContent() != null) {
-                                    CompanyNewsItem cni = new CompanyNewsItem();
-
-                                    cni.setUrl(dbsrLinkHref);
-
-                                    //LOGGER.info(companyNewsItemPage.getContent());
-                                    Document newsDoc = Jsoup.parse(companyNewsItemPage.getContent());
-                                    Element newsTitle = newsDoc.selectFirst("title");
-                                    String newsTitleText = "Empty";
-                                    if (newsTitle != null) {
-                                        newsTitleText = newsTitle.text();
-
-                                    }
-                                    cni.setSubject(newsTitleText);
-                                    LOGGER.info(newsTitleText);
-                                    String bodyText = newsDoc.body().text();
-                                    String newsBodyText = "Empty";
-
-                                    if (bodyText != null && bodyText.length() > 2000) {
-                                        newsBodyText = bodyText;
-                                    } else if (bodyText != null) {
-                                        newsBodyText = bodyText;
-                                    }
-                                    cni.setBody(bodyText);
-                                    //LOGGER.info(newsBodyText);
-                                    cnis.add(cni);
-
-                                }
+                            CompanyNewsItem item = this.companyNewsServiceImpl.buildCompanyNewsItemFromURL(dbsrLinkHref);
+                            if (item != null) {
+                                cnis.add(item);
                             }
+                            
                         }
                     }
                 }

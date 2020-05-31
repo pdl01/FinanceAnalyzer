@@ -180,7 +180,7 @@ public class CompanyNewsServiceImpl implements CompanyNewsService {
         }
         
         HTMLPage companyNewsItemPage = this.httpFetcher.getResponse(_url, false);
-        if (companyNewsItemPage != null && companyNewsItemPage.getContent() != null) {
+        if (companyNewsItemPage != null && companyNewsItemPage.getContent() != null && !companyNewsItemPage.getContent().isEmpty()) {
             CompanyNewsItem cni = new CompanyNewsItem();
 
             cni.setUrl(_url);

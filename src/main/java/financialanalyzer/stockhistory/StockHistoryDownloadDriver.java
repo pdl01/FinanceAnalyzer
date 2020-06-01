@@ -42,7 +42,7 @@ public class StockHistoryDownloadDriver {
     public void fetchLatestData() {
         this.fetchLatestData(null);
     }
-    @Scheduled(cron = "0 15 5 * * 2-6",zone="UTC")
+    @Scheduled(cron = "0 15 6 * * 2-6",zone="UTC")
     public void fetchDaily() {
         LOGGER.info("Starting fetchDaily");
 

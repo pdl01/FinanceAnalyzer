@@ -63,7 +63,9 @@ public class CompanyNewsSearchRepo extends ElasticSearchManager implements Compa
                         "body", _item.getBody(),
                         "sentiment", _item.getSentiment(),
                         "userRating", _item.getUserRating().name(),
-                        "systemRating", _item.getSystemRating().name()
+                        "systemRating", _item.getSystemRating().name(),
+                        "sector",_item.getSectors(),
+                        "industry",_item.getIndustries()
                 );
 
         int retryCounter = 0;
@@ -239,6 +241,14 @@ public class CompanyNewsSearchRepo extends ElasticSearchManager implements Compa
         if (systemRating != null) {
             cni.setSystemRating(NewsItemRating.valueOf(systemRating));
         }
+        List<String> sectors = (List<String>) _sourceAsMap.get("sector");
+        List<String> industries = (List<String>) _sourceAsMap.get("industry");
+        
+
+            cni.setSectors(sectors);
+
+            cni.setIndustries(industries);
+        
 
         return cni;
     }

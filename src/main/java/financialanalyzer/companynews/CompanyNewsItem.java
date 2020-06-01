@@ -6,6 +6,7 @@
 package financialanalyzer.companynews;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  *
@@ -27,6 +28,8 @@ public class CompanyNewsItem implements Cloneable {
     private String sentiment;
     private NewsItemRating userRating;
     private NewsItemRating systemRating;
+    private List<String> sectors;
+    private List<String> industries;
 
     public String getId() {
         return id;
@@ -136,5 +139,23 @@ public class CompanyNewsItem implements Cloneable {
     public void setSystemRating(NewsItemRating systemRating) {
         this.systemRating = systemRating;
     }
+
+    public List<String> getSectors() {
+        return sectors;
+    }
+
+    public void setSectors(List<String> sectors) {
+        this.sectors = sectors;
+    }
+
+    public List<String> getIndustries() {
+        return industries;
+    }
+
+    public void setIndustries(List<String> industries) {
+        this.industries = industries;
+    }
+
+
 
 }

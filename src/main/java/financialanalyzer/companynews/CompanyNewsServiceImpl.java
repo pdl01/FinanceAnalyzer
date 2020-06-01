@@ -68,6 +68,8 @@ public class CompanyNewsServiceImpl implements CompanyNewsService {
                         cnisItemClone.setId(_company.getStockExchange() + ":" + _company.getStockSymbol() + ":" + cnisItemClone.getUrl());
                         cnisItemClone.setExchange(_company.getStockExchange());
                         cnisItemClone.setSymbol(_company.getStockSymbol());
+                        cnisItemClone.setIndustries(_company.getIndustries());
+                        cnisItemClone.setSectors(_company.getSectors());
                         cnisItemClone.setSystemRating(NewsItemRating.NONE);
                         cnisItemClone.setUserRating(NewsItemRating.NONE);
                         cnis.add(cnisItemClone);

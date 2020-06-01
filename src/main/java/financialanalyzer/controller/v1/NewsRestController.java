@@ -215,7 +215,7 @@ public class NewsRestController {
     public RestResponse saveUserRatingForNewsItems(@RequestBody NewsItemForm _newsItemForm) {
         RestResponse restResponse = new RestResponse();
         CompanyNewsSearchProperties cnsp = new CompanyNewsSearchProperties();
-        cnsp.setId(_newsItemForm.getId());
+        cnsp.setCompanyNewsItemId(_newsItemForm.getId());
         List<CompanyNewsItem> cniList = this.companyNewsSearchRepo.searchForCompanyNews(cnsp);
         if (cniList != null && cniList.size() == 1) {
             CompanyNewsItem cni = cniList.get(0);

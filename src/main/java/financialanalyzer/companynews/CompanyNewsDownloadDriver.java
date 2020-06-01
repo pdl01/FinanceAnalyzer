@@ -34,7 +34,7 @@ public class CompanyNewsDownloadDriver {
     private CompanyNewsService companyNewsServiceImpl;
     
 
-    @Scheduled(cron = "0 0 2 * * ?",zone="UTC")
+    @Scheduled(cron = "0 0 5 * * ?",zone="UTC")
     public void fetchDaily() {
         LOGGER.info("Starting fetchDaily");
 

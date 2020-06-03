@@ -7,6 +7,7 @@ package financialanalyzer.companynews;
 
 import financialanalyzer.config.ActiveMQConfig;
 import financialanalyzer.objects.Company;
+import financialanalyzer.systemactivity.SystemActivityManager;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -37,6 +38,9 @@ public class CompanyNewsReceiver {
     @Autowired
     private CompanyNewsService companyNewsServiceImpl;
 
+    @Autowired
+    private SystemActivityManager systemActivityManagerImpl;
+
     @JmsListener(destination = ActiveMQConfig.COMPANY_NEWS_QUEUE)
     public void receiveMessage(@Payload Company _company,
             @Headers MessageHeaders headers,
@@ -46,6 +50,7 @@ public class CompanyNewsReceiver {
 
         List<CompanyNewsItem> cnis = this.companyNewsServiceImpl.fetchCompanyNewsItems(_company, 10);
         boolean addedNewsItem = false;
+        int submissionCounter = 0;
         if (cnis != null && cnis.size() > 0) {
             for (CompanyNewsItem cni : cnis) {
                 //check if it exists already; if it does don't update
@@ -55,22 +60,23 @@ public class CompanyNewsReceiver {
                 List<CompanyNewsItem> alreadyIngestedNewsItems = this.companyNewsSearchRepo.searchForCompanyNews(cnsp);
                 if (alreadyIngestedNewsItems == null || (alreadyIngestedNewsItems != null && alreadyIngestedNewsItems.size() == 0)) {
                     addedNewsItem = true;
+                    submissionCounter++;
                     cni.setRecordDate(new Date());
                     cni.setPublishedDate(new Date());
                     this.companyNewsSearchRepo.submit(cni);
-                    
+
                     //TODO:trigger sentimient analysis update
                 }
             }
 
         }
         if (addedNewsItem) {
+            this.systemActivityManagerImpl.saveSystemActivity(_company.getStockSymbol(), _company.getStockExchange(), SystemActivityManager.ACTIVITY_TYPE_COMPANY_NEWS, "acquired " + submissionCounter + " news items");
             this.companyNewsServiceImpl.submitCompanyToSentimentAnalysisQueue(_company);
         }
-        
+
         //save the url and text and do some sentiment analysis (good/bad news)
         //save the item to the repo
-
         //this.companyNewsSearchRepo.submit(_companyNewsItem);
     }
 }

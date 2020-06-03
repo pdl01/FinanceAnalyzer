@@ -129,12 +129,12 @@ public class CompanyNewsSearchRepo extends ElasticSearchManager implements Compa
             boolQuery.must(QueryBuilders.matchQuery("userRating", _sp.getUserRating().name()));
         }
 
-        if (_sp.getSearchDate() != null) {
-            //try {
-            boolQuery.must(QueryBuilders.matchQuery("recordDate", _sp.getSearchDate()));
-            //} catch (ParseException ex) {
-            //    logger.log(Level.SEVERE, null, ex);
-            //}
+        if (_sp.getSearchDates() != null) {
+            BoolQueryBuilder dateQuery = QueryBuilders.boolQuery();
+            for (String dateForQuery : _sp.getSearchDates()) {
+                dateQuery.should(QueryBuilders.matchQuery("recordDate", dateForQuery));
+            }
+            boolQuery.must(dateQuery);
 
         }
 
@@ -283,12 +283,12 @@ public class CompanyNewsSearchRepo extends ElasticSearchManager implements Compa
         if (_sp.getCompanyNewsItemId() != null) {
             boolQuery.must(QueryBuilders.matchQuery("_id", _sp.getCompanyNewsItemId()));
         }
-        if (_sp.getSearchDate() != null) {
-            //try {
-            boolQuery.must(QueryBuilders.matchQuery("recordDate", _sp.getSearchDate()));
-            //} catch (ParseException ex) {
-            //    logger.log(Level.SEVERE, null, ex);
-            //}
+        if (_sp.getSearchDates() != null) {
+            BoolQueryBuilder dateQuery = QueryBuilders.boolQuery();
+            for (String dateForQuery : _sp.getSearchDates()) {
+                dateQuery.should(QueryBuilders.matchQuery("recordDate", dateForQuery));
+            }
+            boolQuery.must(dateQuery);
 
         }
 

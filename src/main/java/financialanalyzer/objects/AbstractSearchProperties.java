@@ -1,5 +1,8 @@
 package financialanalyzer.objects;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  *
  * @author phil
@@ -14,7 +17,7 @@ public abstract class AbstractSearchProperties {
     protected String stockExchange;
     protected String stockSymbol;
     protected String companyId;
-    protected String searchDate;
+    protected List<String> searchDates;
 
     protected String sortField;
     protected String sortOrder;
@@ -31,14 +34,18 @@ public abstract class AbstractSearchProperties {
         return sortField;
     }
 
-    public String getSearchDate() {
-        return searchDate;
+    public List<String> getSearchDates() {
+        return searchDates;
     }
 
+    public void setSearchDates(List<String> searchDates) {
+        this.searchDates = searchDates;
+    }
     public void setSearchDate(String searchDate) {
-        this.searchDate = searchDate;
+        this.searchDates = new ArrayList<>();
+        this.searchDates.add(searchDate);
     }
-
+    
     public void setSortField(String sortField) {
         this.sortField = sortField;
     }

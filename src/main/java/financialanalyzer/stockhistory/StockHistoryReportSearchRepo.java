@@ -38,11 +38,11 @@ public class StockHistoryReportSearchRepo extends ElasticSearchManager {
     private static final Logger logger = LoggerFactory.getLogger(StockHistoryReportSearchRepo.class.getName());
     public static final String STOCK_HISTORY_INDEX = "stockhistories";
     private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-    
-    public void searchForReport (SearchRequest _sr){
-        
+
+    public void searchForReport(SearchRequest _sr) {
+
     }
-    
+
     public List<StockHistory> searchForStockHistory(StockHistorySearchProperties _shsp) {
         List<StockHistory> shs = new ArrayList<>();
         RestHighLevelClient client = this.buildClient();
@@ -55,7 +55,7 @@ public class StockHistoryReportSearchRepo extends ElasticSearchManager {
         //searchSourceBuilder.query(QueryBuilders.matchAllQuery());
         QueryBuilder matchQueryBuilder = null;
         BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
-        
+
         if (_shsp.getStockExchange() != null) {
             boolQuery.must(QueryBuilders.matchQuery("exchange", _shsp.getStockExchange()));
 
@@ -64,12 +64,18 @@ public class StockHistoryReportSearchRepo extends ElasticSearchManager {
             boolQuery.must(QueryBuilders.matchQuery("symbol", _shsp.getStockSymbol()));
 
         }
-        if (_shsp.getSearchDate() != null) {
-            try {
-                boolQuery.must(QueryBuilders.matchQuery("recordDate", sdf.parse(_shsp.getSearchDate())));
-            } catch (ParseException ex) {
-                logger.error("Parse Error", null, ex);
+        if (_shsp.getSearchDates() != null) {
+            BoolQueryBuilder dateQuery = QueryBuilders.boolQuery();
+
+            for (String dateForQuery : _shsp.getSearchDates()) {
+                try {
+                    dateQuery.should(QueryBuilders.matchQuery("recordDate", sdf.parse(dateForQuery)));
+                } catch (ParseException ex) {
+                    logger.error("Parse Error", null, ex);
+                }
             }
+
+            boolQuery.must(dateQuery);
 
         }
 
@@ -84,11 +90,11 @@ public class StockHistoryReportSearchRepo extends ElasticSearchManager {
                 searchSourceBuilder.sort(_shsp.getSortField(), SortOrder.DESC);
             }
         }
-        
+
         searchRequest.source(searchSourceBuilder);
 
         try {
-            SearchResponse searchResponse = client.search(searchRequest,RequestOptions.DEFAULT);
+            SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
 
             SearchHits hits = searchResponse.getHits();
             SearchHit[] searchHits = hits.getHits();
@@ -117,11 +123,11 @@ public class StockHistoryReportSearchRepo extends ElasticSearchManager {
     private StockHistory buildStockHistoryFromSourceMap(Map<String, Object> _sourceAsMap) {
         //2020-03-09T04:00:00.000Z
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        
+
         String id = (String) _sourceAsMap.get("id");
 
-        String recordDate = ((String) _sourceAsMap.get("recordDate")).substring(0,10);
-        
+        String recordDate = ((String) _sourceAsMap.get("recordDate")).substring(0, 10);
+
         String symbol = (String) _sourceAsMap.get("symbol");
         String exchange = (String) _sourceAsMap.get("exchange");
         //even though mapping is float, sourcemap is being returned as double; need to make unsafe cast, but should be fine
@@ -133,17 +139,15 @@ public class StockHistoryReportSearchRepo extends ElasticSearchManager {
         float high = ((Double) _sourceAsMap.get("high")).floatValue();
         float low = ((Double) _sourceAsMap.get("low")).floatValue();
         int volume = (int) _sourceAsMap.get("volume");
-        
-        
-        
+
         StockHistory sh = new StockHistory();
         sh.setRecordDateAsString(recordDate);
         try {
-            sh.setRecordDate(sdf.parse(recordDate));    
+            sh.setRecordDate(sdf.parse(recordDate));
         } catch (Exception e) {
             logger.error("Cannot convert recordDate from search to java date");
         }
-        
+
         sh.setActual_gain(actual_gain);
         sh.setVolume(volume);
         sh.setPercent_gain(percent_gain);
@@ -151,11 +155,10 @@ public class StockHistoryReportSearchRepo extends ElasticSearchManager {
         sh.setClose(closeValue);
         sh.setHigh(high);
         sh.setLow(low);
-        
+
         sh.setExchange(exchange);
         sh.setSymbol(symbol);
-        
-        
+
         return sh;
     }
 }

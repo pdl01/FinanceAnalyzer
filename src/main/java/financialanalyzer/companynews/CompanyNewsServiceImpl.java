@@ -10,6 +10,7 @@ import financialanalyzer.http.HTMLPage;
 import financialanalyzer.http.HttpFetcher;
 import financialanalyzer.objects.Company;
 import financialanalyzer.sentimentanalysis.SentimentAnalysisManager;
+import financialanalyzer.systemactivity.SystemActivityManager;
 import java.util.ArrayList;
 import java.util.List;
 import org.jsoup.Jsoup;
@@ -43,8 +44,11 @@ public class CompanyNewsServiceImpl implements CompanyNewsService {
     private CompanyNewsRepo companyNewsSearchRepo;
 
     @Autowired
-    protected HttpFetcher httpFetcher;    
-    
+    protected HttpFetcher httpFetcher;
+
+    @Autowired
+    private SystemActivityManager systemActivityManagerImpl;
+
     @Override
     public List<CompanyNewsItem> fetchCompanyNewsItems(Company _company, int _numberOfArticlesPerProvider) {
 
@@ -87,11 +91,13 @@ public class CompanyNewsServiceImpl implements CompanyNewsService {
 
     @Override
     public void submitCompanyToDownloadQueue(Company _company) {
+        this.systemActivityManagerImpl.saveSystemActivity(_company.getStockSymbol(), _company.getStockExchange(), SystemActivityManager.ACTIVITY_TYPE_COMPANY_NEWS, "enqueuing to download news");
         this.jmsTemplate.convertAndSend(ActiveMQConfig.COMPANY_NEWS_QUEUE, _company);
     }
 
     @Override
     public void submitCompanyToSentimentAnalysisQueue(Company _company) {
+        this.systemActivityManagerImpl.saveSystemActivity(_company.getStockSymbol(), _company.getStockExchange(), SystemActivityManager.ACTIVITY_TYPE_COMPANY_NEWS, "enqueuing to sentiment analysis");
         this.jmsTemplate.convertAndSend(ActiveMQConfig.NEWS_SENTIMENT_RATING_QUEUE, _company);
     }
 
@@ -176,11 +182,11 @@ public class CompanyNewsServiceImpl implements CompanyNewsService {
 
     @Override
     public CompanyNewsItem buildCompanyNewsItemFromURL(String _url) {
-        
+
         if (_url.contains("https://www.bloomberg.com")) {
             return null;
         }
-        
+
         HTMLPage companyNewsItemPage = this.httpFetcher.getResponse(_url, false);
         if (companyNewsItemPage != null && companyNewsItemPage.getContent() != null && !companyNewsItemPage.getContent().isEmpty()) {
             CompanyNewsItem cni = new CompanyNewsItem();

@@ -136,12 +136,14 @@ public class StockHistorySearchRepo extends ElasticSearchManager implements Stoc
             boolQuery.must(QueryBuilders.matchQuery("symbol", _shsp.getStockSymbol()));
 
         }
-        if (_shsp.getSearchDate() != null) {
-            //try {
-            boolQuery.must(QueryBuilders.matchQuery("recordDate", _shsp.getSearchDate()));
-            //} catch (ParseException ex) {
-            //    logger.log(Level.SEVERE, null, ex);
-            //}
+
+        
+        if (_shsp.getSearchDates() != null) {
+            BoolQueryBuilder dateQuery = QueryBuilders.boolQuery();
+            for (String dateForQuery : _shsp.getSearchDates()) {
+                dateQuery.should(QueryBuilders.matchQuery("recordDate", dateForQuery));
+            }
+            boolQuery.must(dateQuery);
 
         }
 

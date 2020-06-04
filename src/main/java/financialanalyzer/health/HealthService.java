@@ -5,6 +5,7 @@
  */
 package financialanalyzer.health;
 
+import financialanalyzer.objects.Company;
 import java.util.List;
 
 /**
@@ -16,11 +17,11 @@ public interface HealthService {
     
     public HealthRecord generateDailyHealthRecord();
     
-    public HealthRecord generateHealthRecord();
+    public HealthRecord generateHealthRecord(boolean _reProcessWhereAvailable);
 
-    public List<String> generateListOfCompaniesWithoutNewsItemsInPastXDays(int _numOfDays);
+    public List<Company> generateListOfCompaniesWithoutNewsItemsInPastXDays(int _numOfDays);
 
-    public List<String> generateListOfCompaniesWithoutStockHistoriesInPastXDays(int _numOfDays);
+    public List<Company> generateListOfCompaniesWithoutStockHistoriesInPastXDays(int _numOfDays);
     
     public List<String> getAvailableHealthRecords();
     

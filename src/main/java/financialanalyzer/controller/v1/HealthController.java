@@ -44,7 +44,14 @@ public class HealthController {
 
     @RequestMapping(value = "/latest", method = RequestMethod.POST, produces = "application/json")
     public RestResponse getLatestHealth() {
-        this.healthServiceImpl.generateHealthRecord();
+        this.healthServiceImpl.generateHealthRecord(false);
+        RestResponse restResponse = new RestResponse();
+        return restResponse;
+    }
+
+    @RequestMapping(value = "/latest/rebuild", method = RequestMethod.POST, produces = "application/json")
+    public RestResponse getLatestHealthAndRebuild() {
+        this.healthServiceImpl.generateHealthRecord(true);
         RestResponse restResponse = new RestResponse();
         return restResponse;
     }

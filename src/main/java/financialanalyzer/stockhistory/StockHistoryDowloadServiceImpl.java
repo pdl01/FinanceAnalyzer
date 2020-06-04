@@ -13,7 +13,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
-import financialanalyzer.companynames.CompanyNameProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package financialanalyzer.health;
 
 import financialanalyzer.companynames.CompanyNameProvider;
@@ -10,17 +5,16 @@ import financialanalyzer.companynames.CompanyRepo;
 import financialanalyzer.companynews.CompanyNewsItem;
 import financialanalyzer.companynews.CompanyNewsRepo;
 import financialanalyzer.companynews.CompanyNewsSearchProperties;
-import financialanalyzer.companynews.CompanyNewsSearchRepo;
+import financialanalyzer.companynews.CompanyNewsService;
 import financialanalyzer.objects.Company;
 import financialanalyzer.objects.CompanySearchProperties;
 import financialanalyzer.stockhistory.StockHistory;
-import financialanalyzer.stockhistory.StockHistoryRepo;
+import financialanalyzer.stockhistory.*;
 import financialanalyzer.stockhistory.StockHistorySearchProperties;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import org.apache.lucene.spatial.prefix.tree.S2PrefixTree;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +37,8 @@ public class HealthServiceImpl implements HealthService {
 
     @Autowired
     private CompanyNewsRepo companyNewsSearchRepo;
+    @Autowired
+    private CompanyNewsService companyNewsServiceImpl;
 
     @Autowired
     private CompanyRepo companySearchRepo;
@@ -50,8 +46,11 @@ public class HealthServiceImpl implements HealthService {
     @Autowired
     private StockHistoryRepo stockHistorySearchRepo;
 
+    @Autowired
+    private StockHistoryDownloadService stockHistoryDowloadServiceImpl;
+
     @Override
-    public HealthRecord generateHealthRecord() {
+    public HealthRecord generateHealthRecord(boolean _reProcessWhereAvailable) {
         if (this.isBuilding) {
             LOGGER.info("already building. Exiting");
             return null;
@@ -65,8 +64,31 @@ public class HealthServiceImpl implements HealthService {
             hr.setRecordDateAsString(sdf.format(recordDate));
             //hr.setCompaniesWithoutNewsItemsInPast3Days(this.generateListOfCompaniesWithoutNewsItemsInPastXDays(3));
             //hr.setCompaniesWithoutNewsItemsInPast7Days(this.generateListOfCompaniesWithoutNewsItemsInPastXDays(7));
-            hr.setCompaniesWithoutNewsItemsInPast30Days(this.generateListOfCompaniesWithoutNewsItemsInPastXDays(30));
-            hr.setCompaniesWithoutStockHistoriesInPast7Days(this.generateListOfCompaniesWithoutStockHistoriesInPastXDays(7));
+            List<String> companyIds = null;
+            List<Company> companies = this.generateListOfCompaniesWithoutNewsItemsInPastXDays(30);
+            if (companies != null) {
+                companyIds = new ArrayList<>();
+                for (Company company : companies) {
+                    if (_reProcessWhereAvailable) {
+                        this.companyNewsServiceImpl.submitCompanyToDownloadQueue(company);
+                    }
+                    companyIds.add(company.getId());
+                }
+                hr.setCompaniesWithoutNewsItemsInPast30Days(companyIds);
+            }
+
+            companies = this.generateListOfCompaniesWithoutStockHistoriesInPastXDays(7);
+            if (companies != null) {
+                companyIds = new ArrayList<>();
+                for (Company company : companies) {
+                    if (_reProcessWhereAvailable) {
+                        this.stockHistoryDowloadServiceImpl.queueCompanyForFetch(company, new Date(), true);
+                    }
+                    companyIds.add(company.getId());
+                }
+                hr.setCompaniesWithoutStockHistoriesInPast7Days(companyIds);
+            }
+
             this.isBuilding = false;
             //save the record
             this.healthRecordCache.clearCache();
@@ -80,9 +102,11 @@ public class HealthServiceImpl implements HealthService {
     }
 
     @Override
-    public List<String> generateListOfCompaniesWithoutNewsItemsInPastXDays(int _numOfDays) {
-        List<String> companyIdsToReturn = new ArrayList<>();
+    public List<Company> generateListOfCompaniesWithoutNewsItemsInPastXDays(int _numOfDays) {
+        List<Company> companiesToReturn = new ArrayList<>();
         String[] exchangeArray = {CompanyNameProvider.EXCHANGE_AMEX, CompanyNameProvider.EXCHANGE_NASDAQ, CompanyNameProvider.EXCHANGE_NYSE};
+
+        List<String> searchDates = this.generateSearchDates(_numOfDays);
 
         for (String exchange : exchangeArray) {
             CompanySearchProperties csp = new CompanySearchProperties();
@@ -109,7 +133,7 @@ public class HealthServiceImpl implements HealthService {
 
                         //TODOand search
                         if (cnis == null || (cnis != null && cnis.isEmpty())) {
-                            companyIdsToReturn.add(item.getId());
+                            companiesToReturn.add(item);
                         }
                     }
                 }
@@ -123,7 +147,12 @@ public class HealthServiceImpl implements HealthService {
 
         }
 
-        return companyIdsToReturn;
+        return companiesToReturn;
+    }
+
+    private List<String> generateIdsFromCompanyList(List<Company> _companies) {
+        ArrayList<String> ids = new ArrayList<>();
+        return ids;
     }
 
     private List<String> generateSearchDates(int _numOfDays) {
@@ -138,8 +167,8 @@ public class HealthServiceImpl implements HealthService {
     }
 
     @Override
-    public List<String> generateListOfCompaniesWithoutStockHistoriesInPastXDays(int _numOfDays) {
-        List<String> companyIdsToReturn = new ArrayList<>();
+    public List<Company> generateListOfCompaniesWithoutStockHistoriesInPastXDays(int _numOfDays) {
+        List<Company> companiesToReturn = new ArrayList<>();
         String[] exchangeArray = {CompanyNameProvider.EXCHANGE_AMEX, CompanyNameProvider.EXCHANGE_NASDAQ, CompanyNameProvider.EXCHANGE_NYSE};
 
         //TODO create list of dates to search for; need to convert search date logic to use strings;
@@ -175,7 +204,7 @@ public class HealthServiceImpl implements HealthService {
                         List<StockHistory> shs = this.stockHistorySearchRepo.searchForStockHistory(shsp);
 
                         if (shs == null || (shs != null && shs.isEmpty())) {
-                            companyIdsToReturn.add(item.getId());
+                            companiesToReturn.add(item);
                         }
                     }
                 }
@@ -189,14 +218,14 @@ public class HealthServiceImpl implements HealthService {
 
         }
 
-        return companyIdsToReturn;
+        return companiesToReturn;
     }
 
     @Override
     @Scheduled(cron = "0 0 10 * * ?", zone = "UTC")
     public HealthRecord generateDailyHealthRecord() {
         //build the record
-        HealthRecord hr = this.generateHealthRecord();
+        HealthRecord hr = this.generateHealthRecord(true);
 
         return hr;
     }

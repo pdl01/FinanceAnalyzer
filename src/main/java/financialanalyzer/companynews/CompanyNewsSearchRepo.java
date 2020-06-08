@@ -61,7 +61,7 @@ public class CompanyNewsSearchRepo extends ElasticSearchManager implements Compa
                         "subject", _item.getSubject(),
                         "url", _item.getUrl(),
                         "body", _item.getBody(),
-                        "sentiment", _item.getSentiment(),
+                        "systemRatingVersion", _item.getSystemRatingVersion(),
                         "userRating", _item.getUserRating().name(),
                         "systemRating", _item.getSystemRating().name(),
                         "sector",_item.getSectors(),
@@ -127,6 +127,21 @@ public class CompanyNewsSearchRepo extends ElasticSearchManager implements Compa
         }
         if (_sp.getUserRating() != null) {
             boolQuery.must(QueryBuilders.matchQuery("userRating", _sp.getUserRating().name()));
+        }
+        if (_sp.getIndustries()!= null) {
+            BoolQueryBuilder industryQuery = QueryBuilders.boolQuery();
+            for (String industry : _sp.getIndustries()) {
+                industryQuery.should(QueryBuilders.matchQuery("industry", industry));
+            }
+            boolQuery.must(industryQuery);
+
+        }
+        if (_sp.getSectors()!= null) {
+            BoolQueryBuilder sectorQuery = QueryBuilders.boolQuery();
+            for (String sector : _sp.getSectors()) {
+                sectorQuery.should(QueryBuilders.matchQuery("sector", sector));
+            }
+            boolQuery.must(sectorQuery);
         }
 
         if (_sp.getSearchDates() != null) {
@@ -209,7 +224,7 @@ public class CompanyNewsSearchRepo extends ElasticSearchManager implements Compa
         String subject = (String) _sourceAsMap.get("subject");
         String body = (String) _sourceAsMap.get("body");
         String url = (String) _sourceAsMap.get("url");
-        String sentiment = (String) _sourceAsMap.get("sentiment");
+        String systemRatingVersion = (String) _sourceAsMap.get("systemRatingVersion");
 
         CompanyNewsItem cni = new CompanyNewsItem();
         cni.setId(id);
@@ -232,7 +247,7 @@ public class CompanyNewsSearchRepo extends ElasticSearchManager implements Compa
         cni.setSubject(subject);
         cni.setBody(body);
         cni.setUrl(url);
-        cni.setSentiment(sentiment);
+        cni.setSystemRatingVersion(systemRatingVersion);
         String userRating = (String) _sourceAsMap.get("userRating");
         if (userRating != null) {
             cni.setUserRating(NewsItemRating.valueOf(userRating));
@@ -368,6 +383,7 @@ public class CompanyNewsSearchRepo extends ElasticSearchManager implements Compa
         
         UpdateRequest updateRequest = new UpdateRequest("companynews", "companynewsitem", _item.getId())
                 .doc("id", _item.getId(),
+                        "systemRatingVersion",_item.getSystemRatingVersion(),
                         "systemRating", _item.getSystemRating().name()
                 );
 

@@ -122,6 +122,24 @@ public class CompanySearchRepo extends ElasticSearchManager implements CompanyRe
         } else if (_csp.getCompanyId() != null) {
             boolQuery.must(QueryBuilders.matchQuery("_id", _csp.getCompanyId()));
         }
+
+        if (_csp.getIndustries()!= null) {
+            BoolQueryBuilder industryQuery = QueryBuilders.boolQuery();
+            for (String industry : _csp.getIndustries()) {
+                industryQuery.should(QueryBuilders.matchQuery("industry", industry));
+            }
+            boolQuery.must(industryQuery);
+
+        }
+        if (_csp.getSectors()!= null) {
+            BoolQueryBuilder sectorQuery = QueryBuilders.boolQuery();
+            for (String sector : _csp.getSectors()) {
+                sectorQuery.should(QueryBuilders.matchQuery("sector", sector));
+            }
+            boolQuery.must(sectorQuery);
+        }
+        
+
         //.fuzziness(Fuzziness.AUTO);
         searchSourceBuilder.query(boolQuery).from(_csp.getStartResults()).size(_csp.getNumResults());
 

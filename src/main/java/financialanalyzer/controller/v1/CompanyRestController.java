@@ -90,7 +90,31 @@ public class CompanyRestController {
         restResponse.setObject(companies);
         return restResponse;
     }
+    
+    @RequestMapping(value = "/sector/{sector}", method = RequestMethod.GET, produces = "application/json")
+    public RestResponse getCompaniesBySector(@PathVariable("sector") String sector) {
+        RestResponse restResponse = new RestResponse();
+        CompanySearchProperties csp = new CompanySearchProperties();
+        ArrayList<String> sectors = new ArrayList<>();
+        sectors.add(sector);
+        csp.setSectors(sectors);
+        List<Company> companies = this.companySearchRepo.searchForCompany(csp);
+        restResponse.setObject(companies);
+        return restResponse;
+    }
 
+    @RequestMapping(value = "/industry/{industry}", method = RequestMethod.GET, produces = "application/json")
+    public RestResponse getCompaniesByIndustry(@PathVariable("industry") String industry) {
+        RestResponse restResponse = new RestResponse();
+        CompanySearchProperties csp = new CompanySearchProperties();
+        ArrayList<String> industries = new ArrayList<>();
+        industries.add(industry);
+        csp.setIndustries(industries);
+        List<Company> companies = this.companySearchRepo.searchForCompany(csp);
+        restResponse.setObject(companies);
+        return restResponse;
+    }    
+    
     @RequestMapping(value = "/name/{name}", method = RequestMethod.GET, produces = "application/json")
     public RestResponse getCompaniesByName(@PathVariable("name") String name) {
         RestResponse restResponse = new RestResponse();

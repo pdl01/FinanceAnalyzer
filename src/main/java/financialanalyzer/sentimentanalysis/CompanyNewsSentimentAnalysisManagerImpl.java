@@ -6,6 +6,9 @@
 package financialanalyzer.sentimentanalysis;
 
 import financialanalyzer.companynews.CompanyNewsItem;
+import financialanalyzer.companynews.CompanyNewsRepo;
+import financialanalyzer.companynews.CompanyNewsSearchProperties;
+import financialanalyzer.companynews.CompanyNewsService;
 import financialanalyzer.companynews.CompanyNewsServiceImpl;
 import financialanalyzer.companynews.NewsItemRating;
 import java.util.List;
@@ -35,24 +38,48 @@ public class CompanyNewsSentimentAnalysisManagerImpl implements SentimentAnalysi
     @Autowired
     private AppConfig appConfig;
 
+    @Autowired
+    private CompanyNewsService companyNewsServiceImpl;
+
+    @Autowired
+    private CompanyNewsRepo companyNewsSearchRepo;
+
     private List<String> positiveCompanyNewsReference;
     private List<String> negativeCompanyNewsReference;
 
     private void loadPostiveCompanyNewsReference() {
         this.positiveCompanyNewsReference = new ArrayList<>();
-        File dirPositive = new File(this.appConfig.getCompanyNewsPostiveSentimentAnalysisRefDir());
-        File[] files = dirPositive.listFiles();
-        for (int i = 0; i < files.length; i++) {
-            if (files[i].isFile()) { //this line weeds out other directories/folders
-                String s = this.readAllBytesJava7(files[i].getAbsolutePath());
-                this.positiveCompanyNewsReference.add(s);
-                //System.out.println(files[i]);
+        CompanyNewsSearchProperties cnsp = new CompanyNewsSearchProperties();
+        cnsp.setUserRating(NewsItemRating.POSITIVE);
+
+        cnsp.setNumResults(100);
+        cnsp.setSortField("recordDate");
+        cnsp.setSortOrder("DESC");
+
+        List<CompanyNewsItem> items = this.companyNewsSearchRepo.searchForCompanyNews(cnsp);
+        if (items != null && !items.isEmpty()) {
+            for (CompanyNewsItem item : items) {
+                this.positiveCompanyNewsReference.add(item.getBody());
             }
         }
 
     }
 
     private void loadNegativeCompanyNewsReference() {
+        this.negativeCompanyNewsReference = new ArrayList<>();
+        CompanyNewsSearchProperties cnsp = new CompanyNewsSearchProperties();
+        cnsp.setUserRating(NewsItemRating.POSITIVE);
+
+        cnsp.setNumResults(100);
+        cnsp.setSortField("recordDate");
+        cnsp.setSortOrder("DESC");
+
+        List<CompanyNewsItem> items = this.companyNewsSearchRepo.searchForCompanyNews(cnsp);
+        if (items != null && !items.isEmpty()) {
+            for (CompanyNewsItem item : items) {
+                this.negativeCompanyNewsReference.add(item.getBody());
+            }
+        }
 
     }
 
@@ -79,7 +106,8 @@ public class CompanyNewsSentimentAnalysisManagerImpl implements SentimentAnalysi
             LOGGER.info("similarity Score:" + itemX);
 
         }
-        return totalX;
+        return totalX / this.positiveCompanyNewsReference.size();
+        //return totalX;
     }
 
     @Override
@@ -87,7 +115,15 @@ public class CompanyNewsSentimentAnalysisManagerImpl implements SentimentAnalysi
         if (this.negativeCompanyNewsReference == null) {
             this.loadNegativeCompanyNewsReference();
         }
-        return 0.0d;
+        double totalX = 0.0;
+        for (String refItem : this.negativeCompanyNewsReference) {
+            JaccardSimilarity js = new JaccardSimilarity();
+            Double itemX = js.apply(_input, refItem);
+            totalX = totalX + itemX;
+            LOGGER.info("similarity Score:" + itemX);
+
+        }
+        return totalX / this.positiveCompanyNewsReference.size();
     }
 
     @Override
@@ -97,14 +133,41 @@ public class CompanyNewsSentimentAnalysisManagerImpl implements SentimentAnalysi
 
     }
 
+    private boolean isComparisonSetSuitable(List<String> _items) {
+        if (_items == null || (_items != null && _items.size() < 200)) {
+            //not enough data to compare to
+            return false;
+        }
+        return true;
+    }
+
     @Override
     public NewsItemRating developSystemRating(CompanyNewsItem _item) {
         if (!doesNewsArticleRelateToSymbol(_item)) {
             return NewsItemRating.UNRELATED;
         }
-        //TODO: perform sentimentanalsysi
+        if (this.positiveCompanyNewsReference == null) {
+            this.loadPostiveCompanyNewsReference();
+        }
+
+        if (!this.isComparisonSetSuitable(this.positiveCompanyNewsReference)) {
+            return null;
+        }
+
+        if (!this.isComparisonSetSuitable(this.negativeCompanyNewsReference)) {
+            return null;
+        }
+        
+        LOGGER.debug("Positive Index = " + this.getPositiveSentimentAnalysisIndex(_item.getBody(), null) + " for " + _item.getId());
+        LOGGER.debug("Negative Index = " + this.getNegativeSentimentAnalysisIndex(_item.getBody(), null) + " for " + _item.getId());
+
+        //TODO: perform sentimentanalsysis
         return null;
     }
-    
-    
+
+    @Override
+    public String getVersion() {
+        return "0.0.0";
+    }
+
 }

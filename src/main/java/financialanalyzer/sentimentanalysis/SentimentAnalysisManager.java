@@ -17,7 +17,9 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public interface SentimentAnalysisManager {
-
+    
+    public String getVersion();
+    
     public NewsItemRating developSystemRating(CompanyNewsItem _item);
     public double getPositiveSentimentAnalysisIndex(String _input, String _dataSetId);
 

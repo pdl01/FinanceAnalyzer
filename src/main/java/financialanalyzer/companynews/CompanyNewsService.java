@@ -22,7 +22,7 @@ public interface CompanyNewsService {
 
     public void updateUserRating(String _id, NewsItemRating _nir);
 
-    public void updateSystemRating(String _id, NewsItemRating _nir);
+    public void updateSystemRating(String _id, NewsItemRating _nir,String _ratingSystemVersion);
 
     public List<Company> getCompaniesThatHaveNoNewsItems();
 

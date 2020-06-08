@@ -25,8 +25,8 @@ public class CompanyNewsItem implements Cloneable {
     private String publishedDateAsString;
     private String recordDateAsString;
     private Date recordDate;
-    private String sentiment;
     private NewsItemRating userRating;
+    private String systemRatingVersion;
     private NewsItemRating systemRating;
     private List<String> sectors;
     private List<String> industries;
@@ -82,14 +82,6 @@ public class CompanyNewsItem implements Cloneable {
 
     public void setSymbol(String symbol) {
         this.symbol = symbol;
-    }
-
-    public String getSentiment() {
-        return sentiment;
-    }
-
-    public void setSentiment(String sentiment) {
-        this.sentiment = sentiment;
     }
 
     public Date getPublishedDate() {
@@ -154,6 +146,14 @@ public class CompanyNewsItem implements Cloneable {
 
     public void setIndustries(List<String> industries) {
         this.industries = industries;
+    }
+
+    public String getSystemRatingVersion() {
+        return systemRatingVersion;
+    }
+
+    public void setSystemRatingVersion(String systemRatingVersion) {
+        this.systemRatingVersion = systemRatingVersion;
     }
 
 

@@ -50,7 +50,7 @@ public class SentimentAnalysisReceiver {
             for (CompanyNewsItem item : cnis) {
                 NewsItemRating systemRating = this.companyNewsSentimentAnalysisManagerImpl.developSystemRating(item);
                 if (systemRating != null) {
-                    this.companyNewsServiceImpl.updateSystemRating(item.getId(), systemRating);
+                    this.companyNewsServiceImpl.updateSystemRating(item.getId(), systemRating,this.companyNewsSentimentAnalysisManagerImpl.getVersion());
                 }
             }
         } else {

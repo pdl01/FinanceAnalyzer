@@ -89,30 +89,70 @@ public class NewsRestController {
 
     @RequestMapping(value = "/sector/{sector}", method = RequestMethod.GET, produces = "application/json")
     public RestResponse getNewsBySector(@PathVariable("sector") String _sector) {
-        RestResponse restResponse = new RestResponse();
-        CompanySearchProperties csp = new CompanySearchProperties();
-        //csp.setCompanyId(_id);
+        return this.getNewsBySectorStartingWith(_sector, 0);
 
-        List<Company> companies = this.companySearchRepo.searchForCompany(csp);
+    }
+
+    @RequestMapping(value = "/sector/{sector}/{start}", method = RequestMethod.GET, produces = "application/json")
+    public RestResponse getNewsBySectorStartingWith(@PathVariable("sector") String _sector, @PathVariable("start") int _start) {
+        return this.getNewsBySectorStartingWithInRange(_sector, 0, 20);
+    }
+
+    @RequestMapping(value = "/sector/{sector}/{start}/{numberOfItems}", method = RequestMethod.GET, produces = "application/json")
+    public RestResponse getNewsBySectorStartingWithInRange(@PathVariable("sector") String _sector, @PathVariable("start") int _start, @PathVariable("numberOfItems") int _numberOfItems) {
         List<CompanyNewsItem> companyNewsItems = new ArrayList<>();
-
-        if (companies != null) {
-            for (Company company : companies) {
-                CompanyNewsSearchProperties cnsp = new CompanyNewsSearchProperties();
-                cnsp.setStockExchange(company.getStockExchange());
-                cnsp.setStockSymbol(company.getStockSymbol());
-                cnsp.setSortField("recordDate");
-
-                //this.companyNewsServiceImpl.submitCompanyToDownloadQueue(company);
-                List<CompanyNewsItem> cnis = this.companyNewsSearchRepo.searchForCompanyNews(cnsp);
-                if (cnis != null) {
-                    companyNewsItems.addAll(cnis);
-                }
-            }
+        
+        CompanyNewsSearchProperties cnsp = new CompanyNewsSearchProperties();
+        ArrayList<String> sectors = new ArrayList<>();
+        sectors.add(_sector);
+        cnsp.setSectors(sectors);
+        cnsp.setSortField("recordDate");
+        cnsp.setStartResults(_start);
+        cnsp.setNumResults(_numberOfItems);
+        //this.companyNewsServiceImpl.submitCompanyToDownloadQueue(company);
+        List<CompanyNewsItem> cnis = this.companyNewsSearchRepo.searchForCompanyNews(cnsp);
+        if (cnis != null) {
+            companyNewsItems.addAll(cnis);
         }
-        restResponse.setObject(companyNewsItems);
-        return restResponse;
 
+        RestResponse returnResponse = new RestResponse();
+        returnResponse.setCode(0);
+        returnResponse.setObject(companyNewsItems);
+        return returnResponse;
+    }
+
+    @RequestMapping(value = "/industry/{industry}", method = RequestMethod.GET, produces = "application/json")
+    public RestResponse getNewsByIndustry(@PathVariable("industry") String _industry) {
+        return this.getNewsByIndustryStartingWith(_industry, 0);
+
+    }
+
+    @RequestMapping(value = "/industry/{industry}/{start}", method = RequestMethod.GET, produces = "application/json")
+    public RestResponse getNewsByIndustryStartingWith(@PathVariable("industry") String _industry, @PathVariable("start") int _start) {
+        return this.getNewsByIndustryStartingWithInRange(_industry, 0, 20);
+    }
+
+    @RequestMapping(value = "/industry/{industry}/{start}/{numberOfItems}", method = RequestMethod.GET, produces = "application/json")
+    public RestResponse getNewsByIndustryStartingWithInRange(@PathVariable("industry") String _industry, @PathVariable("start") int _start, @PathVariable("numberOfItems") int _numberOfItems) {
+        List<CompanyNewsItem> companyNewsItems = new ArrayList<>();
+        
+        CompanyNewsSearchProperties cnsp = new CompanyNewsSearchProperties();
+        ArrayList<String> industries = new ArrayList<>();
+        industries.add(_industry);
+        cnsp.setIndustries(industries);
+        cnsp.setSortField("recordDate");
+        cnsp.setStartResults(_start);
+        cnsp.setNumResults(_numberOfItems);
+        //this.companyNewsServiceImpl.submitCompanyToDownloadQueue(company);
+        List<CompanyNewsItem> cnis = this.companyNewsSearchRepo.searchForCompanyNews(cnsp);
+        if (cnis != null) {
+            companyNewsItems.addAll(cnis);
+        }
+
+        RestResponse returnResponse = new RestResponse();
+        returnResponse.setCode(0);
+        returnResponse.setObject(companyNewsItems);
+        return returnResponse;
     }
 
     @RequestMapping(value = "/company/{id}/{start}", method = RequestMethod.GET, produces = "application/json")
@@ -181,12 +221,13 @@ public class NewsRestController {
     }
 
     @RequestMapping(value = "/date/{date}/{start}", method = RequestMethod.GET, produces = "application/json")
-    public RestResponse getNewsForDateStartingWith(@PathVariable("date") String _date,@PathVariable("start") int _start) {
-        return this.getNewsForDateStartingWithInRange(_date, _start,25);
+    public RestResponse getNewsForDateStartingWith(@PathVariable("date") String _date, @PathVariable("start") int _start) {
+        return this.getNewsForDateStartingWithInRange(_date, _start, 25);
 
     }
+
     @RequestMapping(value = "/date/{date}/{start}/{numberOfItems}", method = RequestMethod.GET, produces = "application/json")
-    public RestResponse getNewsForDateStartingWithInRange(@PathVariable("date") String _date,@PathVariable("start") int _start, @PathVariable("numberOfItems") int _numberOfItems) {
+    public RestResponse getNewsForDateStartingWithInRange(@PathVariable("date") String _date, @PathVariable("start") int _start, @PathVariable("numberOfItems") int _numberOfItems) {
         RestResponse restResponse = new RestResponse();
         //CompanySearchProperties csp = new CompanySearchProperties();
         //csp.setCompanyId(_id);
@@ -211,6 +252,7 @@ public class NewsRestController {
         restResponse.setObject(companyNewsItems);
         return restResponse;
     }
+
     @RequestMapping(value = "/userrating", method = RequestMethod.POST, produces = "application/json")
     public RestResponse saveUserRatingForNewsItems(@RequestBody NewsItemForm _newsItemForm) {
         RestResponse restResponse = new RestResponse();
@@ -222,8 +264,8 @@ public class NewsRestController {
             cni.setUserRating(NewsItemRating.valueOf(_newsItemForm.getRating()));
             this.companyNewsSearchRepo.updateUserRatingForNewsItem(cni);
         }
-        
+
         return restResponse;
     }
-    
+
 }

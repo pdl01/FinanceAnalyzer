@@ -18,7 +18,9 @@ public abstract class AbstractSearchProperties {
     protected String stockSymbol;
     protected String companyId;
     protected List<String> searchDates;
-
+    protected List<String> industries;
+    protected List<String> sectors;
+    
     protected String sortField;
     protected String sortOrder;
 
@@ -104,6 +106,22 @@ public abstract class AbstractSearchProperties {
 
     public void setCompanyId(String companyId) {
         this.companyId = companyId;
+    }
+
+    public List<String> getIndustries() {
+        return industries;
+    }
+
+    public void setIndustries(List<String> industries) {
+        this.industries = industries;
+    }
+
+    public List<String> getSectors() {
+        return sectors;
+    }
+
+    public void setSectors(List<String> sectors) {
+        this.sectors = sectors;
     }
 
 }

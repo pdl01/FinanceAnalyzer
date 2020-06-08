@@ -122,13 +122,14 @@ public class CompanyNewsServiceImpl implements CompanyNewsService {
     }
 
     @Override
-    public void updateSystemRating(String _id, NewsItemRating _nir) {
+    public void updateSystemRating(String _id, NewsItemRating _nir,String _ratingSystemsVersion) {
         CompanyNewsItem cni = this.getCompanyNewsItem(_id);
         if (cni == null) {
             LOGGER.warn("Company News Item not found:" + _id);
             return;
         }
         cni.setSystemRating(_nir);
+        cni.setSystemRatingVersion(_ratingSystemsVersion);
         this.companyNewsSearchRepo.updateSystemRatingForNewsItems(cni);
     }
 
@@ -196,13 +197,16 @@ public class CompanyNewsServiceImpl implements CompanyNewsService {
             //LOGGER.info(companyNewsItemPage.getContent());
             Document newsDoc = Jsoup.parse(companyNewsItemPage.getContent());
             Element newsTitle = newsDoc.selectFirst("title");
-            String newsTitleText = "Empty";
+            String newsTitleText = "";
             if (newsTitle != null) {
                 newsTitleText = newsTitle.text();
-
             }
+            if (newsTitleText.trim().isBlank()) {
+                newsTitleText = "Empty Title";
+            }
+            
             cni.setSubject(newsTitleText);
-            LOGGER.info(newsTitleText);
+            //LOGGER.info(newsTitleText);
             String bodyText = newsDoc.body().text();
             String newsBodyText = "Empty";
 

@@ -48,7 +48,8 @@ public abstract class AbstractCompanyNameProvider {
 
     @Autowired
     protected AppConfig appConfig;
-
+    
+    private String version = "1.0.0";
     protected List<StockHistory> downloadAndProcessCSVFromNasDaq(String _exchange, String _symbol, Date _date) {
         //https://www.nasdaq.com/api/v1/historical/BA/stocks/2020-03-01/2020-03-07
         String url = "https://www.nasdaq.com/api/v1/historical/::SYMBOL::/stocks/::MIN-DATE::/::MAX-DATE::";
@@ -119,15 +120,18 @@ public abstract class AbstractCompanyNameProvider {
             while ((line = reader.readNext()) != null) {
                 if (lineCounter != 0) {
                     Company company = new Company();
+                    company.setEnhancementVersion(version);
                     company.setName(line[1]);
                     company.setStockExchange(_exchange);
                     company.setStockSymbol(line[0]);
                     List<String> sectors = new ArrayList<>();
-                    sectors.add(line[5]);
+                    sectors.add(line[5].replace("\\", "_").replace("/","_"));
                     company.setSectors(sectors);
                     List<String> industries = new ArrayList<>();
-                    industries.add(line[6]);
+                    industries.add(line[6].replace("\\", "_").replace("/","_"));
                     company.setIndustries(industries);
+                    company.setDownloadNews(true);
+                    company.setDownloadStocks(true);
                     companies.add(company);
                 }
                 lineCounter++;

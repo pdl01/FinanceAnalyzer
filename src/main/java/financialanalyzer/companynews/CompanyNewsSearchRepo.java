@@ -65,7 +65,8 @@ public class CompanyNewsSearchRepo extends ElasticSearchManager implements Compa
                         "userRating", _item.getUserRating().name(),
                         "systemRating", _item.getSystemRating().name(),
                         "sector",_item.getSectors(),
-                        "industry",_item.getIndustries()
+                        "industry",_item.getIndustries(),
+                        "enhancementVersion",_item.getEnhancementVersion()
                 );
 
         int retryCounter = 0;
@@ -225,7 +226,8 @@ public class CompanyNewsSearchRepo extends ElasticSearchManager implements Compa
         String body = (String) _sourceAsMap.get("body");
         String url = (String) _sourceAsMap.get("url");
         String systemRatingVersion = (String) _sourceAsMap.get("systemRatingVersion");
-
+        String enhancementVersion = (String) _sourceAsMap.get("enhancementVersion");
+        
         CompanyNewsItem cni = new CompanyNewsItem();
         cni.setId(id);
         cni.setRecordDateAsString(recordDate);
@@ -264,7 +266,7 @@ public class CompanyNewsSearchRepo extends ElasticSearchManager implements Compa
 
             cni.setIndustries(industries);
         
-
+        cni.setEnhancementVersion(enhancementVersion);
         return cni;
     }
 

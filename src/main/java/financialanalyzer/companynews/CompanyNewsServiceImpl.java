@@ -46,6 +46,7 @@ public class CompanyNewsServiceImpl implements CompanyNewsService {
     @Autowired
     protected HttpFetcher httpFetcher;
 
+    private String version = "1.0.0";
     @Autowired
     private SystemActivityManager systemActivityManagerImpl;
 
@@ -74,6 +75,7 @@ public class CompanyNewsServiceImpl implements CompanyNewsService {
                         cnisItemClone.setSymbol(_company.getStockSymbol());
                         cnisItemClone.setIndustries(_company.getIndustries());
                         cnisItemClone.setSectors(_company.getSectors());
+                        cnisItemClone.setEnhancementVersion(version);
                         cnisItemClone.setSystemRating(NewsItemRating.NONE);
                         cnisItemClone.setUserRating(NewsItemRating.NONE);
                         cnis.add(cnisItemClone);

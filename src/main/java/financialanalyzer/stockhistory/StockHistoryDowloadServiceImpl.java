@@ -36,7 +36,8 @@ public class StockHistoryDowloadServiceImpl implements StockHistoryDownloadServi
     @Autowired
     private StockHistoryProviderRegistry stockHistoryProviderRegistry;
     
-
+    private String version = "1.0.0";
+    
     @Override
     public List<StockHistory> fetchDataForCompany(Company company) {
         return this.fetchDataForCompany(company, null);
@@ -64,6 +65,9 @@ public class StockHistoryDowloadServiceImpl implements StockHistoryDownloadServi
         }
         if (shs != null) {
             for (StockHistory item : shs) {
+                item.setEnhancementVersion(version);
+                item.setIndustries(company.getIndustries());
+                item.setSectors(company.getSectors());
                 this.stockHistorySearchRepoImpl.submit(item);
             }
             this.systemActivityManagerImpl.saveSystemActivity(company.getStockSymbol(), company.getStockExchange(), SystemActivityManager.ACTIVITY_TYPE_STOCK_HISTORY_DOWNLOAD, "Updated items:" + shs.size());
@@ -82,7 +86,8 @@ public class StockHistoryDowloadServiceImpl implements StockHistoryDownloadServi
         StockHistoryDownloadTask shdt = new StockHistoryDownloadTask();
         shdt.setSymbol(item.getStockSymbol());
         shdt.setExchange(item.getStockExchange());
-
+        shdt.setIndustries(item.getIndustries());
+        shdt.setSectors(item.getSectors());
         if (_date == null) {
             shdt.setDownloadAllAvailalble(true);
             //shs = this.stockHistoryDownloadServiceImpl.fetchDataForCompany(item);

@@ -41,8 +41,11 @@ public class StockHistoryDownloadTaskReceiver {
 
         List<StockHistory> shs = null;
         Company company = new Company();
+        //TODO get this from the repo instead of the queue
         company.setStockExchange(_stockHistoryDownloadTask.getExchange());
         company.setStockSymbol(_stockHistoryDownloadTask.getSymbol());
+        company.setSectors(_stockHistoryDownloadTask.getSectors());
+        company.setIndustries(_stockHistoryDownloadTask.getIndustries());
         if (_stockHistoryDownloadTask.isDownloadAllAvailalble()) {
             shs = this.stockHistoryDownloadServiceImpl.fetchDataForCompany(company);
         } else {

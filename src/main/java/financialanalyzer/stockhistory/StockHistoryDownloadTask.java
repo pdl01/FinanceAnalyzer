@@ -7,6 +7,7 @@ package financialanalyzer.stockhistory;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
  *
@@ -16,6 +17,8 @@ public class StockHistoryDownloadTask implements Serializable {
     private String exchange;
     private String symbol;
     private Date retrieveDate;
+    private List<String> sectors;
+    private List<String> industries;
     private boolean downloadAllAvailalble;
 
     public String getExchange() {
@@ -50,6 +53,22 @@ public class StockHistoryDownloadTask implements Serializable {
 
     public void setDownloadAllAvailalble(boolean downloadAllAvailalble) {
         this.downloadAllAvailalble = downloadAllAvailalble;
+    }
+
+    public List<String> getSectors() {
+        return sectors;
+    }
+
+    public void setSectors(List<String> sectors) {
+        this.sectors = sectors;
+    }
+
+    public List<String> getIndustries() {
+        return industries;
+    }
+
+    public void setIndustries(List<String> industries) {
+        this.industries = industries;
     }
     
 }

@@ -30,6 +30,7 @@ public class CompanyNewsItem implements Cloneable {
     private NewsItemRating systemRating;
     private List<String> sectors;
     private List<String> industries;
+    private String enhancementVersion;
 
     public String getId() {
         return id;
@@ -154,6 +155,14 @@ public class CompanyNewsItem implements Cloneable {
 
     public void setSystemRatingVersion(String systemRatingVersion) {
         this.systemRatingVersion = systemRatingVersion;
+    }
+
+    public String getEnhancementVersion() {
+        return enhancementVersion;
+    }
+
+    public void setEnhancementVersion(String enhancementVersion) {
+        this.enhancementVersion = enhancementVersion;
     }
 
 

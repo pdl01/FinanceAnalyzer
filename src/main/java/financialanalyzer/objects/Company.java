@@ -14,7 +14,10 @@ public class Company {
     private String stockExchange;
     private List<String> sectors;
     private List<String> industries;
-
+    private String enhancementVersion;
+    private boolean downloadNews;
+    private boolean downloadStocks;
+    
     public String getId() {
         return this.stockExchange+"-"+this.stockSymbol;
     }
@@ -61,6 +64,30 @@ public class Company {
 
     public void setIndustries(List<String> industries) {
         this.industries = industries;
+    }
+
+    public String getEnhancementVersion() {
+        return enhancementVersion;
+    }
+
+    public void setEnhancementVersion(String enhancementVersion) {
+        this.enhancementVersion = enhancementVersion;
+    }
+
+    public boolean isDownloadNews() {
+        return downloadNews;
+    }
+
+    public void setDownloadNews(boolean downloadNews) {
+        this.downloadNews = downloadNews;
+    }
+
+    public boolean isDownloadStocks() {
+        return downloadStocks;
+    }
+
+    public void setDownloadStocks(boolean downloadStocks) {
+        this.downloadStocks = downloadStocks;
     }
     
     

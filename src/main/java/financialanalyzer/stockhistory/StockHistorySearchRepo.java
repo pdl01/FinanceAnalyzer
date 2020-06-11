@@ -60,7 +60,10 @@ public class StockHistorySearchRepo extends ElasticSearchManager implements Stoc
                         "actual_gain", _item.getActual_gain(),
                         "volume", _item.getVolume(),
                         "high", _item.getHigh(),
-                        "low", _item.getLow()
+                        "low", _item.getLow(),
+                        "industry",_item.getIndustries(),
+                        "sector",_item.getSectors(),
+                        "enhancementVersion",_item.getEnhancementVersion()
                 );
         int retryCounter = 0;
         boolean indexedSuccessfully = false;
@@ -207,7 +210,10 @@ public class StockHistorySearchRepo extends ElasticSearchManager implements Stoc
         float high = ((Double) _sourceAsMap.get("high")).floatValue();
         float low = ((Double) _sourceAsMap.get("low")).floatValue();
         int volume = (int) _sourceAsMap.get("volume");
-
+        List<String> sectors = (List<String>) _sourceAsMap.get("sector");
+        List<String> industries = (List<String>) _sourceAsMap.get("industry");
+        String enhancementVersion = (String)_sourceAsMap.get("enhancementVersion");
+        
         StockHistory sh = new StockHistory();
         sh.setRecordDateAsString(recordDate);
         try {
@@ -226,7 +232,10 @@ public class StockHistorySearchRepo extends ElasticSearchManager implements Stoc
 
         sh.setExchange(exchange);
         sh.setSymbol(symbol);
-
+        
+        sh.setSectors(sectors);
+        sh.setIndustries(industries);
+        sh.setEnhancementVersion(enhancementVersion);
         return sh;
     }
 }

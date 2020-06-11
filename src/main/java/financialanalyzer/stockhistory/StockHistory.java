@@ -2,6 +2,7 @@
 package financialanalyzer.stockhistory;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  *
@@ -21,7 +22,10 @@ public class StockHistory {
     private float percent_gain;
     private float actual_gain;
     private int volume;
-
+    private String enhancementVersion;
+    private List<String> sectors;
+    private List<String> industries;    
+            
     public Date getRecordDate() {
         return recordDate;
     }
@@ -108,6 +112,30 @@ public class StockHistory {
 
     public void setLow(float low) {
         this.low = low;
+    }
+
+    public String getEnhancementVersion() {
+        return enhancementVersion;
+    }
+
+    public void setEnhancementVersion(String enhancementVersion) {
+        this.enhancementVersion = enhancementVersion;
+    }
+
+    public List<String> getSectors() {
+        return sectors;
+    }
+
+    public void setSectors(List<String> sectors) {
+        this.sectors = sectors;
+    }
+
+    public List<String> getIndustries() {
+        return industries;
+    }
+
+    public void setIndustries(List<String> industries) {
+        this.industries = industries;
     }
     
 }

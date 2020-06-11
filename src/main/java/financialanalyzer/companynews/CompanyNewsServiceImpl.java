@@ -203,7 +203,7 @@ public class CompanyNewsServiceImpl implements CompanyNewsService {
             if (newsTitle != null) {
                 newsTitleText = newsTitle.text();
             }
-            if (newsTitleText.trim().isBlank()) {
+            if (newsTitleText.trim().isEmpty()) {
                 newsTitleText = "Empty Title";
             }
             

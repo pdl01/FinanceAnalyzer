@@ -50,8 +50,7 @@ public class CompanyNewsSentimentAnalysisManagerImpl implements SentimentAnalysi
     private void loadPostiveCompanyNewsReference() {
         this.positiveCompanyNewsReference = new ArrayList<>();
         CompanyNewsSearchProperties cnsp = new CompanyNewsSearchProperties();
-        cnsp.setUserRating(NewsItemRating.POSITIVE);
-
+        cnsp.addIncludedUserRating(NewsItemRating.POSITIVE);
         cnsp.setNumResults(100);
         cnsp.setSortField("recordDate");
         cnsp.setSortOrder("DESC");
@@ -68,7 +67,7 @@ public class CompanyNewsSentimentAnalysisManagerImpl implements SentimentAnalysi
     private void loadNegativeCompanyNewsReference() {
         this.negativeCompanyNewsReference = new ArrayList<>();
         CompanyNewsSearchProperties cnsp = new CompanyNewsSearchProperties();
-        cnsp.setUserRating(NewsItemRating.POSITIVE);
+        cnsp.addIncludedUserRating(NewsItemRating.NEGATIVE);
 
         cnsp.setNumResults(100);
         cnsp.setSortField("recordDate");

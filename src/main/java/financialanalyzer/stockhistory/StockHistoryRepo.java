@@ -20,4 +20,7 @@ public interface StockHistoryRepo {
     public boolean delete(StockHistory _item);
 
     public List<StockHistory> searchForStockHistory(StockHistorySearchProperties _shsp);
+
+    public long searchForStockHistoryCount(StockHistorySearchProperties _shsp);
+
 }

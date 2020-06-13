@@ -6,6 +6,7 @@ import financialanalyzer.companynews.CompanyNewsItem;
 import financialanalyzer.companynews.CompanyNewsRepo;
 import financialanalyzer.companynews.CompanyNewsSearchProperties;
 import financialanalyzer.companynews.CompanyNewsService;
+import financialanalyzer.companynews.NewsItemRating;
 import financialanalyzer.objects.Company;
 import financialanalyzer.objects.CompanySearchProperties;
 import financialanalyzer.stockhistory.StockHistory;
@@ -87,6 +88,33 @@ public class HealthServiceImpl implements HealthService {
                     companyIds.add(company.getId());
                 }
                 hr.setCompaniesWithoutStockHistoriesInPast7Days(companyIds);
+
+                long totalCount = 0;
+                CompanyNewsSearchProperties cnsp = new CompanyNewsSearchProperties();
+                cnsp.addIncludedSystemRating(NewsItemRating.POSITIVE);
+                cnsp.addIncludedSystemRating(NewsItemRating.NEGATIVE);
+                cnsp.addIncludedSystemRating(NewsItemRating.UNRELATED);
+                totalCount = this.companyNewsSearchRepo.searchForCompanyNewsCount(cnsp);
+                hr.setTotalNumberOfSystemAnalyzedNewsItems(totalCount);
+
+                cnsp = new CompanyNewsSearchProperties();
+                cnsp.addIncludedSystemRating(NewsItemRating.NONE);
+                totalCount = this.companyNewsSearchRepo.searchForCompanyNewsCount(cnsp);
+                hr.setTotalNumberOfSystemUnanalyzedNewsItems(totalCount);
+
+                cnsp = new CompanyNewsSearchProperties();
+                cnsp.addIncludedUserRating(NewsItemRating.POSITIVE);
+                cnsp.addIncludedUserRating(NewsItemRating.NEGATIVE);
+                cnsp.addIncludedUserRating(NewsItemRating.UNRELATED);
+                totalCount = this.companyNewsSearchRepo.searchForCompanyNewsCount(cnsp);
+
+                hr.setTotalNumberOfUserAnalyzedNewsItems(totalCount);
+
+                cnsp = new CompanyNewsSearchProperties();
+                cnsp.addIncludedUserRating(NewsItemRating.NONE);
+                totalCount = this.companyNewsSearchRepo.searchForCompanyNewsCount(cnsp);
+                hr.setTotalNumberOfUserUnanalyzedNewsItems(totalCount);
+
             }
 
             this.isBuilding = false;
@@ -129,12 +157,15 @@ public class HealthServiceImpl implements HealthService {
                         cnsp.setStockExchange(item.getStockExchange());
                         cnsp.setStockSymbol(item.getStockSymbol());
                         cnsp.setNumResults(10);
-                        List<CompanyNewsItem> cnis = this.companyNewsSearchRepo.searchForCompanyNews(cnsp);
-
-                        //TODOand search
-                        if (cnis == null || (cnis != null && cnis.isEmpty())) {
+                        //List<CompanyNewsItem> cnis = this.companyNewsSearchRepo.searchForCompanyNews(cnsp);
+                        long companyNewsItemCount = this.companyNewsSearchRepo.searchForCompanyNewsCount(cnsp);
+                        if (companyNewsItemCount < 1) {
                             companiesToReturn.add(item);
                         }
+                        //TODOand search
+                        //if (cnis == null || (cnis != null && cnis.isEmpty())) {
+                        //    companiesToReturn.add(item);
+                        //}
                     }
                 }
                 if (companies != null && companies.size() == numResultsPerBatch) {

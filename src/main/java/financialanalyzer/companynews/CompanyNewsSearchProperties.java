@@ -6,6 +6,8 @@
 package financialanalyzer.companynews;
 
 import financialanalyzer.objects.AbstractSearchProperties;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -14,8 +16,8 @@ import financialanalyzer.objects.AbstractSearchProperties;
 public class CompanyNewsSearchProperties extends AbstractSearchProperties {
 
     protected String companyNewsItemId;
-    protected NewsItemRating systemRating;
-    protected NewsItemRating userRating;
+    protected List<NewsItemRating> includedSystemRatings;
+    protected List<NewsItemRating> includedUserRatings;
  
     public String getCompanyNewsItemId() {
         return companyNewsItemId;
@@ -25,22 +27,35 @@ public class CompanyNewsSearchProperties extends AbstractSearchProperties {
         this.companyNewsItemId = companyNewsItemId;
     }
 
-    public NewsItemRating getSystemRating() {
-        return systemRating;
+    public List<NewsItemRating> getIncludedSystemRatings() {
+        return includedSystemRatings;
     }
 
-    public void setSystemRating(NewsItemRating systemRating) {
-        this.systemRating = systemRating;
+    public void setIncludedSystemRating(List<NewsItemRating> includedSystemRatings) {
+        this.includedSystemRatings = includedSystemRatings;
     }
 
-    public NewsItemRating getUserRating() {
-        return userRating;
+    public List<NewsItemRating> getIncludedUserRatings() {
+        return includedUserRatings;
     }
 
-    public void setUserRating(NewsItemRating userRating) {
-        this.userRating = userRating;
+    public void setIncludedUserRatings(List<NewsItemRating> includedUserRatings) {
+        this.includedUserRatings = includedUserRatings;
     }
-
+    public void addIncludedUserRating(NewsItemRating _item) {
+        if (this.includedUserRatings == null) {
+            this.includedUserRatings = new ArrayList<>();
+        }
+        this.includedUserRatings.add(_item);
+    }
+    public void addIncludedSystemRating(NewsItemRating _item) {
+        if (this.includedSystemRatings == null) {
+            this.includedSystemRatings = new ArrayList<>();
+        }
+        this.includedSystemRatings.add(_item);        
+    }
+    
+    
     
 
 }

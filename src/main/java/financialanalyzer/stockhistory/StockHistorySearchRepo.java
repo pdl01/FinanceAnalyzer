@@ -61,16 +61,16 @@ public class StockHistorySearchRepo extends ElasticSearchManager implements Stoc
                         "volume", _item.getVolume(),
                         "high", _item.getHigh(),
                         "low", _item.getLow(),
-                        "industry",_item.getIndustries(),
-                        "sector",_item.getSectors(),
-                        "enhancementVersion",_item.getEnhancementVersion()
+                        "industry", _item.getIndustries(),
+                        "sector", _item.getSectors(),
+                        "enhancementVersion", _item.getEnhancementVersion()
                 );
         int retryCounter = 0;
         boolean indexedSuccessfully = false;
         while (!indexedSuccessfully && retryCounter < 3) {
 
             try {
-                logger.info("Index Attempt:"+retryCounter+":"+this.getKey(_item));
+                logger.info("Index Attempt:" + retryCounter + ":" + this.getKey(_item));
                 IndexResponse indexResponse = client.index(indexRequest);
                 //logger.info(indexResponse.getIndex());
                 //logger.info(indexResponse.getResult().name());
@@ -140,7 +140,6 @@ public class StockHistorySearchRepo extends ElasticSearchManager implements Stoc
 
         }
 
-        
         if (_shsp.getSearchDates() != null) {
             BoolQueryBuilder dateQuery = QueryBuilders.boolQuery();
             for (String dateForQuery : _shsp.getSearchDates()) {
@@ -212,8 +211,8 @@ public class StockHistorySearchRepo extends ElasticSearchManager implements Stoc
         int volume = (int) _sourceAsMap.get("volume");
         List<String> sectors = (List<String>) _sourceAsMap.get("sector");
         List<String> industries = (List<String>) _sourceAsMap.get("industry");
-        String enhancementVersion = (String)_sourceAsMap.get("enhancementVersion");
-        
+        String enhancementVersion = (String) _sourceAsMap.get("enhancementVersion");
+
         StockHistory sh = new StockHistory();
         sh.setRecordDateAsString(recordDate);
         try {
@@ -232,10 +231,72 @@ public class StockHistorySearchRepo extends ElasticSearchManager implements Stoc
 
         sh.setExchange(exchange);
         sh.setSymbol(symbol);
-        
+
         sh.setSectors(sectors);
         sh.setIndustries(industries);
         sh.setEnhancementVersion(enhancementVersion);
         return sh;
+    }
+
+    @Override
+    public long searchForStockHistoryCount(StockHistorySearchProperties _shsp) {
+        List<StockHistory> shs = new ArrayList<>();
+        RestHighLevelClient client = this.buildClient();
+        if (client == null) {
+            return -1;
+        }
+
+        SearchRequest searchRequest = new SearchRequest("stockhistories");
+        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+        //searchSourceBuilder.query(QueryBuilders.matchAllQuery());
+        QueryBuilder matchQueryBuilder = null;
+        BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
+
+        if (_shsp.getStockExchange() != null) {
+            boolQuery.must(QueryBuilders.matchQuery("exchange", _shsp.getStockExchange()));
+
+        }
+        if (_shsp.getStockSymbol() != null) {
+            boolQuery.must(QueryBuilders.matchQuery("symbol", _shsp.getStockSymbol()));
+
+        }
+
+        if (_shsp.getSearchDates() != null) {
+            BoolQueryBuilder dateQuery = QueryBuilders.boolQuery();
+            for (String dateForQuery : _shsp.getSearchDates()) {
+                dateQuery.should(QueryBuilders.matchQuery("recordDate", dateForQuery));
+            }
+            boolQuery.must(dateQuery);
+
+        }
+
+        //.fuzziness(Fuzziness.AUTO);
+        searchSourceBuilder.query(boolQuery).from(_shsp.getStartResults()).size(_shsp.getNumResults());
+
+        if (_shsp.getSortField() != null) {
+            //TODO sort based on dimension type
+            if ("ASC".equalsIgnoreCase(_shsp.getSortOrder())) {
+                searchSourceBuilder.sort(_shsp.getSortField(), SortOrder.ASC);
+            } else {
+                searchSourceBuilder.sort(_shsp.getSortField(), SortOrder.DESC);
+            }
+        }
+
+        searchRequest.source(searchSourceBuilder);
+        long numOfHits = -1;
+        try {
+            SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
+
+            SearchHits hits = searchResponse.getHits();
+            //SearchHit[] searchHits = hits.getHits();
+            numOfHits =  hits.getTotalHits();
+
+        } catch (IOException ex) {
+            logger.error(ex.getMessage());
+        }
+
+        this.closeClient(client);
+
+        return numOfHits;
     }
 }

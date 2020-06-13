@@ -1,4 +1,4 @@
-/*
+/*+
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
@@ -64,9 +64,9 @@ public class CompanyNewsSearchRepo extends ElasticSearchManager implements Compa
                         "systemRatingVersion", _item.getSystemRatingVersion(),
                         "userRating", _item.getUserRating().name(),
                         "systemRating", _item.getSystemRating().name(),
-                        "sector",_item.getSectors(),
-                        "industry",_item.getIndustries(),
-                        "enhancementVersion",_item.getEnhancementVersion()
+                        "sector", _item.getSectors(),
+                        "industry", _item.getIndustries(),
+                        "enhancementVersion", _item.getEnhancementVersion()
                 );
 
         int retryCounter = 0;
@@ -123,13 +123,25 @@ public class CompanyNewsSearchRepo extends ElasticSearchManager implements Compa
             logger.debug("search for id:" + _sp.getCompanyNewsItemId());
             boolQuery.must(QueryBuilders.matchQuery("_id", _sp.getCompanyNewsItemId()));
         }
-        if (_sp.getSystemRating() != null) {
-            boolQuery.must(QueryBuilders.matchQuery("systemRating", _sp.getSystemRating().name()));
+        if (_sp.getIncludedSystemRatings() != null) {
+            BoolQueryBuilder systemRatingQuery = QueryBuilders.boolQuery();
+            for (NewsItemRating rating : _sp.getIncludedSystemRatings()) {
+                systemRatingQuery.should(QueryBuilders.matchQuery("systemRating", rating.name()));
+            }
+            boolQuery.must(systemRatingQuery);
+
         }
-        if (_sp.getUserRating() != null) {
-            boolQuery.must(QueryBuilders.matchQuery("userRating", _sp.getUserRating().name()));
+
+        if (_sp.getIncludedUserRatings() != null) {
+            BoolQueryBuilder userRatingQuery = QueryBuilders.boolQuery();
+            for (NewsItemRating rating : _sp.getIncludedUserRatings()) {
+                userRatingQuery.should(QueryBuilders.matchQuery("userRating", rating.name()));
+            }
+            boolQuery.must(userRatingQuery);
+
         }
-        if (_sp.getIndustries()!= null) {
+
+        if (_sp.getIndustries() != null) {
             BoolQueryBuilder industryQuery = QueryBuilders.boolQuery();
             for (String industry : _sp.getIndustries()) {
                 industryQuery.should(QueryBuilders.matchQuery("industry", industry));
@@ -137,7 +149,7 @@ public class CompanyNewsSearchRepo extends ElasticSearchManager implements Compa
             boolQuery.must(industryQuery);
 
         }
-        if (_sp.getSectors()!= null) {
+        if (_sp.getSectors() != null) {
             BoolQueryBuilder sectorQuery = QueryBuilders.boolQuery();
             for (String sector : _sp.getSectors()) {
                 sectorQuery.should(QueryBuilders.matchQuery("sector", sector));
@@ -227,7 +239,7 @@ public class CompanyNewsSearchRepo extends ElasticSearchManager implements Compa
         String url = (String) _sourceAsMap.get("url");
         String systemRatingVersion = (String) _sourceAsMap.get("systemRatingVersion");
         String enhancementVersion = (String) _sourceAsMap.get("enhancementVersion");
-        
+
         CompanyNewsItem cni = new CompanyNewsItem();
         cni.setId(id);
         cni.setRecordDateAsString(recordDate);
@@ -260,12 +272,11 @@ public class CompanyNewsSearchRepo extends ElasticSearchManager implements Compa
         }
         List<String> sectors = (List<String>) _sourceAsMap.get("sector");
         List<String> industries = (List<String>) _sourceAsMap.get("industry");
-        
 
-            cni.setSectors(sectors);
+        cni.setSectors(sectors);
 
-            cni.setIndustries(industries);
-        
+        cni.setIndustries(industries);
+
         cni.setEnhancementVersion(enhancementVersion);
         return cni;
     }
@@ -346,7 +357,7 @@ public class CompanyNewsSearchRepo extends ElasticSearchManager implements Compa
         if (client == null) {
             return false;
         }
-        logger.debug("Update user rating:"+_item.getId() + ":"+_item.getUserRating().name());
+        logger.debug("Update user rating:" + _item.getId() + ":" + _item.getUserRating().name());
         UpdateRequest updateRequest = new UpdateRequest("companynews", "companynewsitem", _item.getId())
                 .doc("id", _item.getId(),
                         "userRating", _item.getUserRating().name()
@@ -381,11 +392,11 @@ public class CompanyNewsSearchRepo extends ElasticSearchManager implements Compa
         if (client == null) {
             return false;
         }
-        logger.debug("Update system rating:"+_item.getId() + ":"+_item.getSystemRating().name());
-        
+        logger.debug("Update system rating:" + _item.getId() + ":" + _item.getSystemRating().name());
+
         UpdateRequest updateRequest = new UpdateRequest("companynews", "companynewsitem", _item.getId())
                 .doc("id", _item.getId(),
-                        "systemRatingVersion",_item.getSystemRatingVersion(),
+                        "systemRatingVersion", _item.getSystemRatingVersion(),
                         "systemRating", _item.getSystemRating().name()
                 );
 
@@ -407,6 +418,109 @@ public class CompanyNewsSearchRepo extends ElasticSearchManager implements Compa
         this.closeClient(client);
         return indexedSuccessfully;
 
+    }
+
+    @Override
+    public long searchForCompanyNewsCount(CompanyNewsSearchProperties _sp) {
+        logger.info("Beginning Search");
+        List<CompanyNewsItem> cnis = new ArrayList<>();
+        RestHighLevelClient client = this.buildClient();
+        if (client == null) {
+            logger.error("Client is null");
+            return -1;
+        }
+
+        SearchRequest searchRequest = new SearchRequest("companynews");
+        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+        //searchSourceBuilder.query(QueryBuilders.matchAllQuery());
+        QueryBuilder matchQueryBuilder = null;
+        BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
+
+        if (_sp.getStockExchange() != null) {
+            logger.debug("search for exchange:" + _sp.getStockExchange());
+
+            boolQuery.must(QueryBuilders.matchQuery("exchange", _sp.getStockExchange()));
+
+        }
+        if (_sp.getStockSymbol() != null) {
+            logger.debug("search for symbol:" + _sp.getStockSymbol());
+            boolQuery.must(QueryBuilders.matchQuery("symbol", _sp.getStockSymbol()));
+        }
+        if (_sp.getCompanyNewsItemId() != null) {
+            logger.debug("search for id:" + _sp.getCompanyNewsItemId());
+            boolQuery.must(QueryBuilders.matchQuery("_id", _sp.getCompanyNewsItemId()));
+        }
+        if (_sp.getIncludedSystemRatings() != null) {
+            BoolQueryBuilder systemRatingQuery = QueryBuilders.boolQuery();
+            for (NewsItemRating rating : _sp.getIncludedSystemRatings()) {
+                systemRatingQuery.should(QueryBuilders.matchQuery("systemRating", rating.name()));
+            }
+            boolQuery.must(systemRatingQuery);
+
+        }
+
+        if (_sp.getIncludedUserRatings() != null) {
+            BoolQueryBuilder userRatingQuery = QueryBuilders.boolQuery();
+            for (NewsItemRating rating : _sp.getIncludedUserRatings()) {
+                userRatingQuery.should(QueryBuilders.matchQuery("userRating", rating.name()));
+            }
+            boolQuery.must(userRatingQuery);
+
+        }
+        if (_sp.getIndustries() != null) {
+            BoolQueryBuilder industryQuery = QueryBuilders.boolQuery();
+            for (String industry : _sp.getIndustries()) {
+                industryQuery.should(QueryBuilders.matchQuery("industry", industry));
+            }
+            boolQuery.must(industryQuery);
+
+        }
+        if (_sp.getSectors() != null) {
+            BoolQueryBuilder sectorQuery = QueryBuilders.boolQuery();
+            for (String sector : _sp.getSectors()) {
+                sectorQuery.should(QueryBuilders.matchQuery("sector", sector));
+            }
+            boolQuery.must(sectorQuery);
+        }
+
+        if (_sp.getSearchDates() != null) {
+            BoolQueryBuilder dateQuery = QueryBuilders.boolQuery();
+            for (String dateForQuery : _sp.getSearchDates()) {
+                dateQuery.should(QueryBuilders.matchQuery("recordDate", dateForQuery));
+            }
+            boolQuery.must(dateQuery);
+
+        }
+
+        //.fuzziness(Fuzziness.AUTO);
+        searchSourceBuilder.query(boolQuery).from(_sp.getStartResults()).size(_sp.getNumResults());
+
+        if (_sp.getSortField() != null) {
+            //TODO sort based on dimension type
+            if ("ASC".equalsIgnoreCase(_sp.getSortOrder())) {
+                searchSourceBuilder.sort(_sp.getSortField(), SortOrder.ASC);
+            } else {
+                searchSourceBuilder.sort(_sp.getSortField(), SortOrder.DESC);
+            }
+        }
+
+        searchRequest.source(searchSourceBuilder);
+        long numOfHits  = -1;
+        try {
+            SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
+
+            SearchHits hits = searchResponse.getHits();
+            numOfHits = hits.getTotalHits();
+            //return numOfHits;
+            //SearchHit[] searchHits = hits.getHits();
+
+        } catch (IOException ex) {
+            logger.error(ex.getMessage());
+        }
+
+        this.closeClient(client);
+        logger.info("Returning frm search");
+        return numOfHits;
     }
 
 }

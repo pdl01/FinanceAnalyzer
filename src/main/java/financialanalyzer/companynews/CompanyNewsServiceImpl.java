@@ -145,7 +145,7 @@ public class CompanyNewsServiceImpl implements CompanyNewsService {
     public List<CompanyNewsItem> getNewsItemsWithNoSystemRatingForCompany(Company _company) {
         LOGGER.debug("Entering getNewsItemsWithNoSystemRatingForCompany:" + _company.getId());
         CompanyNewsSearchProperties cnsp = new CompanyNewsSearchProperties();
-        cnsp.setSystemRating(NewsItemRating.NONE);
+        cnsp.addIncludedSystemRating(NewsItemRating.NONE);
         cnsp.setStockSymbol(_company.getStockSymbol());
         cnsp.setStockExchange(_company.getStockExchange());
         List<CompanyNewsItem> returnItems = new ArrayList<>();

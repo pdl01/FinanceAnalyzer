@@ -13,17 +13,54 @@ import java.util.List;
  * @author phil
  */
 public class HealthRecord {
+
     private Date recordDate;
     private String recordDateAsString;
-    
+
     private List<String> companiesWithoutNewsItemsInPast3Days;
     private List<String> companiesWithoutNewsItemsInPast7Days;
     private List<String> companiesWithoutNewsItemsInPast30Days;
-    
+
     private List<String> companiesWithoutStockHistoriesInPast7Days;
+    private long totalNumberOfUserAnalyzedNewsItems;
+    private long totalNumberOfUserUnanalyzedNewsItems;
+    private long totalNumberOfSystemAnalyzedNewsItems;
+    private long totalNumberOfSystemUnanalyzedNewsItems;
 
     public Date getRecordDate() {
         return recordDate;
+    }
+
+    public long getTotalNumberOfUserAnalyzedNewsItems() {
+        return totalNumberOfUserAnalyzedNewsItems;
+    }
+
+    public void setTotalNumberOfUserAnalyzedNewsItems(long totalNumberOfUserAnalyzedNewsItems) {
+        this.totalNumberOfUserAnalyzedNewsItems = totalNumberOfUserAnalyzedNewsItems;
+    }
+
+    public long getTotalNumberOfUserUnanalyzedNewsItems() {
+        return totalNumberOfUserUnanalyzedNewsItems;
+    }
+
+    public void setTotalNumberOfUserUnanalyzedNewsItems(long totalNumberOfUserUnanalyzedNewsItems) {
+        this.totalNumberOfUserUnanalyzedNewsItems = totalNumberOfUserUnanalyzedNewsItems;
+    }
+
+    public long getTotalNumberOfSystemAnalyzedNewsItems() {
+        return totalNumberOfSystemAnalyzedNewsItems;
+    }
+
+    public void setTotalNumberOfSystemAnalyzedNewsItems(long totalNumberOfSystemAnalyzedNewsItems) {
+        this.totalNumberOfSystemAnalyzedNewsItems = totalNumberOfSystemAnalyzedNewsItems;
+    }
+
+    public long getTotalNumberOfSystemUnanalyzedNewsItems() {
+        return totalNumberOfSystemUnanalyzedNewsItems;
+    }
+
+    public void setTotalNumberOfSystemUnanalyzedNewsItems(long totalNumberOfSystemUnanalyzedNewsItems) {
+        this.totalNumberOfSystemUnanalyzedNewsItems = totalNumberOfSystemUnanalyzedNewsItems;
     }
 
     public void setRecordDate(Date recordDate) {

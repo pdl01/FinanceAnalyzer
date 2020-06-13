@@ -20,7 +20,7 @@ public interface CompanyNewsRepo {
     public boolean delete(CompanyNewsItem _item);
 
     public List<CompanyNewsItem> searchForCompanyNews(CompanyNewsSearchProperties _sp);
-    
+    public long searchForCompanyNewsCount(CompanyNewsSearchProperties _sp);
     public long getNumberOfNewsItemsForCompany(CompanyNewsSearchProperties _sp);
     
     public boolean updateUserRatingForNewsItem(CompanyNewsItem _item);

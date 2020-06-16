@@ -155,6 +155,48 @@ public class NewsRestController {
         return returnResponse;
     }
 
+
+    @RequestMapping(value = "/status/{statustype}/{status}", method = RequestMethod.GET, produces = "application/json")
+    public RestResponse getNewsByStatus(@PathVariable("statustype") String _statustype,@PathVariable("status") String _status) {
+        return this.getNewsByStatusStartingWith(_statustype,_status, 0);
+
+    }
+
+    @RequestMapping(value = "/status/{statustype}/{status}/{start}", method = RequestMethod.GET, produces = "application/json")
+    public RestResponse getNewsByStatusStartingWith(@PathVariable("statustype") String _statustype, @PathVariable("status") String _status, @PathVariable("start") int _start) {
+        return this.getNewsByStatusStartingWithInRange(_statustype,_status, 0, 20);
+    }
+
+    @RequestMapping(value = "/status/{statustype}/{status}/{start}/{numberOfItems}", method = RequestMethod.GET, produces = "application/json")
+    public RestResponse getNewsByStatusStartingWithInRange(@PathVariable("statustype") String _statustype, @PathVariable("status") String _status,@PathVariable("start") int _start, @PathVariable("numberOfItems") int _numberOfItems) {
+        List<CompanyNewsItem> companyNewsItems = new ArrayList<>();
+        
+        CompanyNewsSearchProperties cnsp = new CompanyNewsSearchProperties();
+        ArrayList<String> industries = new ArrayList<>();
+        if ("USER".equalsIgnoreCase(_statustype)) {
+            cnsp.addIncludedUserRating(NewsItemRating.valueOf(_status));
+        } else if ("SYSTEM".equalsIgnoreCase(_statustype)) {
+            cnsp.addIncludedSystemRating(NewsItemRating.valueOf(_status));
+        } else {
+            
+        }
+        cnsp.setSortField("recordDate");
+        cnsp.setStartResults(_start);
+        cnsp.setNumResults(_numberOfItems);
+        //this.companyNewsServiceImpl.submitCompanyToDownloadQueue(company);
+        List<CompanyNewsItem> cnis = this.companyNewsSearchRepo.searchForCompanyNews(cnsp);
+        if (cnis != null) {
+            companyNewsItems.addAll(cnis);
+        }
+
+        RestResponse returnResponse = new RestResponse();
+        returnResponse.setCode(0);
+        returnResponse.setObject(companyNewsItems);
+        return returnResponse;
+    }
+    
+    
+    
     @RequestMapping(value = "/company/{id}/{start}", method = RequestMethod.GET, produces = "application/json")
     public RestResponse getCompanyNewsForCompanyStartingWith(@PathVariable("id") String _id, @PathVariable("start") int _start) {
         return this.getNewsForCompanyStartingWithInRange(_id, _start, 25);

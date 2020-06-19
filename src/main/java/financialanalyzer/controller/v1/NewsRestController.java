@@ -310,4 +310,45 @@ public class NewsRestController {
         return restResponse;
     }
 
+    
+    @RequestMapping(value = "/text/{text}", method = RequestMethod.GET, produces = "application/json")
+    public RestResponse getNewsForText(@PathVariable("text") String _text) {
+        return this.getNewsForTextStartingWith(_text, 0);
+
+    }
+
+    @RequestMapping(value = "/text/{text}/{start}", method = RequestMethod.GET, produces = "application/json")
+    public RestResponse getNewsForTextStartingWith(@PathVariable("text") String _text, @PathVariable("start") int _start) {
+        return this.getNewsForTextStartingWithInRange(_text, _start, 25);
+
+    }
+
+    @RequestMapping(value = "/text/{text}/{start}/{numberOfItems}", method = RequestMethod.GET, produces = "application/json")
+    public RestResponse getNewsForTextStartingWithInRange(@PathVariable("text") String _text, @PathVariable("start") int _start, @PathVariable("numberOfItems") int _numberOfItems) {
+        RestResponse restResponse = new RestResponse();
+        //CompanySearchProperties csp = new CompanySearchProperties();
+        //csp.setCompanyId(_id);
+
+        //List<Company> companies = this.companySearchRepo.searchForCompany(csp);
+        List<CompanyNewsItem> companyNewsItems = new ArrayList<>();
+
+        CompanyNewsSearchProperties cnsp = new CompanyNewsSearchProperties();
+        //cnsp.setStockExchange(company.getStockExchange());
+        //cnsp.setStockSymbol(company.getStockSymbol());
+        cnsp.setSubject(_text);
+        cnsp.setSortField("recordDate");
+        cnsp.setSortOrder("DESC");
+        cnsp.setStartResults(_start);
+        cnsp.setNumResults(_numberOfItems);
+
+        //this.companyNewsServiceImpl.submitCompanyToDownloadQueue(company);
+        List<CompanyNewsItem> cnis = this.companyNewsSearchRepo.searchForCompanyNews(cnsp);
+        if (cnis != null) {
+            companyNewsItems.addAll(cnis);
+        }
+        restResponse.setObject(companyNewsItems);
+        return restResponse;
+    }
+
+    
 }

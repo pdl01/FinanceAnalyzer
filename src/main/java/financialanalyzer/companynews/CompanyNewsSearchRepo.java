@@ -119,6 +119,12 @@ public class CompanyNewsSearchRepo extends ElasticSearchManager implements Compa
             logger.debug("search for symbol:" + _sp.getStockSymbol());
             boolQuery.must(QueryBuilders.matchQuery("symbol", _sp.getStockSymbol()));
         }
+        
+        if (_sp.getSubject() != null) {
+            logger.debug("search for subject:" + _sp.getStockSymbol());
+            boolQuery.must(QueryBuilders.wildcardQuery("subject", "*"+_sp.getSubject()+"*"));
+        }
+        
         if (_sp.getCompanyNewsItemId() != null) {
             logger.debug("search for id:" + _sp.getCompanyNewsItemId());
             boolQuery.must(QueryBuilders.matchQuery("_id", _sp.getCompanyNewsItemId()));

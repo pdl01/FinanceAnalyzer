@@ -1,8 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package financialanalyzer.companynames;
 
 import financialanalyzer.companynames.CompanyRepo;
@@ -182,7 +178,8 @@ public class CompanySearchRepo extends ElasticSearchManager implements CompanyRe
         return companies;
 
     }
-
+    
+    
     private Company buildCompanyFromSourceMap(Map<String, Object> _sourceAsMap) {
         String id = (String) _sourceAsMap.get("id");
 
@@ -203,5 +200,7 @@ public class CompanySearchRepo extends ElasticSearchManager implements CompanyRe
         
         return company;
     }
+
+
 
 }

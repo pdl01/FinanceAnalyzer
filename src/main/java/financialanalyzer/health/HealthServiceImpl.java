@@ -107,8 +107,27 @@ public class HealthServiceImpl implements HealthService {
                 cnsp.addIncludedUserRating(NewsItemRating.NEGATIVE);
                 cnsp.addIncludedUserRating(NewsItemRating.UNRELATED);
                 totalCount = this.companyNewsSearchRepo.searchForCompanyNewsCount(cnsp);
-
                 hr.setTotalNumberOfUserAnalyzedNewsItems(totalCount);
+
+                cnsp = new CompanyNewsSearchProperties();
+                cnsp.addIncludedSystemRating(NewsItemRating.POSITIVE);
+                totalCount = this.companyNewsSearchRepo.searchForCompanyNewsCount(cnsp);
+                hr.setTotalNumberOfPositiveSystemAnalyzedNewsItems(totalCount);
+
+                cnsp = new CompanyNewsSearchProperties();
+                cnsp.addIncludedSystemRating(NewsItemRating.NEGATIVE);
+                totalCount = this.companyNewsSearchRepo.searchForCompanyNewsCount(cnsp);
+                hr.setTotalNumberOfNegativeSystemAnalyzedNewsItems(totalCount);
+
+                cnsp = new CompanyNewsSearchProperties();
+                cnsp.addIncludedUserRating(NewsItemRating.NEGATIVE);
+                totalCount = this.companyNewsSearchRepo.searchForCompanyNewsCount(cnsp);
+                hr.setTotalNumberOfNegativeUserAnalyzedNewsItems(totalCount);
+                
+                cnsp = new CompanyNewsSearchProperties();
+                cnsp.addIncludedUserRating(NewsItemRating.POSITIVE);
+                totalCount = this.companyNewsSearchRepo.searchForCompanyNewsCount(cnsp);
+                hr.setTotalNumberOfPositiveUserAnalyzedNewsItems(totalCount);
 
                 cnsp = new CompanyNewsSearchProperties();
                 cnsp.addIncludedUserRating(NewsItemRating.NONE);

@@ -23,9 +23,13 @@ public class HealthRecord {
 
     private List<String> companiesWithoutStockHistoriesInPast7Days;
     private long totalNumberOfUserAnalyzedNewsItems;
+    private long totalNumberOfPositiveUserAnalyzedNewsItems;
+    private long totalNumberOfNegativeUserAnalyzedNewsItems;
     private long totalNumberOfUserUnanalyzedNewsItems;
     private long totalNumberOfSystemAnalyzedNewsItems;
     private long totalNumberOfSystemUnanalyzedNewsItems;
+    private long totalNumberOfPositiveSystemAnalyzedNewsItems;
+    private long totalNumberOfNegativeSystemAnalyzedNewsItems;
 
     public Date getRecordDate() {
         return recordDate;
@@ -105,6 +109,38 @@ public class HealthRecord {
 
     public void setCompaniesWithoutStockHistoriesInPast7Days(List<String> companiesWithoutStockHistoriesInPast7Days) {
         this.companiesWithoutStockHistoriesInPast7Days = companiesWithoutStockHistoriesInPast7Days;
+    }
+
+    public long getTotalNumberOfNegativeUserAnalyzedNewsItems() {
+        return totalNumberOfNegativeUserAnalyzedNewsItems;
+    }
+
+    public void setTotalNumberOfNegativeUserAnalyzedNewsItems(long totalNumberOfNegativeUserAnalyzedNewsItems) {
+        this.totalNumberOfNegativeUserAnalyzedNewsItems = totalNumberOfNegativeUserAnalyzedNewsItems;
+    }
+
+    public long getTotalNumberOfNegativeSystemAnalyzedNewsItems() {
+        return totalNumberOfNegativeSystemAnalyzedNewsItems;
+    }
+
+    public void setTotalNumberOfNegativeSystemAnalyzedNewsItems(long totalNumberOfNegativeSystemAnalyzedNewsItems) {
+        this.totalNumberOfNegativeSystemAnalyzedNewsItems = totalNumberOfNegativeSystemAnalyzedNewsItems;
+    }
+
+    public long getTotalNumberOfPositiveUserAnalyzedNewsItems() {
+        return totalNumberOfPositiveUserAnalyzedNewsItems;
+    }
+
+    public void setTotalNumberOfPositiveUserAnalyzedNewsItems(long totalNumberOfPositiveUserAnalyzedNewsItems) {
+        this.totalNumberOfPositiveUserAnalyzedNewsItems = totalNumberOfPositiveUserAnalyzedNewsItems;
+    }
+
+    public long getTotalNumberOfPositiveSystemAnalyzedNewsItems() {
+        return totalNumberOfPositiveSystemAnalyzedNewsItems;
+    }
+
+    public void setTotalNumberOfPositiveSystemAnalyzedNewsItems(long totalNumberOfPositiveSystemAnalyzedNewsItems) {
+        this.totalNumberOfPositiveSystemAnalyzedNewsItems = totalNumberOfPositiveSystemAnalyzedNewsItems;
     }
 
 }

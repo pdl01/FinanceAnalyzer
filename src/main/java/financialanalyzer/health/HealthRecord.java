@@ -22,6 +22,7 @@ public class HealthRecord {
     private List<String> companiesWithoutNewsItemsInPast30Days;
 
     private List<String> companiesWithoutStockHistoriesInPast7Days;
+    private List<String> companiesWithoutStockHistoriesInPast3Days;
     private long totalNumberOfUserAnalyzedNewsItems;
     private long totalNumberOfPositiveUserAnalyzedNewsItems;
     private long totalNumberOfNegativeUserAnalyzedNewsItems;
@@ -141,6 +142,14 @@ public class HealthRecord {
 
     public void setTotalNumberOfPositiveSystemAnalyzedNewsItems(long totalNumberOfPositiveSystemAnalyzedNewsItems) {
         this.totalNumberOfPositiveSystemAnalyzedNewsItems = totalNumberOfPositiveSystemAnalyzedNewsItems;
+    }
+
+    public List<String> getCompaniesWithoutStockHistoriesInPast3Days() {
+        return companiesWithoutStockHistoriesInPast3Days;
+    }
+
+    public void setCompaniesWithoutStockHistoriesInPast3Days(List<String> companiesWithoutStockHistoriesInPast3Days) {
+        this.companiesWithoutStockHistoriesInPast3Days = companiesWithoutStockHistoriesInPast3Days;
     }
 
 }

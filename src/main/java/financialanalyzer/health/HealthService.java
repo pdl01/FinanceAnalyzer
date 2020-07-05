@@ -19,9 +19,9 @@ public interface HealthService {
     
     public HealthRecord generateHealthRecord(boolean _reProcessWhereAvailable);
 
-    public List<Company> generateListOfCompaniesWithoutNewsItemsInPastXDays(int _numOfDays);
+    public List<Company> generateListOfCompaniesWithoutNewsItemsInPastXDays(int _numOfDays,List<Company> _companies);
 
-    public List<Company> generateListOfCompaniesWithoutStockHistoriesInPastXDays(int _numOfDays);
+    public List<Company> generateListOfCompaniesWithoutStockHistoriesInPastXDays(int _numOfDays,List<Company> _companies);
     
     public List<String> getAvailableHealthRecords();
     

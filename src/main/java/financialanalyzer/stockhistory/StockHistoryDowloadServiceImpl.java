@@ -7,6 +7,7 @@ package financialanalyzer.stockhistory;
 
 import financialanalyzer.config.ActiveMQConfig;
 import financialanalyzer.objects.Company;
+import financialanalyzer.stockperformance.StockPerformanceService;
 import financialanalyzer.systemactivity.SystemActivityManager;
 import java.util.Date;
 import java.util.List;
@@ -22,6 +23,7 @@ import org.slf4j.LoggerFactory;
  */
 @Component
 public class StockHistoryDowloadServiceImpl implements StockHistoryDownloadService {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(StockHistoryDowloadServiceImpl.class.getName());
 
     @Autowired
@@ -32,12 +34,15 @@ public class StockHistoryDowloadServiceImpl implements StockHistoryDownloadServi
 
     @Autowired
     private JmsTemplate jmsTemplate;
-    
+
     @Autowired
     private StockHistoryProviderRegistry stockHistoryProviderRegistry;
-    
+
+    @Autowired
+    private StockPerformanceService stockPerformanceServiceImpl;
+
     private String version = "1.0.0";
-    
+
     @Override
     public List<StockHistory> fetchDataForCompany(Company company) {
         return this.fetchDataForCompany(company, null);
@@ -49,18 +54,18 @@ public class StockHistoryDowloadServiceImpl implements StockHistoryDownloadServi
             return null;
         }
         List<StockHistory> shs = null;
-        
+
         StockHistoryProvider shProvider = this.stockHistoryProviderRegistry.getPreferredProvider();
         if (shProvider == null) {
             LOGGER.error("Unable to locate a StockHistory Provider");
             return null;
         }
-        
+
         if (_date != null) {
-            shs = shProvider.getStockHistoryForCompany(company.getStockExchange(),company.getStockSymbol());
+            shs = shProvider.getStockHistoryForCompany(company.getStockExchange(), company.getStockSymbol());
 
         } else {
-            shs = shProvider.getStockHistoryForCompanyForDay(company.getStockExchange(),company.getStockSymbol(), _date);
+            shs = shProvider.getStockHistoryForCompanyForDay(company.getStockExchange(), company.getStockSymbol(), _date);
 
         }
         if (shs != null) {
@@ -70,6 +75,10 @@ public class StockHistoryDowloadServiceImpl implements StockHistoryDownloadServi
                 item.setSectors(company.getSectors());
                 this.stockHistorySearchRepoImpl.submit(item);
             }
+            //submit to build performance report
+
+            this.stockPerformanceServiceImpl.queueCompanyForBuild(company);
+
             this.systemActivityManagerImpl.saveSystemActivity(company.getStockSymbol(), company.getStockExchange(), SystemActivityManager.ACTIVITY_TYPE_STOCK_HISTORY_DOWNLOAD, "Updated items:" + shs.size());
             /*
             shs.forEach(item -> {
@@ -102,7 +111,7 @@ public class StockHistoryDowloadServiceImpl implements StockHistoryDownloadServi
 
     @Override
     public void queueStockHistoryDownloadTask(StockHistoryDownloadTask _item) {
-        LOGGER.info("queueing _item:"+_item.getSymbol());
+        LOGGER.info("queueing _item:" + _item.getSymbol());
         this.jmsTemplate.convertAndSend(ActiveMQConfig.STOCK_HISTORY_DOWNLOAD_QUEUE, _item);
     }
 

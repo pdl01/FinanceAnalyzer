@@ -25,6 +25,8 @@ public class ActiveMQConfig {
     public static final String COMPANY_NEWS_QUEUE = "company-news-queue";
     public static final String SYSTEM_ACTIVITY_QUEUE = "system-activity-queue";
     public static final String NEWS_SENTIMENT_RATING_QUEUE="news-sentiment-queue";
+    public static final String STOCK_PERFORMANCE_QUEUE="stock-performance-queue";
+    
     
     @Bean
     public JmsListenerContainerFactory<?> queueListenerFactory() {

@@ -249,4 +249,46 @@ public class CompanyRestController {
         //restResponse.setObject(company);
         return restResponse;
     }
+    
+    
+    
+@RequestMapping(value = "/company/{id}/stockperformance/{start}", method = RequestMethod.GET, produces = "application/json")
+    public RestResponse getStockPerformanceForCompanyStartingWith(@PathVariable("id") String _id, @PathVariable("start") int _start) {
+        return this.getStockPerformanceForCompanyStartingWithInRange(_id, 0, 25);
+    }
+    
+    @RequestMapping(value = "/company/{id}/stockperformance/{start}/{numberOfItems}", method = RequestMethod.GET, produces = "application/json")
+    public RestResponse getStockPerformanceForCompanyStartingWithInRange(@PathVariable("id") String _id, @PathVariable("start") int _start, @PathVariable("numberOfItems") int _numberOfItems) {
+        RestResponse restResponse = new RestResponse();
+        CompanySearchProperties csp = new CompanySearchProperties();
+        csp.setCompanyId(_id);
+        //csp.setStartResults(_start);
+        //csp.setNumResults(_numberOfItems);
+        List<Company> companies = this.companySearchRepo.searchForCompany(csp);
+        List<StockHistory> stockhistories = new ArrayList<>();
+        if (companies != null) {
+            for (Company company : companies) {
+                StockHistorySearchProperties shsp = new StockHistorySearchProperties();
+                shsp.setStockExchange(company.getStockExchange());
+                shsp.setStockSymbol(company.getStockSymbol());
+                shsp.setNumResults(_numberOfItems);
+                shsp.setStartResults(_start);
+                shsp.setSortField("recordDate");
+                shsp.setSortOrder("DESC");
+                List<StockHistory> shs = this.stockHistorySearchRepo.searchForStockHistory(shsp);
+                if (shs != null) {
+                    stockhistories.addAll(shs);
+                }
+            }
+        }
+        //restResponse.setObject(company);
+        restResponse.setObject(stockhistories);
+        
+        return restResponse;
+    }
+    
+    @RequestMapping(value = "/company/{id}/stockperformance", method = RequestMethod.GET, produces = "application/json")
+    public RestResponse getStockPerformanceForCompany(@PathVariable("id") String _id) {
+        return this.getStockPerformanceForCompanyStartingWith(_id, 0);
+    }    
 }

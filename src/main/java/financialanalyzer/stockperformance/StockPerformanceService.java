@@ -14,7 +14,7 @@ import java.util.Date;
  */
 public interface StockPerformanceService {
         public void queueCompanyForBuild(Company company);
-        public void buildStockPerformanceRecordForCompany(Company company);
-        
+        public StockPerformance buildStockPerformanceRecordForCompany(Company company);
+        public void saveStockPerformance(StockPerformance sp);
 
 }

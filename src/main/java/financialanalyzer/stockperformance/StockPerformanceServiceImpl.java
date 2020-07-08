@@ -38,13 +38,17 @@ public class StockPerformanceServiceImpl implements StockPerformanceService {
     @Autowired
     private StockHistorySearchRepo stockHistorySearchRepoImpl;
 
+    @Autowired
+    private StockPerformanceSearchRepo stockPerformanceSearchRepoImpl;
+
+    
     @Override
     public void queueCompanyForBuild(Company company) {
         this.jmsTemplate.convertAndSend(ActiveMQConfig.STOCK_PERFORMANCE_QUEUE, company);
     }
 
     @Override
-    public void buildStockPerformanceRecordForCompany(Company _company) {
+    public StockPerformance buildStockPerformanceRecordForCompany(Company _company) {
         StockHistorySearchProperties shsp = new StockHistorySearchProperties();
         shsp.setStockExchange(_company.getStockExchange());
         shsp.setStockSymbol(_company.getStockSymbol());
@@ -71,7 +75,7 @@ public class StockPerformanceServiceImpl implements StockPerformanceService {
         }
         LOGGER.debug(sp.getExchange()+":"+sp.getSymbol()+":3day:"+sp.getThreedayperf()+":7day:"+sp.getSevendayperf()+":30day:"+sp.getThirtydayperf());
         //persist to the repo
-        
+        return sp;
     }
     private StockPerformance createStockPerformanceFromCompany(Company _company) {
         StockPerformance sp = new StockPerformance();
@@ -81,5 +85,10 @@ public class StockPerformanceServiceImpl implements StockPerformanceService {
         sp.setIndustries(_company.getIndustries());
         sp.setRecordDate(new Date());
         return sp;
+    }
+
+    @Override
+    public void saveStockPerformance(StockPerformance sp) {
+        this.stockPerformanceSearchRepoImpl.submit(sp);
     }
 }

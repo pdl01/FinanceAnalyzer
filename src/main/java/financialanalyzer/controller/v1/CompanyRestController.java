@@ -16,6 +16,9 @@ import financialanalyzer.stockhistory.StockHistory;
 import financialanalyzer.stockhistory.StockHistorySearchProperties;
 import financialanalyzer.companynames.CompanyRepo;
 import financialanalyzer.stockhistory.StockHistoryRepo;
+import financialanalyzer.stockperformance.StockPerformance;
+import financialanalyzer.stockperformance.StockPerformanceRepo;
+import financialanalyzer.stockperformance.StockPerformanceSearchProperties;
 import financialanalyzer.systemactivity.SystemActivity;
 import financialanalyzer.systemactivity.SystemActivityManager;
 import financialanalyzer.systemactivity.SystemActivityRepo;
@@ -45,6 +48,10 @@ public class CompanyRestController {
     
     @Autowired
     private StockHistoryRepo stockHistorySearchRepo;
+    
+    @Autowired
+    private StockPerformanceRepo stockPerformanceSearchRepo;
+  
     
     @Autowired
     private AllStockNamesDownloadDriver allStockNamesDownloadDriver;
@@ -265,24 +272,24 @@ public class CompanyRestController {
         //csp.setStartResults(_start);
         //csp.setNumResults(_numberOfItems);
         List<Company> companies = this.companySearchRepo.searchForCompany(csp);
-        List<StockHistory> stockhistories = new ArrayList<>();
+        List<StockPerformance> stockPerformanceItems = new ArrayList<>();
         if (companies != null) {
             for (Company company : companies) {
-                StockHistorySearchProperties shsp = new StockHistorySearchProperties();
+                StockPerformanceSearchProperties shsp = new StockPerformanceSearchProperties();
                 shsp.setStockExchange(company.getStockExchange());
                 shsp.setStockSymbol(company.getStockSymbol());
                 shsp.setNumResults(_numberOfItems);
                 shsp.setStartResults(_start);
                 shsp.setSortField("recordDate");
                 shsp.setSortOrder("DESC");
-                List<StockHistory> shs = this.stockHistorySearchRepo.searchForStockHistory(shsp);
+                List<StockPerformance> shs = this.stockPerformanceSearchRepo.searchForStockPerformance(shsp);
                 if (shs != null) {
-                    stockhistories.addAll(shs);
+                    stockPerformanceItems.addAll(shs);
                 }
             }
         }
         //restResponse.setObject(company);
-        restResponse.setObject(stockhistories);
+        restResponse.setObject(stockPerformanceItems);
         
         return restResponse;
     }

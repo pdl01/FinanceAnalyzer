@@ -33,11 +33,14 @@ public class StockPerformanceReceiver {
     private StockPerformanceService stockPerformanceServiceImpl;
 
     @JmsListener(destination = ActiveMQConfig.STOCK_PERFORMANCE_QUEUE)
-    public void receiveMessage(@Payload Company _company,
+    public void receiveMespssage(@Payload Company _company,
             @Headers MessageHeaders headers,
             Message message, Session session) {
         LOGGER.info("Received " + _company.getStockSymbol());
-        this.stockPerformanceServiceImpl.buildStockPerformanceRecordForCompany(_company);
+        StockPerformance sp = this.stockPerformanceServiceImpl.buildStockPerformanceRecordForCompany(_company);
+        if (sp != null) {
+            this.stockPerformanceServiceImpl.saveStockPerformance(sp);
+        }
     }
 
 }

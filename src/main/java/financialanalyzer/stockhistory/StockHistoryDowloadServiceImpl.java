@@ -74,11 +74,10 @@ public class StockHistoryDowloadServiceImpl implements StockHistoryDownloadServi
                 item.setIndustries(company.getIndustries());
                 item.setSectors(company.getSectors());
                 this.stockHistorySearchRepoImpl.submit(item);
-            this.stockPerformanceServiceImpl.queueCompanyForBuild(company);
 
             }
             //submit to build performance report
-
+            this.stockPerformanceServiceImpl.queueCompanyForBuild(company);
 
             this.systemActivityManagerImpl.saveSystemActivity(company.getStockSymbol(), company.getStockExchange(), SystemActivityManager.ACTIVITY_TYPE_STOCK_HISTORY_DOWNLOAD, "Updated items:" + shs.size());
             /*

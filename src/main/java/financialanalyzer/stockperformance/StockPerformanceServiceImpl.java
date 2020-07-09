@@ -62,14 +62,25 @@ public class StockPerformanceServiceImpl implements StockPerformanceService {
         int counter = 0;
         float closingValue = items.get(0).getClose();
         StockPerformance sp = this.createStockPerformanceFromCompany(_company);
-
+        
+        //TODO: validation check
+        //check if the first item in the list is from the day before
+        //if it is continue;
+        //if it is not, queue the company and start again.
+        //StockHistory sh = items.get(0);
+                
+                
         for (StockHistory item : items) {
+            
             if (counter == 2) {
-                sp.setThreedayperf((closingValue - item.getOpen()) / item.getOpen() * 100);
+                sp.setThreedayperf((closingValue - item.getOpen()) / item.getOpen());
             } else if (counter == 6) {
-                sp.setSevendayperf((closingValue - item.getOpen()) / item.getOpen() * 100);
+                sp.setSevendayperf((closingValue - item.getOpen()) / item.getOpen());
             } else if (counter == 29) {
-                sp.setThirtydayperf((closingValue - item.getOpen()) / item.getOpen() * 100);
+                sp.setThirtydayperf((closingValue - item.getOpen()) / item.getOpen());
+            } else if (counter == 0) {
+                //set the stock performance date record to the first item in the array, since this is what its based on
+                sp.setRecordDate(item.getRecordDate());
             }
             counter++;
         }
@@ -83,7 +94,7 @@ public class StockPerformanceServiceImpl implements StockPerformanceService {
         sp.setSymbol(_company.getStockSymbol());
         sp.setSectors(_company.getSectors());
         sp.setIndustries(_company.getIndustries());
-        sp.setRecordDate(new Date());
+        //sp.setRecordDate(new Date());
         return sp;
     }
 

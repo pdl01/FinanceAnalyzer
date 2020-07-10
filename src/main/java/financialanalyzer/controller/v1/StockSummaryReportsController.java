@@ -11,6 +11,9 @@ import financialanalyzer.report.ReportGenerator;
 import financialanalyzer.report.ReportSummary;
 import financialanalyzer.report.TopVolumesByAmountGenerator;
 import financialanalyzer.stockhistory.StockHistoryRepo;
+import financialanalyzer.stockperformance.StockPerformance;
+import financialanalyzer.stockperformance.StockPerformanceRepo;
+import financialanalyzer.stockperformance.StockPerformanceSearchProperties;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -47,6 +50,10 @@ public class StockSummaryReportsController {
     @Autowired
     private StockHistoryRepo stockHistorySearchRepo;
 
+    @Autowired
+    private StockPerformanceRepo stockPerformanceSearchRepo;
+
+    
     @RequestMapping(value = "/report/{name}", method = RequestMethod.GET, produces = "application/json")
     public RestResponse getReportForName(@PathVariable("name") String _name) {
         String dateString = sdf.format(new Date());
@@ -271,7 +278,7 @@ public class StockSummaryReportsController {
         return this.getTopLosersByAmountStartingWith(endDate, 0);
     }
 
-        @RequestMapping(value = "/dailyReport/losers-percent/{endDate}/{start}/{numberOfItems}", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "/dailyReport/losers-percent/{endDate}/{start}/{numberOfItems}", method = RequestMethod.GET, produces = "application/json")
     public RestResponse getTopLosersByPercentageStartingWithNumResults(@PathVariable("endDate") String endDate, @PathVariable("start") int _start, @PathVariable("numberOfItems") int _numberOfItems) {
         RestResponse restResponse = new RestResponse();
         List<StockHistory> stockHistories = new ArrayList<>();
@@ -290,14 +297,46 @@ public class StockSummaryReportsController {
         restResponse.setObject(stockHistories);
         return restResponse;
     }
-        @RequestMapping(value = "/dailyReport/losers-percent/{endDate}/{start}", method = RequestMethod.GET, produces = "application/json")
+
+    @RequestMapping(value = "/dailyReport/losers-percent/{endDate}/{start}", method = RequestMethod.GET, produces = "application/json")
     public RestResponse getTopLosersByPercentageStartingWith(@PathVariable("endDate") String endDate, @PathVariable("start") int _start) {
-        return this.getTopLosersByPercentageStartingWithNumResults(endDate, _start,25);
+        return this.getTopLosersByPercentageStartingWithNumResults(endDate, _start, 25);
     }
-    
+
     @RequestMapping(value = "/dailyReport/losers-percent/{endDate}", method = RequestMethod.GET, produces = "application/json")
     public RestResponse getTopLosersByPercentage(@PathVariable("endDate") String endDate) {
         return this.getTopLosersByPercentageStartingWith(endDate, 0);
     }
 
+    @RequestMapping(value = "/stockPerformance/{reportType}/{endDate}", method = RequestMethod.GET, produces = "application/json")
+    public RestResponse getStockPerformanceForDay(@PathVariable("endDate") String endDate, @PathVariable("reportType") String reportType) {
+        return this.getStockPerformanceForDayStartingWith(endDate, reportType, 0);
+    }
+
+    @RequestMapping(value = "/stockPerformance/{reportType}/{endDate}/{start}", method = RequestMethod.GET, produces = "application/json")
+    public RestResponse getStockPerformanceForDayStartingWith(@PathVariable("endDate") String endDate, @PathVariable("reportType") String reportType,@PathVariable("start") int _start) {
+        return this.getStockPerformanceForDayStartingWithNumResults(endDate, reportType, _start, 25);
+    }
+    @RequestMapping(value = "/stockPerformance/{reportType}/{endDate}/{start}/{numResults}", method = RequestMethod.GET, produces = "application/json")
+    public RestResponse getStockPerformanceForDayStartingWithNumResults(@PathVariable("endDate") String endDate, @PathVariable("reportType") String reportType,@PathVariable("start") int _start,@PathVariable("numResults") int _numResults) {
+        RestResponse restResponse = new RestResponse();
+        List<StockPerformance> stockPerformanceItems = new ArrayList<>();
+
+        StockPerformanceSearchProperties shsp = new StockPerformanceSearchProperties();
+        shsp.setSearchDate(endDate);
+        shsp.setStartResults(_start);
+        shsp.setNumResults(_numResults);
+        
+        String[] reportFilter = reportType.split("-");
+        shsp.setSortField(reportFilter[0]);
+        shsp.setSortOrder(reportFilter[1]);
+        List<StockPerformance> shs = this.stockPerformanceSearchRepo.searchForStockPerformance(shsp);
+        if (shs != null) {
+            stockPerformanceItems.addAll(shs);
+        }
+
+        restResponse.setObject(stockPerformanceItems);
+        return restResponse;
+
+    }
 }

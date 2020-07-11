@@ -35,6 +35,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class StockPerformanceSearchRepo extends ElasticSearchManager implements StockPerformanceRepo {
+
     private static final Logger logger = LoggerFactory.getLogger(StockPerformanceSearchRepo.class.getName());
     private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
@@ -48,15 +49,19 @@ public class StockPerformanceSearchRepo extends ElasticSearchManager implements 
             return null;
         }
 
-        _item.setId(_item.getExchange()+"-"+_item.getSymbol()+"-"+sdf.format(_item.getRecordDate()));
+        _item.setId(_item.getExchange() + "-" + _item.getSymbol() + "-" + sdf.format(_item.getRecordDate()));
         IndexRequest indexRequest = new IndexRequest("companystockperformance", "stockperformancerecord", _item.getId())
                 .source("id", _item.getId(),
                         "recordDate", sdf.format(_item.getRecordDate()),
                         "symbol", _item.getSymbol(),
                         "exchange", _item.getExchange(),
+                        "current",_item.getCurrent(),
                         "threedayperf", _item.getThreedayperf(),
                         "sevendayperf", _item.getSevendayperf(),
                         "thirtydayperf", _item.getThirtydayperf(),
+                        "threedayopen",_item.getThreedayopen(),
+                        "sevendayopen",_item.getSevendayopen(),
+                        "thirtydayopen",_item.getThirtydayopen(),
                         "industry", _item.getIndustries(),
                         "sector", _item.getSectors()
                 );
@@ -164,7 +169,7 @@ public class StockPerformanceSearchRepo extends ElasticSearchManager implements 
     public long searchForStockPerformanceCount(StockPerformanceSearchProperties _shsp) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-    
+
     private StockPerformance buildStockPerformanceFromSourceMap(Map<String, Object> _sourceAsMap) {
         //2020-03-09T04:00:00.000Z
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -178,8 +183,12 @@ public class StockPerformanceSearchRepo extends ElasticSearchManager implements 
         //even though mapping is float, sourcemap is being returned as double; need to make unsafe cast, but should be fine
         //https://github.com/elastic/elasticsearch/issues/25792
         float threedayperf = ((Double) _sourceAsMap.get("threedayperf")).floatValue();
+        float threedayopen = ((Double) _sourceAsMap.get("threedayopen")).floatValue();
         float sevendayperf = ((Double) _sourceAsMap.get("sevendayperf")).floatValue();
+        float sevendayopen = ((Double) _sourceAsMap.get("sevendayopen")).floatValue();
         float thirtydayperf = ((Double) _sourceAsMap.get("thirtydayperf")).floatValue();
+        float thirtydayopen = ((Double) _sourceAsMap.get("thirtydayopen")).floatValue();
+        float current = ((Double) _sourceAsMap.get("current")).floatValue();
         List<String> sectors = (List<String>) _sourceAsMap.get("sector");
         List<String> industries = (List<String>) _sourceAsMap.get("industry");
 
@@ -191,19 +200,24 @@ public class StockPerformanceSearchRepo extends ElasticSearchManager implements 
         } catch (Exception e) {
             logger.error("Cannot convert recordDate from search to java date");
         }
-        sh.setThirtydayperf(thirtydayperf);
-        sh.setThreedayperf(threedayperf);
-        sh.setSevendayperf(sevendayperf);
+        sh.setCurrent(current);
         
+        sh.setThirtydayperf(thirtydayperf);
+        sh.setThirtydayopen(thirtydayopen);
+
+        sh.setThreedayperf(threedayperf);
+        sh.setThreedayopen(threedayopen);
+
+        sh.setSevendayperf(sevendayperf);
+        sh.setSevendayopen(sevendayopen);
 
         sh.setExchange(exchange);
         sh.setSymbol(symbol);
 
         sh.setSectors(sectors);
         sh.setIndustries(industries);
-        
+
         return sh;
     }
-    
-    
+
 }

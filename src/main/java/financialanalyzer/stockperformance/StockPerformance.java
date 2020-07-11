@@ -21,9 +21,46 @@ public class StockPerformance {
     private String exchange;
     private List<String> sectors;
     private List<String> industries;
+    private float current;
     private float threedayperf;
+    private float threedayopen;
     private float sevendayperf;
+    private float sevendayopen;
     private float thirtydayperf;
+    private float thirtydayopen;
+
+    public float getCurrent() {
+        return current;
+    }
+
+    public void setCurrent(float current) {
+        this.current = current;
+    }
+
+    public float getThreedayopen() {
+        return threedayopen;
+    }
+
+    public void setThreedayopen(float threedayopen) {
+        this.threedayopen = threedayopen;
+    }
+
+
+    public float getSevendayopen() {
+        return sevendayopen;
+    }
+
+    public void setSevendayopen(float sevendayopen) {
+        this.sevendayopen = sevendayopen;
+    }
+
+    public float getThirtydayopen() {
+        return thirtydayopen;
+    }
+
+    public void setThirtydayopen(float thirtydayopen) {
+        this.thirtydayopen = thirtydayopen;
+    }
 
     public String getId() {
         return id;

@@ -41,7 +41,6 @@ public class StockPerformanceServiceImpl implements StockPerformanceService {
     @Autowired
     private StockPerformanceSearchRepo stockPerformanceSearchRepoImpl;
 
-    
     @Override
     public void queueCompanyForBuild(Company company) {
         this.jmsTemplate.convertAndSend(ActiveMQConfig.STOCK_PERFORMANCE_QUEUE, company);
@@ -62,32 +61,35 @@ public class StockPerformanceServiceImpl implements StockPerformanceService {
         int counter = 0;
         float closingValue = items.get(0).getClose();
         StockPerformance sp = this.createStockPerformanceFromCompany(_company);
-        
+        sp.setCurrent(closingValue);
         //TODO: validation check
         //check if the first item in the list is from the day before
         //if it is continue;
         //if it is not, queue the company and start again.
         //StockHistory sh = items.get(0);
-                
-                
         for (StockHistory item : items) {
-            
+
             if (counter == 2) {
+                sp.setThreedayopen(item.getOpen());
                 sp.setThreedayperf((closingValue - item.getOpen()) / item.getOpen());
             } else if (counter == 6) {
+                sp.setSevendayopen(item.getOpen());
                 sp.setSevendayperf((closingValue - item.getOpen()) / item.getOpen());
             } else if (counter == 29) {
+                sp.setThirtydayopen(item.getOpen());
                 sp.setThirtydayperf((closingValue - item.getOpen()) / item.getOpen());
             } else if (counter == 0) {
                 //set the stock performance date record to the first item in the array, since this is what its based on
+                
                 sp.setRecordDate(item.getRecordDate());
             }
             counter++;
         }
-        LOGGER.debug(sp.getExchange()+":"+sp.getSymbol()+":3day:"+sp.getThreedayperf()+":7day:"+sp.getSevendayperf()+":30day:"+sp.getThirtydayperf());
+        LOGGER.debug(sp.getExchange() + ":" + sp.getSymbol() + ":3day:" + sp.getThreedayperf() + ":7day:" + sp.getSevendayperf() + ":30day:" + sp.getThirtydayperf());
         //persist to the repo
         return sp;
     }
+
     private StockPerformance createStockPerformanceFromCompany(Company _company) {
         StockPerformance sp = new StockPerformance();
         sp.setExchange(_company.getStockExchange());

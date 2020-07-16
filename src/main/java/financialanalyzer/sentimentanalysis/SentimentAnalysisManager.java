@@ -26,4 +26,5 @@ public interface SentimentAnalysisManager {
     public double getNegativeSentimentAnalysisIndex(String _input, String _dataSetId);
 
     public boolean doesNewsArticleRelateToSymbol(CompanyNewsItem _cni);
+    public void clearCache();
 }

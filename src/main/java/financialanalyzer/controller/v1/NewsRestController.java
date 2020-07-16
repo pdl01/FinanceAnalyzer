@@ -101,7 +101,7 @@ public class NewsRestController {
     @RequestMapping(value = "/sector/{sector}/{start}/{numberOfItems}", method = RequestMethod.GET, produces = "application/json")
     public RestResponse getNewsBySectorStartingWithInRange(@PathVariable("sector") String _sector, @PathVariable("start") int _start, @PathVariable("numberOfItems") int _numberOfItems) {
         List<CompanyNewsItem> companyNewsItems = new ArrayList<>();
-        
+
         CompanyNewsSearchProperties cnsp = new CompanyNewsSearchProperties();
         ArrayList<String> sectors = new ArrayList<>();
         sectors.add(_sector);
@@ -135,7 +135,7 @@ public class NewsRestController {
     @RequestMapping(value = "/industry/{industry}/{start}/{numberOfItems}", method = RequestMethod.GET, produces = "application/json")
     public RestResponse getNewsByIndustryStartingWithInRange(@PathVariable("industry") String _industry, @PathVariable("start") int _start, @PathVariable("numberOfItems") int _numberOfItems) {
         List<CompanyNewsItem> companyNewsItems = new ArrayList<>();
-        
+
         CompanyNewsSearchProperties cnsp = new CompanyNewsSearchProperties();
         ArrayList<String> industries = new ArrayList<>();
         industries.add(_industry);
@@ -155,22 +155,21 @@ public class NewsRestController {
         return returnResponse;
     }
 
-
     @RequestMapping(value = "/status/{statustype}/{status}", method = RequestMethod.GET, produces = "application/json")
-    public RestResponse getNewsByStatus(@PathVariable("statustype") String _statustype,@PathVariable("status") String _status) {
-        return this.getNewsByStatusStartingWith(_statustype,_status, 0);
+    public RestResponse getNewsByStatus(@PathVariable("statustype") String _statustype, @PathVariable("status") String _status) {
+        return this.getNewsByStatusStartingWith(_statustype, _status, 0);
 
     }
 
     @RequestMapping(value = "/status/{statustype}/{status}/{start}", method = RequestMethod.GET, produces = "application/json")
     public RestResponse getNewsByStatusStartingWith(@PathVariable("statustype") String _statustype, @PathVariable("status") String _status, @PathVariable("start") int _start) {
-        return this.getNewsByStatusStartingWithInRange(_statustype,_status, 0, 20);
+        return this.getNewsByStatusStartingWithInRange(_statustype, _status, 0, 20);
     }
 
     @RequestMapping(value = "/status/{statustype}/{status}/{start}/{numberOfItems}", method = RequestMethod.GET, produces = "application/json")
-    public RestResponse getNewsByStatusStartingWithInRange(@PathVariable("statustype") String _statustype, @PathVariable("status") String _status,@PathVariable("start") int _start, @PathVariable("numberOfItems") int _numberOfItems) {
+    public RestResponse getNewsByStatusStartingWithInRange(@PathVariable("statustype") String _statustype, @PathVariable("status") String _status, @PathVariable("start") int _start, @PathVariable("numberOfItems") int _numberOfItems) {
         List<CompanyNewsItem> companyNewsItems = new ArrayList<>();
-        
+
         CompanyNewsSearchProperties cnsp = new CompanyNewsSearchProperties();
         ArrayList<String> industries = new ArrayList<>();
         if ("USER".equalsIgnoreCase(_statustype)) {
@@ -178,7 +177,7 @@ public class NewsRestController {
         } else if ("SYSTEM".equalsIgnoreCase(_statustype)) {
             cnsp.addIncludedSystemRating(NewsItemRating.valueOf(_status));
         } else {
-            
+
         }
         cnsp.setSortField("recordDate");
         cnsp.setStartResults(_start);
@@ -194,9 +193,7 @@ public class NewsRestController {
         returnResponse.setObject(companyNewsItems);
         return returnResponse;
     }
-    
-    
-    
+
     @RequestMapping(value = "/company/{id}/{start}", method = RequestMethod.GET, produces = "application/json")
     public RestResponse getCompanyNewsForCompanyStartingWith(@PathVariable("id") String _id, @PathVariable("start") int _start) {
         return this.getNewsForCompanyStartingWithInRange(_id, _start, 25);
@@ -310,7 +307,6 @@ public class NewsRestController {
         return restResponse;
     }
 
-    
     @RequestMapping(value = "/text/{text}", method = RequestMethod.GET, produces = "application/json")
     public RestResponse getNewsForText(@PathVariable("text") String _text) {
         return this.getNewsForTextStartingWith(_text, 0);
@@ -350,5 +346,22 @@ public class NewsRestController {
         return restResponse;
     }
 
+    @RequestMapping(value = "/sentimentanalysis/generate", method = RequestMethod.POST, produces = "application/json")
+    public RestResponse generateSentimentAnalysisForNewItem(@RequestBody NewsItemForm _newsItemForm) {
+        RestResponse restResponse = new RestResponse();
+        CompanyNewsSearchProperties cnsp = new CompanyNewsSearchProperties();
+        cnsp.setCompanyNewsItemId(_newsItemForm.getId());
+        List<CompanyNewsItem> cniList = this.companyNewsSearchRepo.searchForCompanyNews(cnsp);
+        if (cniList != null && cniList.size() == 1) {
+            CompanyNewsItem cni = cniList.get(0);
+            //cni.setUserRating(NewsItemRating.valueOf(_newsItemForm.getRating()));
+            NewsItemRating rating = this.companyNewsServiceImpl.buildSentimentAnalysisForNewsItem(cni,false);
+            restResponse.setObject(rating);
+            //this.companyNewsSearchRepo.updateUserRatingForNewsItem(cni);
+        }
+
+        return restResponse;
+    
+    }
     
 }

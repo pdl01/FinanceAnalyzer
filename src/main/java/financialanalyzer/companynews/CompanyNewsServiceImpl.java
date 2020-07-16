@@ -124,7 +124,7 @@ public class CompanyNewsServiceImpl implements CompanyNewsService {
     }
 
     @Override
-    public void updateSystemRating(String _id, NewsItemRating _nir,String _ratingSystemsVersion) {
+    public void updateSystemRating(String _id, NewsItemRating _nir, String _ratingSystemsVersion) {
         CompanyNewsItem cni = this.getCompanyNewsItem(_id);
         if (cni == null) {
             LOGGER.warn("Company News Item not found:" + _id);
@@ -206,7 +206,7 @@ public class CompanyNewsServiceImpl implements CompanyNewsService {
             if (newsTitleText.trim().isEmpty()) {
                 newsTitleText = "Empty Title";
             }
-            
+
             cni.setSubject(newsTitleText);
             //LOGGER.info(newsTitleText);
             String bodyText = newsDoc.body().text();
@@ -222,6 +222,31 @@ public class CompanyNewsServiceImpl implements CompanyNewsService {
             return cni;
         }
         return null;
+    }
+
+    @Override
+    public void processSentimentAnalysisForCompany(Company _company) {
+
+        //get all items for the company with no system rating
+        List<CompanyNewsItem> cnis = this.getNewsItemsWithNoSystemRatingForCompany(_company);
+        if (cnis != null) {
+            LOGGER.info("Number of news items with no system rating to process for sentiment analysis:" + cnis.size());
+            //perform analysis on those
+            for (CompanyNewsItem item : cnis) {
+                this.buildSentimentAnalysisForNewsItem(item, true);
+            }
+        } else {
+            LOGGER.info("No news items to process.");
+        }
+    }
+
+    @Override
+    public NewsItemRating buildSentimentAnalysisForNewsItem(CompanyNewsItem _item, boolean _updateInRepo) {
+        NewsItemRating systemRating = this.companyNewsSentimentAnalysisManagerImpl.developSystemRating(_item);
+        if (systemRating != null && _updateInRepo) {
+            this.updateSystemRating(_item.getId(), systemRating, this.companyNewsSentimentAnalysisManagerImpl.getVersion());
+        }
+        return systemRating;
     }
 
 }

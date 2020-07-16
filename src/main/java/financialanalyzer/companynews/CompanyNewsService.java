@@ -31,4 +31,8 @@ public interface CompanyNewsService {
     public List<CompanyNewsItem> getNewsItemsWithNoSystemRatingForCompany(Company _company);
     
     public CompanyNewsItem buildCompanyNewsItemFromURL(String _url);
+    
+    public void processSentimentAnalysisForCompany(Company _company);
+    
+    public NewsItemRating buildSentimentAnalysisForNewsItem(CompanyNewsItem _item,boolean _updateInRepo);
 }

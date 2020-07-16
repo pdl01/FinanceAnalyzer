@@ -42,20 +42,8 @@ public class SentimentAnalysisReceiver {
             Message message, Session session) {
 
         LOGGER.info("Receiving company:" + _company.getId());
-        //get all items for the company with no system rating
-        List<CompanyNewsItem> cnis = this.companyNewsServiceImpl.getNewsItemsWithNoSystemRatingForCompany(_company);
-        if (cnis != null) {
-            LOGGER.info("Number of news items with no system rating to process for sentiment analysis:"+cnis.size());
-            //perform analysis on those
-            for (CompanyNewsItem item : cnis) {
-                NewsItemRating systemRating = this.companyNewsSentimentAnalysisManagerImpl.developSystemRating(item);
-                if (systemRating != null) {
-                    this.companyNewsServiceImpl.updateSystemRating(item.getId(), systemRating,this.companyNewsSentimentAnalysisManagerImpl.getVersion());
-                }
-            }
-        } else {
-            LOGGER.info("No news items to process.");
-        }
+        this.companyNewsServiceImpl.processSentimentAnalysisForCompany(_company);
+
 
     }
 }

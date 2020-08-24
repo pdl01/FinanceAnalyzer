@@ -23,7 +23,9 @@ import financialanalyzer.systemactivity.SystemActivity;
 import financialanalyzer.systemactivity.SystemActivityManager;
 import financialanalyzer.systemactivity.SystemActivityRepo;
 import financialanalyzer.systemactivity.SystemActivitySearchProperties;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -157,6 +159,20 @@ public class CompanyRestController {
     public RestResponse triggerStockHistoryDownload() {
         RestResponse restResponse = new RestResponse();
         this.stockHistoryDownloadDriver.fetchLatestData();
+        //restResponse.setObject(company);
+        return restResponse;
+    }
+
+    @RequestMapping(value = "/stockhistory/fetchLatestData/{date}", method = RequestMethod.POST, produces = "application/json")
+    public RestResponse triggerStockHistoryDownloadForDate(@PathVariable("date") String inputDate) {
+        RestResponse restResponse = new RestResponse();
+        try {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Date theDate = sdf.parse(inputDate);
+        this.stockHistoryDownloadDriver.fetchLatestData(sdf.parse(inputDate));
+        } catch (Exception e) {
+            logger.error ("Error in getting data",e);
+        }
         //restResponse.setObject(company);
         return restResponse;
     }

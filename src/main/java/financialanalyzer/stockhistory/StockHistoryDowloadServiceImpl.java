@@ -115,4 +115,20 @@ public class StockHistoryDowloadServiceImpl implements StockHistoryDownloadServi
         this.jmsTemplate.convertAndSend(ActiveMQConfig.STOCK_HISTORY_DOWNLOAD_QUEUE, _item);
     }
 
+    @Override
+    public void runReconcileForCompany(Company _company) {
+        //find earliest date in the system
+        //use 60 days ago or that date which ever is earlier
+        //starting with the basedate, generate a list of dates
+        //if the date should have a record, and there is no record 
+        //download and build a record
+       
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void runReconcileForSystem() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
 }

@@ -161,7 +161,7 @@ public class HealthServiceImpl implements HealthService {
             cnsp.addIncludedSystemRating(NewsItemRating.NEGATIVE);
             totalCount = this.companyNewsSearchRepo.searchForCompanyNewsCount(cnsp);
             hr.setTotalNumberOfNegativeSystemAnalyzedNewsItems(totalCount);
-
+         
             cnsp = new CompanyNewsSearchProperties();
             cnsp.addIncludedUserRating(NewsItemRating.NEGATIVE);
             totalCount = this.companyNewsSearchRepo.searchForCompanyNewsCount(cnsp);

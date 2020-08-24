@@ -22,4 +22,8 @@ public interface StockHistoryDownloadService {
     public List<StockHistory> fetchDataForCompany(Company company);
 
     public List<StockHistory> fetchDataForCompany(Company company, Date _date);
+    
+    public void runReconcileForCompany(Company _company);
+    
+    public void runReconcileForSystem();
 }

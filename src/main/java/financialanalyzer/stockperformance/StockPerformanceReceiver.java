@@ -41,6 +41,12 @@ public class StockPerformanceReceiver {
         if (sp != null) {
             this.stockPerformanceServiceImpl.saveStockPerformance(sp);
         }
+        try {
+            Thread.sleep(5000);
+
+        } catch (InterruptedException ex) {
+            LOGGER.info("Interruption", ex);
+        }        
     }
 
 }

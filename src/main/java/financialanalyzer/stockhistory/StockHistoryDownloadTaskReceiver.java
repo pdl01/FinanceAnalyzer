@@ -62,7 +62,12 @@ public class StockHistoryDownloadTaskReceiver {
 
         }
         */
+        try {
+            Thread.sleep(5000);
 
+        } catch (InterruptedException ex) {
+            LOGGER.info("Interruption", ex);
+        }  
         LOGGER.info("Finished Processing " + _stockHistoryDownloadTask.getSymbol());
 
     }

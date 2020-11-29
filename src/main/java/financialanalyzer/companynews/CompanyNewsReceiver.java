@@ -11,6 +11,7 @@ import financialanalyzer.systemactivity.SystemActivityManager;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
 import javax.jms.Message;
 import javax.jms.Session;
 import org.slf4j.Logger;
@@ -78,5 +79,11 @@ public class CompanyNewsReceiver {
         //save the url and text and do some sentiment analysis (good/bad news)
         //save the item to the repo
         //this.companyNewsSearchRepo.submit(_companyNewsItem);
+        try {
+            Thread.sleep(5000);
+
+        } catch (InterruptedException ex) {
+            LOGGER.info("Interruption", ex);
+        }
     }
 }

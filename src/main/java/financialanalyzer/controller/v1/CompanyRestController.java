@@ -43,48 +43,47 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/companies")
 public class CompanyRestController {
-    
+
     private static final Logger logger = LoggerFactory.getLogger(CompanyRestController.class.getName());
     @Autowired
     private CompanyRepo companySearchRepo;
-    
+
     @Autowired
     private StockHistoryRepo stockHistorySearchRepo;
-    
+
     @Autowired
     private StockPerformanceRepo stockPerformanceSearchRepo;
-  
-    
+
     @Autowired
     private AllStockNamesDownloadDriver allStockNamesDownloadDriver;
-    
+
     @Autowired
     private StockHistoryDownloadDriver stockHistoryDownloadDriver;
-    
+
     @Autowired
     private StockHistoryDownloadService stockHistoryDownloadServiceImpl;
-    
+
     @Autowired
     private SystemActivityManager systemActivityManagerImpl;
-    
+
     @Autowired
     private SystemActivityRepo systemActivitySearchRepo;
-    
+
     @Autowired
     private CompanyGroupingCacheManager CompanyGroupCacheManagerImpl;
-    
+
     @RequestMapping(value = "/symbol/{symbol}", method = RequestMethod.GET, produces = "application/json")
     public RestResponse getCompaniesBySymbol(@PathVariable("symbol") String symbol) {
         RestResponse restResponse = new RestResponse();
         this.systemActivityManagerImpl.saveSystemActivity(symbol, null, SystemActivityManager.ACTIVITY_TYPE_STOCK_SYMBOL_SEARCH, "Search Performed");
         CompanySearchProperties csp = new CompanySearchProperties();
-        
+
         csp.setStockSymbol(symbol);
         List<Company> companies = this.companySearchRepo.searchForCompany(csp);
         restResponse.setObject(companies);
         return restResponse;
     }
-    
+
     @RequestMapping(value = "/company/{id}", method = RequestMethod.GET, produces = "application/json")
     public RestResponse getCompanyById(@PathVariable("id") String _id) {
         RestResponse restResponse = new RestResponse();
@@ -94,7 +93,7 @@ public class CompanyRestController {
         restResponse.setObject(companies);
         return restResponse;
     }
-    
+
     @RequestMapping(value = "/exchange/{exchange}", method = RequestMethod.GET, produces = "application/json")
     public RestResponse getCompaniesByExchange(@PathVariable("exchange") String exchange) {
         RestResponse restResponse = new RestResponse();
@@ -104,7 +103,7 @@ public class CompanyRestController {
         restResponse.setObject(companies);
         return restResponse;
     }
-    
+
     @RequestMapping(value = "/sector/{sector}", method = RequestMethod.GET, produces = "application/json")
     public RestResponse getCompaniesBySector(@PathVariable("sector") String sector) {
         RestResponse restResponse = new RestResponse();
@@ -116,7 +115,7 @@ public class CompanyRestController {
         restResponse.setObject(companies);
         return restResponse;
     }
-    
+
     @RequestMapping(value = "/industry/{industry}", method = RequestMethod.GET, produces = "application/json")
     public RestResponse getCompaniesByIndustry(@PathVariable("industry") String industry) {
         RestResponse restResponse = new RestResponse();
@@ -128,7 +127,7 @@ public class CompanyRestController {
         restResponse.setObject(companies);
         return restResponse;
     }
-    
+
     @RequestMapping(value = "/name/{name}", method = RequestMethod.GET, produces = "application/json")
     public RestResponse getCompaniesByName(@PathVariable("name") String name) {
         RestResponse restResponse = new RestResponse();
@@ -138,7 +137,7 @@ public class CompanyRestController {
         restResponse.setObject(companies);
         return restResponse;
     }
-    
+
     @RequestMapping(value = "/createDraft", method = RequestMethod.POST, produces = "application/json")
     public RestResponse saveCompany(@RequestBody Company _company) {
         RestResponse restResponse = new RestResponse();
@@ -146,7 +145,7 @@ public class CompanyRestController {
         restResponse.setObject(company);
         return restResponse;
     }
-    
+
     @RequestMapping(value = "/companies/fetchLatestData", method = RequestMethod.POST, produces = "application/json")
     public RestResponse triggerCompanyNameDownload() {
         RestResponse restResponse = new RestResponse();
@@ -154,7 +153,7 @@ public class CompanyRestController {
         //restResponse.setObject(company);
         return restResponse;
     }
-    
+
     @RequestMapping(value = "/stockhistory/fetchLatestData", method = RequestMethod.POST, produces = "application/json")
     public RestResponse triggerStockHistoryDownload() {
         RestResponse restResponse = new RestResponse();
@@ -167,16 +166,16 @@ public class CompanyRestController {
     public RestResponse triggerStockHistoryDownloadForDate(@PathVariable("date") String inputDate) {
         RestResponse restResponse = new RestResponse();
         try {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        Date theDate = sdf.parse(inputDate);
-        this.stockHistoryDownloadDriver.fetchLatestData(sdf.parse(inputDate));
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            Date theDate = sdf.parse(inputDate);
+            this.stockHistoryDownloadDriver.fetchLatestData(sdf.parse(inputDate));
         } catch (Exception e) {
-            logger.error ("Error in getting data",e);
+            logger.error("Error in getting data", e);
         }
         //restResponse.setObject(company);
         return restResponse;
     }
-    
+
     @RequestMapping(value = "/symbol/{symbol}/stock/fetch", method = RequestMethod.POST, produces = "application/json")
     public RestResponse fetchStockInformation(@PathVariable("symbol") String symbol) {
         RestResponse restResponse = new RestResponse();
@@ -191,12 +190,12 @@ public class CompanyRestController {
         //restResponse.setObject(company);
         return restResponse;
     }
-    
+
     @RequestMapping(value = "/company/{id}/stock/{start}", method = RequestMethod.GET, produces = "application/json")
     public RestResponse getStockInformationForCompanyStartingWith(@PathVariable("id") String _id, @PathVariable("start") int _start) {
         return this.getStockInformationForCompanyStartingWithInRange(_id, 0, 25);
     }
-    
+
     @RequestMapping(value = "/company/{id}/stock/{start}/{numberOfItems}", method = RequestMethod.GET, produces = "application/json")
     public RestResponse getStockInformationForCompanyStartingWithInRange(@PathVariable("id") String _id, @PathVariable("start") int _start, @PathVariable("numberOfItems") int _numberOfItems) {
         RestResponse restResponse = new RestResponse();
@@ -223,15 +222,15 @@ public class CompanyRestController {
         }
         //restResponse.setObject(company);
         restResponse.setObject(stockhistories);
-        
+
         return restResponse;
     }
-    
+
     @RequestMapping(value = "/company/{id}/stock", method = RequestMethod.GET, produces = "application/json")
     public RestResponse getStockInformationForCompany(@PathVariable("id") String _id) {
         return this.getStockInformationForCompanyStartingWith(_id, 0);
     }
-    
+
     @RequestMapping(value = "/company/{id}/systemActivity", method = RequestMethod.GET, produces = "application/json")
     public RestResponse getSystemActivityForCompany(@PathVariable("id") String _id) {
         RestResponse restResponse = new RestResponse();
@@ -255,7 +254,7 @@ public class CompanyRestController {
         restResponse.setObject(systemActivities);
         return restResponse;
     }
-    
+
     @RequestMapping(value = "/sectorNames", method = RequestMethod.GET, produces = "application/json")
     public RestResponse getSectorNames() {
         RestResponse restResponse = new RestResponse();
@@ -264,6 +263,7 @@ public class CompanyRestController {
         //restResponse.setObject(company);
         return restResponse;
     }
+
     @RequestMapping(value = "/industryNames", method = RequestMethod.GET, produces = "application/json")
     public RestResponse getIndustryNames() {
         RestResponse restResponse = new RestResponse();
@@ -272,14 +272,12 @@ public class CompanyRestController {
         //restResponse.setObject(company);
         return restResponse;
     }
-    
-    
-    
-@RequestMapping(value = "/company/{id}/stockperformance/{start}", method = RequestMethod.GET, produces = "application/json")
+
+    @RequestMapping(value = "/company/{id}/stockperformance/{start}", method = RequestMethod.GET, produces = "application/json")
     public RestResponse getStockPerformanceForCompanyStartingWith(@PathVariable("id") String _id, @PathVariable("start") int _start) {
         return this.getStockPerformanceForCompanyStartingWithInRange(_id, 0, 25);
     }
-    
+
     @RequestMapping(value = "/company/{id}/stockperformance/{start}/{numberOfItems}", method = RequestMethod.GET, produces = "application/json")
     public RestResponse getStockPerformanceForCompanyStartingWithInRange(@PathVariable("id") String _id, @PathVariable("start") int _start, @PathVariable("numberOfItems") int _numberOfItems) {
         RestResponse restResponse = new RestResponse();
@@ -306,12 +304,26 @@ public class CompanyRestController {
         }
         //restResponse.setObject(company);
         restResponse.setObject(stockPerformanceItems);
-        
+
         return restResponse;
     }
-    
+
     @RequestMapping(value = "/company/{id}/stockperformance", method = RequestMethod.GET, produces = "application/json")
     public RestResponse getStockPerformanceForCompany(@PathVariable("id") String _id) {
         return this.getStockPerformanceForCompanyStartingWith(_id, 0);
-    }    
+    }
+
+    @RequestMapping(value = "/company/{id}/downloadoptions", method = RequestMethod.POST, produces = "application/json")
+    public RestResponse saveCompanyDownloadOptions(@RequestBody Company _company) {
+        RestResponse restResponse = new RestResponse();
+        
+        boolean updated = this.companySearchRepo.updateCompanyDownloadProperties(_company);
+        
+        if (updated) {
+            restResponse.setCode(RestResponse.CODE_SUCCESS);
+        } else {
+            restResponse.setCode(RestResponse.CODE_FAILURE);
+        }
+        return restResponse;
+    }
 }

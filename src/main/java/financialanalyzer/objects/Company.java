@@ -15,8 +15,8 @@ public class Company {
     private List<String> sectors;
     private List<String> industries;
     private String enhancementVersion;
-    private boolean downloadNews;
-    private boolean downloadStocks;
+    private boolean downloadNews = true;
+    private boolean downloadStocks = true;
     
     public String getId() {
         return this.stockExchange+"-"+this.stockSymbol;

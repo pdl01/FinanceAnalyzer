@@ -17,4 +17,5 @@ public interface CompanyRepo {
     public Company submit(Company _company);
     public boolean delete(Company _company);
     public List<Company> searchForCompany(CompanySearchProperties _csp);
+    public boolean updateCompanyDownloadProperties(Company _company);
 }

@@ -1,4 +1,3 @@
-
 package financialanalyzer.companynames;
 
 import financialanalyzer.companynames.CompanyRepo;
@@ -14,6 +13,8 @@ import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.action.update.UpdateRequest;
+import org.elasticsearch.action.update.UpdateResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.index.query.BoolQueryBuilder;
@@ -51,8 +52,10 @@ public class CompanySearchRepo extends ElasticSearchManager implements CompanyRe
                         "name", _company.getName(), "symbol", _company.getStockSymbol(),
                         "exchange", _company.getStockExchange(),
                         "sector", _company.getSectors(),
-                        "industry",_company.getIndustries(),
-                        "enhancementVersion",_company.getEnhancementVersion()
+                        "industry", _company.getIndustries(),
+                        "enhancementVersion", _company.getEnhancementVersion(),
+                        "downloadStocks",_company.isDownloadStocks(),
+                        "downloadNews",_company.isDownloadNews()
                 );
 
         try {
@@ -107,12 +110,12 @@ public class CompanySearchRepo extends ElasticSearchManager implements CompanyRe
         //searchSourceBuilder.query(QueryBuilders.matchAllQuery());
         QueryBuilder matchQueryBuilder = null;
         BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
-        
+
         if (_csp.getCompanyName() != null) {
             boolQuery.must(QueryBuilders.matchQuery("name", _csp.getCompanyName()));
         } else if (_csp.getStockExchange() != null) {
             boolQuery.must(QueryBuilders.matchQuery("exchange", _csp.getStockExchange()));
-            
+
         } else if (_csp.getStockSymbol() != null) {
             boolQuery.must(QueryBuilders.matchQuery("symbol", _csp.getStockSymbol()));
 
@@ -120,7 +123,7 @@ public class CompanySearchRepo extends ElasticSearchManager implements CompanyRe
             boolQuery.must(QueryBuilders.matchQuery("_id", _csp.getCompanyId()));
         }
 
-        if (_csp.getIndustries()!= null) {
+        if (_csp.getIndustries() != null) {
             BoolQueryBuilder industryQuery = QueryBuilders.boolQuery();
             for (String industry : _csp.getIndustries()) {
                 industryQuery.should(QueryBuilders.matchQuery("industry", industry));
@@ -128,14 +131,13 @@ public class CompanySearchRepo extends ElasticSearchManager implements CompanyRe
             boolQuery.must(industryQuery);
 
         }
-        if (_csp.getSectors()!= null) {
+        if (_csp.getSectors() != null) {
             BoolQueryBuilder sectorQuery = QueryBuilders.boolQuery();
             for (String sector : _csp.getSectors()) {
                 sectorQuery.should(QueryBuilders.matchQuery("sector", sector));
             }
             boolQuery.must(sectorQuery);
         }
-        
 
         //.fuzziness(Fuzziness.AUTO);
         searchSourceBuilder.query(boolQuery).from(_csp.getStartResults()).size(_csp.getNumResults());
@@ -152,7 +154,7 @@ public class CompanySearchRepo extends ElasticSearchManager implements CompanyRe
         searchRequest.source(searchSourceBuilder);
 
         try {
-            SearchResponse searchResponse = client.search(searchRequest,RequestOptions.DEFAULT);
+            SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
 
             SearchHits hits = searchResponse.getHits();
             SearchHit[] searchHits = hits.getHits();
@@ -178,8 +180,7 @@ public class CompanySearchRepo extends ElasticSearchManager implements CompanyRe
         return companies;
 
     }
-    
-    
+
     private Company buildCompanyFromSourceMap(Map<String, Object> _sourceAsMap) {
         String id = (String) _sourceAsMap.get("id");
 
@@ -188,7 +189,12 @@ public class CompanySearchRepo extends ElasticSearchManager implements CompanyRe
         String exchange = (String) _sourceAsMap.get("exchange");
         List<String> sectors = (List<String>) _sourceAsMap.get("sector");
         List<String> industries = (List<String>) _sourceAsMap.get("industry");
-        String enhancementVersion = (String)_sourceAsMap.get("enhancementVersion");
+        String enhancementVersion = (String) _sourceAsMap.get("enhancementVersion");
+        boolean downloadStocks = true;
+        boolean downloadNews = true;
+        //boolean downloadStocks = (boolean) _sourceAsMap.get("downloadStocks");
+        //boolean downloadNews = (boolean) _sourceAsMap.get("downloadNews");
+
         Company company = new Company();
         company.setId(id);
         company.setName(name);
@@ -197,10 +203,37 @@ public class CompanySearchRepo extends ElasticSearchManager implements CompanyRe
         company.setSectors(sectors);
         company.setIndustries(industries);
         company.setEnhancementVersion(enhancementVersion);
-        
+        company.setDownloadNews(downloadNews);
+        company.setDownloadStocks(downloadStocks);
+
         return company;
     }
 
+    @Override
+    public boolean updateCompanyDownloadProperties(Company _company) {
+        if (_company == null) {
+            return false;
+        }
+        RestHighLevelClient client = this.buildClient();
+        if (client == null) {
+            return false;
+        }
 
+        UpdateRequest updateRequest = new UpdateRequest("companies", "company", _company.getId())
+                .doc("downloadNews", _company.isDownloadNews(),
+                        "downloadStocks", _company.isDownloadStocks()
+                );
+        boolean indexedSuccessfully = false;
+        try {
+            UpdateResponse updateResponse = client.update(updateRequest, RequestOptions.DEFAULT);
+            indexedSuccessfully = true;            //logger.info(indexResponse.getIndex());
+            //logger.info(indexResponse.getResult().name());
+        } catch (IOException ex) {
+            //ex.printStackTrace();
+            logger.error(ex.getMessage());
+        }
+        this.closeClient(client);
+        return indexedSuccessfully;
+    }
 
 }

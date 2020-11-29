@@ -2,7 +2,7 @@ pipeline {
     agent any
     tools { 
         maven 'maven_3.3' 
-        jdk 'java-8-openjdk-amd64' 
+        jdk 'java-11-openjdk-amd64' 
     }
     stages {
         stage('Clone repository') {

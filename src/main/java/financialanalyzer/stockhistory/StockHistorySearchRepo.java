@@ -132,18 +132,18 @@ public class StockHistorySearchRepo extends ElasticSearchManager implements Stoc
         BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
 
         if (_shsp.getStockExchange() != null) {
-            boolQuery.must(QueryBuilders.matchQuery("exchange", _shsp.getStockExchange()));
+            boolQuery.must(QueryBuilders.termQuery("exchange", _shsp.getStockExchange()));
 
         }
         if (_shsp.getStockSymbol() != null) {
-            boolQuery.must(QueryBuilders.matchQuery("symbol", _shsp.getStockSymbol()));
+            boolQuery.must(QueryBuilders.termQuery("symbol", _shsp.getStockSymbol()));
 
         }
 
         if (_shsp.getSearchDates() != null) {
             BoolQueryBuilder dateQuery = QueryBuilders.boolQuery();
             for (String dateForQuery : _shsp.getSearchDates()) {
-                dateQuery.should(QueryBuilders.matchQuery("recordDate", dateForQuery));
+                dateQuery.should(QueryBuilders.termQuery("recordDate", dateForQuery));
             }
             boolQuery.must(dateQuery);
 
@@ -253,18 +253,18 @@ public class StockHistorySearchRepo extends ElasticSearchManager implements Stoc
         BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
 
         if (_shsp.getStockExchange() != null) {
-            boolQuery.must(QueryBuilders.matchQuery("exchange", _shsp.getStockExchange()));
+            boolQuery.must(QueryBuilders.termQuery("exchange", _shsp.getStockExchange()));
 
         }
         if (_shsp.getStockSymbol() != null) {
-            boolQuery.must(QueryBuilders.matchQuery("symbol", _shsp.getStockSymbol()));
+            boolQuery.must(QueryBuilders.termQuery("symbol", _shsp.getStockSymbol()));
 
         }
 
         if (_shsp.getSearchDates() != null) {
             BoolQueryBuilder dateQuery = QueryBuilders.boolQuery();
             for (String dateForQuery : _shsp.getSearchDates()) {
-                dateQuery.should(QueryBuilders.matchQuery("recordDate", dateForQuery));
+                dateQuery.should(QueryBuilders.termQuery("recordDate", dateForQuery));
             }
             boolQuery.must(dateQuery);
 

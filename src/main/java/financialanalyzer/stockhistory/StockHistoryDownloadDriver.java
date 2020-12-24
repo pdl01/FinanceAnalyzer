@@ -36,13 +36,13 @@ public class StockHistoryDownloadDriver {
 
     //@Autowired
     //private JmsTemplate jmsTemplate;
-
     //@Scheduled(initialDelay = 5000, fixedRate = 1000 * 60 * 60 * 24)
     //@Scheduled(initialDelay = 1000 * 60 * 60 * 24, fixedRate = 1000 * 60 * 60 * 24)
     public void fetchLatestData() {
         this.fetchLatestData(null);
     }
-    @Scheduled(cron = "0 15 6 * * 2-6",zone="UTC")
+
+    @Scheduled(cron = "0 15 6 * * 2-6", zone = "UTC")
     public void fetchDaily() {
         LOGGER.info("Starting fetchDaily");
 
@@ -91,7 +91,9 @@ public class StockHistoryDownloadDriver {
                             shdt.setRetrieveDate(_date);
                             //shs = this.stockHistoryDownloadServiceImpl.fetchDataForCompany(item, _date);
                         }
-                        this.stockHistoryDownloadServiceImpl.queueStockHistoryDownloadTask(shdt);
+                        if (item.isDownloadStocks()) {
+                            this.stockHistoryDownloadServiceImpl.queueStockHistoryDownloadTask(shdt);
+                        }
                         //this.jmsTemplate.convertAndSend(ActiveMQConfig.STOCK_HISTORY_DOWNLOAD_QUEUE, shdt);
                         /*
                         if (shs != null) {

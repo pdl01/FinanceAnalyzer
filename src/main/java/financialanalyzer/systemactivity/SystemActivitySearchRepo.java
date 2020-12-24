@@ -112,19 +112,18 @@ public class SystemActivitySearchRepo extends ElasticSearchManager implements Sy
         SearchRequest searchRequest = new SearchRequest("systemactivities");
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         //searchSourceBuilder.query(QueryBuilders.matchAllQuery());
-        QueryBuilder matchQueryBuilder = null;
         BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
 
         if (_sp.getStockExchange() != null) {
-            boolQuery.must(QueryBuilders.matchQuery("exchange", _sp.getStockExchange()));
+            boolQuery.must(QueryBuilders.termQuery("exchange", _sp.getStockExchange()));
 
         }
         if (_sp.getStockSymbol() != null) {
-            boolQuery.must(QueryBuilders.matchQuery("symbol", _sp.getStockSymbol()));
+            boolQuery.must(QueryBuilders.termQuery("symbol", _sp.getStockSymbol()));
 
         }
         if (_sp.getActivityType() != null) {
-            boolQuery.must(QueryBuilders.matchQuery("activityType", _sp.getActivityType()));
+            boolQuery.must(QueryBuilders.termQuery("activityType", _sp.getActivityType()));
         }
 
         //.fuzziness(Fuzziness.AUTO);

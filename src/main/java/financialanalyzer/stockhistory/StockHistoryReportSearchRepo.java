@@ -57,11 +57,11 @@ public class StockHistoryReportSearchRepo extends ElasticSearchManager {
         BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
 
         if (_shsp.getStockExchange() != null) {
-            boolQuery.must(QueryBuilders.matchQuery("exchange", _shsp.getStockExchange()));
+            boolQuery.must(QueryBuilders.termQuery("exchange", _shsp.getStockExchange()));
 
         }
         if (_shsp.getStockSymbol() != null) {
-            boolQuery.must(QueryBuilders.matchQuery("symbol", _shsp.getStockSymbol()));
+            boolQuery.must(QueryBuilders.termQuery("symbol", _shsp.getStockSymbol()));
 
         }
         if (_shsp.getSearchDates() != null) {
@@ -69,7 +69,7 @@ public class StockHistoryReportSearchRepo extends ElasticSearchManager {
 
             for (String dateForQuery : _shsp.getSearchDates()) {
                 try {
-                    dateQuery.should(QueryBuilders.matchQuery("recordDate", sdf.parse(dateForQuery)));
+                    dateQuery.should(QueryBuilders.termQuery("recordDate", sdf.parse(dateForQuery)));
                 } catch (ParseException ex) {
                     logger.error("Parse Error", null, ex);
                 }

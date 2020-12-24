@@ -26,15 +26,13 @@ public class CompanyNewsDownloadDriver {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CompanyNewsDownloadDriver.class.getName());
 
-
     @Autowired
     private CompanySearchRepo companySearchRepo;
-    
+
     @Autowired
     private CompanyNewsService companyNewsServiceImpl;
-    
 
-    @Scheduled(cron = "0 0 5 * * ?",zone="UTC")
+    @Scheduled(cron = "0 0 5 * * ?", zone = "UTC")
     public void fetchDaily() {
         LOGGER.info("Starting fetchDaily");
 
@@ -43,14 +41,13 @@ public class CompanyNewsDownloadDriver {
         LOGGER.info("Completed fetchDaily");
     }
 
-    public void processCompaniesThatHaveNoNewsItems(){
+    public void processCompaniesThatHaveNoNewsItems() {
         LOGGER.info("Starting processCompaniesThatHaveNoNewsItems");
         //get the companies 
         //find out which ones have no data
         LOGGER.info("Completed processCompaniesThatHaveNoNewsItems");
     }
-    
-    
+
     public void fetchLatestData(Date _date) {
         String[] exchangeArray = {CompanyNameProvider.EXCHANGE_AMEX, CompanyNameProvider.EXCHANGE_NASDAQ, CompanyNameProvider.EXCHANGE_NYSE};
 
@@ -72,7 +69,9 @@ public class CompanyNewsDownloadDriver {
                 if (companies != null) {
                     for (Company item : companies) {
                         LOGGER.info("Submitting:" + item.getStockExchange() + item.getName() + ":" + item.getStockSymbol());
-                        this.companyNewsServiceImpl.submitCompanyToDownloadQueue(item);
+                        if (item.isDownloadNews()) {
+                            this.companyNewsServiceImpl.submitCompanyToDownloadQueue(item);
+                        }
                     }
                 }
                 if (companies != null && companies.size() == numResultsPerBatch) {
@@ -82,9 +81,8 @@ public class CompanyNewsDownloadDriver {
                     hasMoreResults = false;
                 }
             }
-         
+
         }
         LOGGER.info("Ending fetchLatestData");
     }
 }
-

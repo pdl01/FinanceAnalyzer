@@ -106,18 +106,17 @@ public class CompanyNewsSearchRepo extends ElasticSearchManager implements Compa
         SearchRequest searchRequest = new SearchRequest("companynews");
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         //searchSourceBuilder.query(QueryBuilders.matchAllQuery());
-        QueryBuilder matchQueryBuilder = null;
         BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
 
         if (_sp.getStockExchange() != null) {
             logger.debug("search for exchange:" + _sp.getStockExchange());
 
-            boolQuery.must(QueryBuilders.matchQuery("exchange", _sp.getStockExchange()));
+            boolQuery.must(QueryBuilders.termQuery("exchange", _sp.getStockExchange()));
 
         }
         if (_sp.getStockSymbol() != null) {
             logger.debug("search for symbol:" + _sp.getStockSymbol());
-            boolQuery.must(QueryBuilders.matchQuery("symbol", _sp.getStockSymbol()));
+            boolQuery.must(QueryBuilders.termQuery("symbol", _sp.getStockSymbol()));
         }
         
         if (_sp.getSubject() != null) {
@@ -127,12 +126,12 @@ public class CompanyNewsSearchRepo extends ElasticSearchManager implements Compa
         
         if (_sp.getCompanyNewsItemId() != null) {
             logger.debug("search for id:" + _sp.getCompanyNewsItemId());
-            boolQuery.must(QueryBuilders.matchQuery("_id", _sp.getCompanyNewsItemId()));
+            boolQuery.must(QueryBuilders.termQuery("_id", _sp.getCompanyNewsItemId()));
         }
         if (_sp.getIncludedSystemRatings() != null) {
             BoolQueryBuilder systemRatingQuery = QueryBuilders.boolQuery();
             for (NewsItemRating rating : _sp.getIncludedSystemRatings()) {
-                systemRatingQuery.should(QueryBuilders.matchQuery("systemRating", rating.name()));
+                systemRatingQuery.should(QueryBuilders.termQuery("systemRating", rating.name()));
             }
             boolQuery.must(systemRatingQuery);
 
@@ -141,7 +140,7 @@ public class CompanyNewsSearchRepo extends ElasticSearchManager implements Compa
         if (_sp.getIncludedUserRatings() != null) {
             BoolQueryBuilder userRatingQuery = QueryBuilders.boolQuery();
             for (NewsItemRating rating : _sp.getIncludedUserRatings()) {
-                userRatingQuery.should(QueryBuilders.matchQuery("userRating", rating.name()));
+                userRatingQuery.should(QueryBuilders.termQuery("userRating", rating.name()));
             }
             boolQuery.must(userRatingQuery);
 
@@ -150,7 +149,7 @@ public class CompanyNewsSearchRepo extends ElasticSearchManager implements Compa
         if (_sp.getIndustries() != null) {
             BoolQueryBuilder industryQuery = QueryBuilders.boolQuery();
             for (String industry : _sp.getIndustries()) {
-                industryQuery.should(QueryBuilders.matchQuery("industry", industry));
+                industryQuery.should(QueryBuilders.termQuery("industry", industry));
             }
             boolQuery.must(industryQuery);
 
@@ -158,7 +157,7 @@ public class CompanyNewsSearchRepo extends ElasticSearchManager implements Compa
         if (_sp.getSectors() != null) {
             BoolQueryBuilder sectorQuery = QueryBuilders.boolQuery();
             for (String sector : _sp.getSectors()) {
-                sectorQuery.should(QueryBuilders.matchQuery("sector", sector));
+                sectorQuery.should(QueryBuilders.termQuery("sector", sector));
             }
             boolQuery.must(sectorQuery);
         }
@@ -166,7 +165,7 @@ public class CompanyNewsSearchRepo extends ElasticSearchManager implements Compa
         if (_sp.getSearchDates() != null) {
             BoolQueryBuilder dateQuery = QueryBuilders.boolQuery();
             for (String dateForQuery : _sp.getSearchDates()) {
-                dateQuery.should(QueryBuilders.matchQuery("recordDate", dateForQuery));
+                dateQuery.should(QueryBuilders.termQuery("recordDate", dateForQuery));
             }
             boolQuery.must(dateQuery);
 
@@ -300,27 +299,26 @@ public class CompanyNewsSearchRepo extends ElasticSearchManager implements Compa
         SearchRequest searchRequest = new SearchRequest("companynews");
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         //searchSourceBuilder.query(QueryBuilders.matchAllQuery());
-        QueryBuilder matchQueryBuilder = null;
         BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
 
         if (_sp.getId() != null) {
-            boolQuery.must(QueryBuilders.matchQuery("id", _sp.getId()));
+            boolQuery.must(QueryBuilders.termQuery("id", _sp.getId()));
         }
 
         if (_sp.getStockExchange() != null) {
-            boolQuery.must(QueryBuilders.matchQuery("exchange", _sp.getStockExchange()));
+            boolQuery.must(QueryBuilders.termQuery("exchange", _sp.getStockExchange()));
 
         }
         if (_sp.getStockSymbol() != null) {
-            boolQuery.must(QueryBuilders.matchQuery("symbol", _sp.getStockSymbol()));
+            boolQuery.must(QueryBuilders.termQuery("symbol", _sp.getStockSymbol()));
         }
         if (_sp.getCompanyNewsItemId() != null) {
-            boolQuery.must(QueryBuilders.matchQuery("_id", _sp.getCompanyNewsItemId()));
+            boolQuery.must(QueryBuilders.termQuery("_id", _sp.getCompanyNewsItemId()));
         }
         if (_sp.getSearchDates() != null) {
             BoolQueryBuilder dateQuery = QueryBuilders.boolQuery();
             for (String dateForQuery : _sp.getSearchDates()) {
-                dateQuery.should(QueryBuilders.matchQuery("recordDate", dateForQuery));
+                dateQuery.should(QueryBuilders.termQuery("recordDate", dateForQuery));
             }
             boolQuery.must(dateQuery);
 
@@ -439,27 +437,26 @@ public class CompanyNewsSearchRepo extends ElasticSearchManager implements Compa
         SearchRequest searchRequest = new SearchRequest("companynews");
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         //searchSourceBuilder.query(QueryBuilders.matchAllQuery());
-        QueryBuilder matchQueryBuilder = null;
         BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
 
         if (_sp.getStockExchange() != null) {
             logger.debug("search for exchange:" + _sp.getStockExchange());
 
-            boolQuery.must(QueryBuilders.matchQuery("exchange", _sp.getStockExchange()));
+            boolQuery.must(QueryBuilders.termQuery("exchange", _sp.getStockExchange()));
 
         }
         if (_sp.getStockSymbol() != null) {
             logger.debug("search for symbol:" + _sp.getStockSymbol());
-            boolQuery.must(QueryBuilders.matchQuery("symbol", _sp.getStockSymbol()));
+            boolQuery.must(QueryBuilders.termQuery("symbol", _sp.getStockSymbol()));
         }
         if (_sp.getCompanyNewsItemId() != null) {
             logger.debug("search for id:" + _sp.getCompanyNewsItemId());
-            boolQuery.must(QueryBuilders.matchQuery("_id", _sp.getCompanyNewsItemId()));
+            boolQuery.must(QueryBuilders.termQuery("_id", _sp.getCompanyNewsItemId()));
         }
         if (_sp.getIncludedSystemRatings() != null) {
             BoolQueryBuilder systemRatingQuery = QueryBuilders.boolQuery();
             for (NewsItemRating rating : _sp.getIncludedSystemRatings()) {
-                systemRatingQuery.should(QueryBuilders.matchQuery("systemRating", rating.name()));
+                systemRatingQuery.should(QueryBuilders.termQuery("systemRating", rating.name()));
             }
             boolQuery.must(systemRatingQuery);
 
@@ -468,7 +465,7 @@ public class CompanyNewsSearchRepo extends ElasticSearchManager implements Compa
         if (_sp.getIncludedUserRatings() != null) {
             BoolQueryBuilder userRatingQuery = QueryBuilders.boolQuery();
             for (NewsItemRating rating : _sp.getIncludedUserRatings()) {
-                userRatingQuery.should(QueryBuilders.matchQuery("userRating", rating.name()));
+                userRatingQuery.should(QueryBuilders.termQuery("userRating", rating.name()));
             }
             boolQuery.must(userRatingQuery);
 
@@ -476,7 +473,7 @@ public class CompanyNewsSearchRepo extends ElasticSearchManager implements Compa
         if (_sp.getIndustries() != null) {
             BoolQueryBuilder industryQuery = QueryBuilders.boolQuery();
             for (String industry : _sp.getIndustries()) {
-                industryQuery.should(QueryBuilders.matchQuery("industry", industry));
+                industryQuery.should(QueryBuilders.termQuery("industry", industry));
             }
             boolQuery.must(industryQuery);
 
@@ -484,7 +481,7 @@ public class CompanyNewsSearchRepo extends ElasticSearchManager implements Compa
         if (_sp.getSectors() != null) {
             BoolQueryBuilder sectorQuery = QueryBuilders.boolQuery();
             for (String sector : _sp.getSectors()) {
-                sectorQuery.should(QueryBuilders.matchQuery("sector", sector));
+                sectorQuery.should(QueryBuilders.termQuery("sector", sector));
             }
             boolQuery.must(sectorQuery);
         }
@@ -492,7 +489,7 @@ public class CompanyNewsSearchRepo extends ElasticSearchManager implements Compa
         if (_sp.getSearchDates() != null) {
             BoolQueryBuilder dateQuery = QueryBuilders.boolQuery();
             for (String dateForQuery : _sp.getSearchDates()) {
-                dateQuery.should(QueryBuilders.matchQuery("recordDate", dateForQuery));
+                dateQuery.should(QueryBuilders.termQuery("recordDate", dateForQuery));
             }
             boolQuery.must(dateQuery);
 

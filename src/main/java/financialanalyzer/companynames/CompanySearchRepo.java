@@ -53,9 +53,7 @@ public class CompanySearchRepo extends ElasticSearchManager implements CompanyRe
                         "exchange", _company.getStockExchange(),
                         "sector", _company.getSectors(),
                         "industry", _company.getIndustries(),
-                        "enhancementVersion", _company.getEnhancementVersion(),
-                        "downloadStocks",_company.isDownloadStocks(),
-                        "downloadNews",_company.isDownloadNews()
+                        "enhancementVersion", _company.getEnhancementVersion()
                 );
 
         try {
@@ -108,25 +106,24 @@ public class CompanySearchRepo extends ElasticSearchManager implements CompanyRe
         SearchRequest searchRequest = new SearchRequest("companies");
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         //searchSourceBuilder.query(QueryBuilders.matchAllQuery());
-        QueryBuilder matchQueryBuilder = null;
         BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
 
         if (_csp.getCompanyName() != null) {
-            boolQuery.must(QueryBuilders.matchQuery("name", _csp.getCompanyName()));
+            boolQuery.must(QueryBuilders.termQuery("name", _csp.getCompanyName()));
         } else if (_csp.getStockExchange() != null) {
-            boolQuery.must(QueryBuilders.matchQuery("exchange", _csp.getStockExchange()));
+            boolQuery.must(QueryBuilders.termQuery("exchange", _csp.getStockExchange()));
 
         } else if (_csp.getStockSymbol() != null) {
-            boolQuery.must(QueryBuilders.matchQuery("symbol", _csp.getStockSymbol()));
+            boolQuery.must(QueryBuilders.termQuery("symbol", _csp.getStockSymbol()));
 
         } else if (_csp.getCompanyId() != null) {
-            boolQuery.must(QueryBuilders.matchQuery("_id", _csp.getCompanyId()));
+            boolQuery.must(QueryBuilders.termQuery("_id", _csp.getCompanyId()));
         }
 
         if (_csp.getIndustries() != null) {
             BoolQueryBuilder industryQuery = QueryBuilders.boolQuery();
             for (String industry : _csp.getIndustries()) {
-                industryQuery.should(QueryBuilders.matchQuery("industry", industry));
+                industryQuery.should(QueryBuilders.termQuery("industry", industry));
             }
             boolQuery.must(industryQuery);
 
@@ -134,7 +131,7 @@ public class CompanySearchRepo extends ElasticSearchManager implements CompanyRe
         if (_csp.getSectors() != null) {
             BoolQueryBuilder sectorQuery = QueryBuilders.boolQuery();
             for (String sector : _csp.getSectors()) {
-                sectorQuery.should(QueryBuilders.matchQuery("sector", sector));
+                sectorQuery.should(QueryBuilders.termQuery("sector", sector));
             }
             boolQuery.must(sectorQuery);
         }

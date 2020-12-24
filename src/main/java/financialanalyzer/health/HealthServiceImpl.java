@@ -71,10 +71,12 @@ public class HealthServiceImpl implements HealthService {
             if (companies != null) {
                 companyIds = new ArrayList<>();
                 for (Company company : companies) {
-                    if (_reProcessWhereAvailable) {
-                        this.companyNewsServiceImpl.submitCompanyToDownloadQueue(company);
+                    if (company.isDownloadNews()) {
+                        if (_reProcessWhereAvailable) {
+                            this.companyNewsServiceImpl.submitCompanyToDownloadQueue(company);
+                        }
+                        companyIds.add(company.getId());
                     }
-                    companyIds.add(company.getId());
                 }
                 hr.setCompaniesWithoutNewsItemsInPast3Days(companyIds);
                 previous_step_companies = companies;
@@ -85,10 +87,12 @@ public class HealthServiceImpl implements HealthService {
             if (companies != null) {
                 companyIds = new ArrayList<>();
                 for (Company company : companies) {
-                    if (_reProcessWhereAvailable) {
-                        this.companyNewsServiceImpl.submitCompanyToDownloadQueue(company);
+                    if (company.isDownloadNews()) {
+                        if (_reProcessWhereAvailable) {
+                            this.companyNewsServiceImpl.submitCompanyToDownloadQueue(company);
+                        }
+                        companyIds.add(company.getId());
                     }
-                    companyIds.add(company.getId());
                 }
                 previous_step_companies = companies;
                 hr.setCompaniesWithoutNewsItemsInPast7Days(companyIds);
@@ -99,10 +103,12 @@ public class HealthServiceImpl implements HealthService {
             if (companies != null) {
                 companyIds = new ArrayList<>();
                 for (Company company : companies) {
-                    if (_reProcessWhereAvailable) {
-                        this.companyNewsServiceImpl.submitCompanyToDownloadQueue(company);
+                    if (company.isDownloadNews()) {
+                        if (_reProcessWhereAvailable) {
+                            this.companyNewsServiceImpl.submitCompanyToDownloadQueue(company);
+                        }
+                        companyIds.add(company.getId());
                     }
-                    companyIds.add(company.getId());
                 }
                 hr.setCompaniesWithoutNewsItemsInPast30Days(companyIds);
             }
@@ -111,10 +117,12 @@ public class HealthServiceImpl implements HealthService {
             if (companies != null) {
                 companyIds = new ArrayList<>();
                 for (Company company : companies) {
-                    if (_reProcessWhereAvailable) {
-                        this.stockHistoryDowloadServiceImpl.queueCompanyForFetch(company, new Date(), true);
+                    if (company.isDownloadStocks()) {
+                        if (_reProcessWhereAvailable) {
+                            this.stockHistoryDowloadServiceImpl.queueCompanyForFetch(company, new Date(), true);
+                        }
+                        companyIds.add(company.getId());
                     }
-                    companyIds.add(company.getId());
                 }
                 hr.setCompaniesWithoutStockHistoriesInPast3Days(companyIds);
                 previous_step_companies = companies;
@@ -161,7 +169,7 @@ public class HealthServiceImpl implements HealthService {
             cnsp.addIncludedSystemRating(NewsItemRating.NEGATIVE);
             totalCount = this.companyNewsSearchRepo.searchForCompanyNewsCount(cnsp);
             hr.setTotalNumberOfNegativeSystemAnalyzedNewsItems(totalCount);
-         
+
             cnsp = new CompanyNewsSearchProperties();
             cnsp.addIncludedUserRating(NewsItemRating.NEGATIVE);
             totalCount = this.companyNewsSearchRepo.searchForCompanyNewsCount(cnsp);

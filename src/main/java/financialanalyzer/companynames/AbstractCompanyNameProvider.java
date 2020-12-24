@@ -18,7 +18,9 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLConnection;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
@@ -89,7 +91,12 @@ public abstract class AbstractCompanyNameProvider {
     protected boolean downloadCSVForExchangeFromNasDaq(String _url, String _fileName) {
         try {
             URL csvUrl = new URL(_url);
-            BufferedReader in = new BufferedReader(new InputStreamReader(csvUrl.openStream()));
+            HttpURLConnection  urlConn = (HttpURLConnection)csvUrl.openConnection();
+            //urlConn.setRequestProperty("Content-Type", "text/plain");
+            urlConn.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:56.0) Gecko/20100101 Firefox/56.0");
+            urlConn.setConnectTimeout(5000);
+            urlConn.setReadTimeout(5000);
+            BufferedReader in = new BufferedReader(new InputStreamReader(urlConn.getInputStream()));
             String inputLine;
             while ((inputLine = in.readLine()) != null){
                 System.out.println(inputLine);

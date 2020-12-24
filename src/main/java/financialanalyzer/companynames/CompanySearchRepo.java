@@ -190,8 +190,8 @@ public class CompanySearchRepo extends ElasticSearchManager implements CompanyRe
         List<String> sectors = (List<String>) _sourceAsMap.get("sector");
         List<String> industries = (List<String>) _sourceAsMap.get("industry");
         String enhancementVersion = (String) _sourceAsMap.get("enhancementVersion");
-        boolean downloadStocks = true;
-        boolean downloadNews = true;
+        boolean downloadStocks = (Boolean) _sourceAsMap.get("downloadStocks");
+        boolean downloadNews = (Boolean) _sourceAsMap.get("downloadNews");
         //boolean downloadStocks = (boolean) _sourceAsMap.get("downloadStocks");
         //boolean downloadNews = (boolean) _sourceAsMap.get("downloadNews");
 

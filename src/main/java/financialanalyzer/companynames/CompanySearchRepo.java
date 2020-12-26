@@ -96,7 +96,7 @@ public class CompanySearchRepo extends ElasticSearchManager implements CompanyRe
 
     @Override
     public List<Company> searchForCompany(CompanySearchProperties _csp) {
-        logger.info("Beginning searchForCompany");
+        logger.debug("Beginning searchForCompany");
         List<Company> companies = new ArrayList<>();
         RestHighLevelClient client = this.buildClient();
         if (client == null) {
@@ -172,7 +172,7 @@ public class CompanySearchRepo extends ElasticSearchManager implements CompanyRe
         }
 
         this.closeClient(client);
-        logger.info("Completed searchForCompany");
+        logger.debug("Completed searchForCompany");
 
         return companies;
 

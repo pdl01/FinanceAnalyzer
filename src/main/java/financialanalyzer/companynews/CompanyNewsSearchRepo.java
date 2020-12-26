@@ -43,7 +43,7 @@ public class CompanyNewsSearchRepo extends ElasticSearchManager implements Compa
 
     @Override
     public CompanyNewsItem submit(CompanyNewsItem _item) {
-        logger.info("processing submit");
+        logger.debug("processing submit");
         if (_item == null) {
             return null;
         }
@@ -95,7 +95,7 @@ public class CompanyNewsSearchRepo extends ElasticSearchManager implements Compa
 
     @Override
     public List<CompanyNewsItem> searchForCompanyNews(CompanyNewsSearchProperties _sp) {
-        logger.info("Beginning Search");
+        logger.debug("Beginning Search");
         List<CompanyNewsItem> cnis = new ArrayList<>();
         RestHighLevelClient client = this.buildClient();
         if (client == null) {
@@ -212,7 +212,7 @@ public class CompanyNewsSearchRepo extends ElasticSearchManager implements Compa
         }
 
         this.closeClient(client);
-        logger.info("Returning frm search");
+        logger.debug("Returning frm search");
         return cnis;
 
     }
@@ -288,7 +288,7 @@ public class CompanyNewsSearchRepo extends ElasticSearchManager implements Compa
 
     @Override
     public long getNumberOfNewsItemsForCompany(CompanyNewsSearchProperties _sp) {
-        logger.info("Beginning Search");
+        logger.debug("Beginning Search");
         List<CompanyNewsItem> cnis = new ArrayList<>();
         RestHighLevelClient client = this.buildClient();
         if (client == null) {
@@ -347,7 +347,7 @@ public class CompanyNewsSearchRepo extends ElasticSearchManager implements Compa
         }
 
         this.closeClient(client);
-        logger.info("Returning frm search");
+        logger.debug("Returning frm search");
         return -1;
     }
 

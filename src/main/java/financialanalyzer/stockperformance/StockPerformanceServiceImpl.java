@@ -55,7 +55,9 @@ public class StockPerformanceServiceImpl implements StockPerformanceService {
         shsp.setSortOrder("DESC");
         shsp.setNumResults(30);
         List<StockHistory> items = this.stockHistorySearchRepoImpl.searchForStockHistory(shsp);
-
+        if (items.size() == 0) {
+            return null;
+        }
         //get last 30 days sorted descending
         //calculate % gain from open of first to close of last
         int counter = 0;

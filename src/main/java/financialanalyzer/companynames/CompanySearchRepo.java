@@ -17,6 +17,7 @@ import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.action.update.UpdateResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.common.unit.Fuzziness;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -109,7 +110,8 @@ public class CompanySearchRepo extends ElasticSearchManager implements CompanyRe
         BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
 
         if (_csp.getCompanyName() != null) {
-            boolQuery.must(QueryBuilders.termQuery("name", _csp.getCompanyName()));
+            boolQuery.must(QueryBuilders.matchQuery("name", _csp.getCompanyName()).fuzziness(Fuzziness.AUTO));
+            
         } else if (_csp.getStockExchange() != null) {
             boolQuery.must(QueryBuilders.termQuery("exchange", _csp.getStockExchange()));
 

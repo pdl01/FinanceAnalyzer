@@ -5,6 +5,12 @@
  */
 package financialanalyzer.controller.v1;
 
+import financialanalyzer.report.ReportGenerator;
+import financialanalyzer.report.ReportGeneratorRegistry;
+import financialanalyzer.stockhistory.StockHistory;
+import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,17 +22,40 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/publicpackage")
 public class VideoPackageRestController {
+    @Autowired
+    private ReportGeneratorRegistry reportGeneratorRegistry;
+    
+    @RequestMapping(value = "/audioscript/{endDate}/{reportName}", method = RequestMethod.GET, produces = "application/json")
+    public RestResponse generateSummaryScriptForItem(@PathVariable("reportName") String _reportName,@PathVariable("endDate") String _endDate) {
+        RestResponse restResponse = new RestResponse();
+        String script = this.buildDailyScriptForReport(_reportName, _endDate,10);
 
-    @RequestMapping(value = "/audioscript/{date}/{reportName}", method = RequestMethod.GET, produces = "application/json")
-    public void generateSummaryScriptForItem() {
-
+        restResponse.setObject(script);
+        return restResponse;
     }
-    @RequestMapping(value = "/audioreport/{date}/{reportName}", method = RequestMethod.GET, produces = "application/json")
-    public void generateSummaryAudioForItem() {
 
-    }
-    @RequestMapping(value = "/videoreport/{date}/{reportName}", method = RequestMethod.GET, produces = "application/json")
-    public void geneateSummaryVideoForItem() {
+    @RequestMapping(value = "/audioreport/{endDate}/{reportName}", method = RequestMethod.GET, produces = "application/json")
+    public RestResponse generateSummaryAudioForItem(@PathVariable("reportName") String _reportName,@PathVariable("endDate") String _endDate) {
+        RestResponse restResponse = new RestResponse();
 
+        return restResponse;
     }
+
+    @RequestMapping(value = "/videoreport/{endDate}/{reportName}", method = RequestMethod.GET, produces = "application/json")
+    public RestResponse geneateSummaryVideoForItem(@PathVariable("reportName") String _reportName,@PathVariable("endDate") String _endDate) {
+        RestResponse restResponse = new RestResponse();
+ 
+        return restResponse;
+    }
+
+
+    private String buildDailyScriptForReport(String _reportId, String _endDate, int _numItems) {
+        for (ReportGenerator reportGenerator : this.reportGeneratorRegistry.getReportGenerators()) {
+            if (reportGenerator.getId().equalsIgnoreCase(_reportId)) {
+                return reportGenerator.getReportAudioScript(_endDate, _numItems);
+            }
+        }
+        return null;
+    }
+
 }

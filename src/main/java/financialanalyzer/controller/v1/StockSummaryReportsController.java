@@ -48,8 +48,8 @@ public class StockSummaryReportsController {
     private final static String TOP_VOLUMES_BY_AMOUNT = "top-volumes-by-amount";
     private final static String TOP_VOLUMES_BY_AVERAGE = "top-volumes-by-average";
 
-    @Autowired
-    private StockHistoryRepo stockHistorySearchRepo;
+    //@Autowired
+    //private StockHistoryRepo stockHistorySearchRepo;
 
     @Autowired
     private StockPerformanceRepo stockPerformanceSearchRepo;

@@ -5,9 +5,13 @@
  */
 package financialanalyzer.report;
 
+import financialanalyzer.companynames.CompanySearchRepo;
+import financialanalyzer.objects.Company;
+import financialanalyzer.objects.CompanySearchProperties;
 import financialanalyzer.stockhistory.StockHistory;
 import financialanalyzer.stockhistory.StockHistoryRepo;
 import financialanalyzer.stockhistory.StockHistorySearchProperties;
+import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -22,10 +26,13 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class TopLosersByAmountGenerator implements ReportGenerator {
+
     private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(TopLosersByAmountGenerator.class.getName());
 
     @Autowired
     private StockHistoryRepo stockHistorySearchRepo;
+    @Autowired
+    private CompanySearchRepo companySearchRepo;
 
     @Override
     public ReportSummary getReport(String _startDate, String _endDate) {
@@ -39,30 +46,32 @@ public class TopLosersByAmountGenerator implements ReportGenerator {
 
         SimpleDateFormat longFormDaySDF = new SimpleDateFormat("EEEE MMMM d y");
         SimpleDateFormat dateConverterSDF = new SimpleDateFormat("yyyy-MM-dd");
-        
+
+        NumberFormat currencyFormat = NumberFormat.getCurrencyInstance();
+
         StringBuilder sb = new StringBuilder();
         sb.append(header);
         try {
             sb.append(longFormDaySDF.format(dateConverterSDF.parse(_date)));
         } catch (ParseException ex) {
-            LOGGER.error("Unable to parse date"+_date,ex);
+            LOGGER.error("Unable to parse date" + _date, ex);
         }
         sb.append(" were ");
-        for (StockHistory stockHistory: stockHistories) {
+        for (StockHistory stockHistory : stockHistories) {
             //TODO: do name lookup
-            sb.append(stockHistory.getSymbol());
-            
+            sb.append(stockHistory.getCompanyName());
+
             sb.append(" with a loss of ");
-            sb.append(stockHistory.getActual_gain());
+            sb.append(currencyFormat.format(stockHistory.getActual_gain()));
             sb.append(" from ");
-            sb.append(stockHistory.getOpen());
+            sb.append(currencyFormat.format(stockHistory.getOpen()));
             sb.append(" to ");
-            sb.append(stockHistory.getClose());
+            sb.append(currencyFormat.format(stockHistory.getClose()));
             sb.append(", ");
         }
-        
+
         return sb.toString();
-        
+
     }
 
     @Override
@@ -78,13 +87,31 @@ public class TopLosersByAmountGenerator implements ReportGenerator {
         shsp.setSearchDate(_date);
         shsp.setStartResults(_start);
         shsp.setNumResults(_numResults);
-        shsp.setSortField("percent_gain");
+        shsp.setSortField("actual_gain");
         shsp.setSortOrder("ASC");
         List<StockHistory> shs = this.stockHistorySearchRepo.searchForStockHistory(shsp);
         if (shs != null) {
-            stockHistories.addAll(shs);
+            for (StockHistory stockHistory : shs) {
+                stockHistory.setCompanyName(this.getCompanyName(stockHistory.getExchange(), stockHistory.getSymbol()));
+                stockHistories.add(stockHistory);
+            }
+            //stockHistories.addAll(shs);
         }
         return stockHistories;
     }
 
+    private String getCompanyName(String _exchange, String _symbol) {
+        CompanySearchProperties csp = new CompanySearchProperties();
+        csp.setStockExchange(_exchange);
+        csp.setStockSymbol(_symbol);
+        int numResultsPerBatch = 1;
+        csp.setStartResults(0);
+        csp.setNumResults(numResultsPerBatch);
+
+        List<Company> companies = this.companySearchRepo.searchForCompany(csp);
+        if (companies != null && companies.size() > 0) {
+            return companies.get(0).getName();
+        }
+        return "";
+    }
 }

@@ -6,7 +6,6 @@
 package financialanalyzer.stockperformance;
 
 import financialanalyzer.elasticsearch.ElasticSearchManager;
-import financialanalyzer.stockhistory.StockHistory;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;

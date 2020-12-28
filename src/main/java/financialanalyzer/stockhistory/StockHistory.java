@@ -25,7 +25,8 @@ public class StockHistory {
     private String enhancementVersion;
     private List<String> sectors;
     private List<String> industries;    
-            
+    private String companyName;
+    
     public Date getRecordDate() {
         return recordDate;
     }
@@ -136,6 +137,14 @@ public class StockHistory {
 
     public void setIndustries(List<String> industries) {
         this.industries = industries;
+    }
+
+    public String getCompanyName() {
+        return companyName;
+    }
+
+    public void setCompanyName(String companyName) {
+        this.companyName = companyName;
     }
     
 }

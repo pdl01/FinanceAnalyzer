@@ -1,9 +1,13 @@
 package financialanalyzer.report;
 
+import financialanalyzer.companynames.CompanySearchRepo;
+import financialanalyzer.objects.Company;
+import financialanalyzer.objects.CompanySearchProperties;
 import financialanalyzer.stockhistory.StockHistory;
 import financialanalyzer.stockhistory.StockHistoryRepo;
 import financialanalyzer.stockhistory.StockHistorySearchProperties;
 import financialanalyzer.stockperformance.StockPerformanceRepo;
+import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -26,7 +30,8 @@ public class TopGainersByAmountGenerator implements ReportGenerator {
 
     @Autowired
     private StockPerformanceRepo stockPerformanceSearchRepo;
-
+    @Autowired
+    private CompanySearchRepo companySearchRepo;
     @Override
     public ReportSummary getReport(String _startDate, String _endDate) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
@@ -47,16 +52,17 @@ public class TopGainersByAmountGenerator implements ReportGenerator {
             LOGGER.error("Unable to parse date"+_date,ex);
         }
         sb.append(" were ");
+        NumberFormat currencyFormat = NumberFormat.getCurrencyInstance();
         for (StockHistory stockHistory: stockHistories) {
             //TODO: do name lookup
-            sb.append(stockHistory.getSymbol());
+            sb.append(stockHistory.getCompanyName());
             
             sb.append(" with a gain of ");
-            sb.append(stockHistory.getActual_gain());
+            sb.append(currencyFormat.format(stockHistory.getActual_gain()));
             sb.append(" from ");
-            sb.append(stockHistory.getOpen());
+            sb.append(currencyFormat.format(stockHistory.getOpen()));
             sb.append(" to ");
-            sb.append(stockHistory.getClose());
+            sb.append(currencyFormat.format(stockHistory.getClose()));
             sb.append(", ");
         }
         
@@ -74,8 +80,12 @@ public class TopGainersByAmountGenerator implements ReportGenerator {
         shsp.setSortField("actual_gain");
         shsp.setSortOrder("DESC");
         List<StockHistory> shs = this.stockHistorySearchRepo.searchForStockHistory(shsp);
-        if (shs != null) {
-            stockHistories.addAll(shs);
+      if (shs != null) {
+            for (StockHistory stockHistory:shs){
+               stockHistory.setCompanyName(this.getCompanyName(stockHistory.getExchange(), stockHistory.getSymbol()));
+               stockHistories.add(stockHistory);
+            }
+            //stockHistories.addAll(shs);
         }
 
         return stockHistories;
@@ -85,5 +95,18 @@ public class TopGainersByAmountGenerator implements ReportGenerator {
     public String getId() {
         return "gainers-amount";
     }
+    private String getCompanyName(String _exchange,String _symbol) {
+        CompanySearchProperties csp = new CompanySearchProperties();
+            csp.setStockExchange(_exchange);
+            csp.setStockSymbol(_symbol);
+            int numResultsPerBatch = 1;
+            csp.setStartResults(0);
+            csp.setNumResults(numResultsPerBatch);
 
+            List<Company> companies = this.companySearchRepo.searchForCompany(csp);
+            if (companies != null && companies.size()>0){
+                return companies.get(0).getName();
+            }
+            return "";
+    }
 }

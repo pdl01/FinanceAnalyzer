@@ -111,14 +111,16 @@ public class CompanySearchRepo extends ElasticSearchManager implements CompanyRe
 
         if (_csp.getCompanyName() != null) {
             boolQuery.must(QueryBuilders.matchQuery("name", _csp.getCompanyName()).fuzziness(Fuzziness.AUTO));
-            
-        } else if (_csp.getStockExchange() != null) {
+        }
+        if (_csp.getStockExchange() != null) {
             boolQuery.must(QueryBuilders.termQuery("exchange", _csp.getStockExchange()));
 
-        } else if (_csp.getStockSymbol() != null) {
+        }
+        if (_csp.getStockSymbol() != null) {
             boolQuery.must(QueryBuilders.termQuery("symbol", _csp.getStockSymbol()));
 
-        } else if (_csp.getCompanyId() != null) {
+        }
+        if (_csp.getCompanyId() != null) {
             boolQuery.must(QueryBuilders.termQuery("_id", _csp.getCompanyId()));
         }
 

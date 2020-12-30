@@ -7,11 +7,9 @@ package financialanalyzer.controller.v1;
 
 import financialanalyzer.health.HealthRecord;
 import financialanalyzer.health.HealthService;
-import financialanalyzer.objects.NewsItemForm;
 import financialanalyzer.stockhistory.GapAnalysisManagerImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -66,5 +64,10 @@ public class HealthController {
         RestResponse restResponse = new RestResponse();
         return restResponse;
     }
-
+    @RequestMapping(value = "/gaps/day/{date}", method = RequestMethod.POST, produces = "application/json")
+    public RestResponse performGapFill(@PathVariable("date") String _date) {
+        this.gapAnalysisManagerImpl.execute(_date);
+        RestResponse restResponse = new RestResponse();
+        return restResponse;
+    }
 }

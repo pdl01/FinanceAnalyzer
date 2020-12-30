@@ -51,6 +51,9 @@ public class HealthServiceImpl implements HealthService {
     @Autowired
     private StockHistoryDownloadService stockHistoryDowloadServiceImpl;
 
+    @Autowired
+    private GapAnalysisManagerImpl gapAnalysisManagerImpl;
+    
     @Override
     public HealthRecord generateHealthRecord(boolean _reProcessWhereAvailable) {
         if (this.isBuilding) {
@@ -185,6 +188,8 @@ public class HealthServiceImpl implements HealthService {
             totalCount = this.companyNewsSearchRepo.searchForCompanyNewsCount(cnsp);
             hr.setTotalNumberOfUserUnanalyzedNewsItems(totalCount);
 
+            hr.setDailyStockCount(this.generateStockHistoryDateCountList(10));
+            
             this.isBuilding = false;
             //save the record
             this.healthRecordCache.clearCache();
@@ -209,6 +214,8 @@ public class HealthServiceImpl implements HealthService {
                 CompanyNewsSearchProperties cnsp = new CompanyNewsSearchProperties();
                 cnsp.setStockExchange(item.getStockExchange());
                 cnsp.setStockSymbol(item.getStockSymbol());
+                cnsp.setSortField("symbol");
+                cnsp.setSortOrder("ASC");
                 cnsp.setNumResults(10);
                 //List<CompanyNewsItem> cnis = this.companyNewsSearchRepo.searchForCompanyNews(cnsp);
                 if (searchDates != null) {
@@ -232,6 +239,8 @@ public class HealthServiceImpl implements HealthService {
                 boolean hasMoreResults = true;
                 csp.setStartResults(0);
                 csp.setNumResults(numResultsPerBatch);
+                csp.setSortField("symbol");
+                csp.setSortOrder("ASC");
 
                 while (hasMoreResults) {
                     List<Company> companies = this.companySearchRepo.searchForCompany(csp);
@@ -331,7 +340,9 @@ public class HealthServiceImpl implements HealthService {
                 boolean hasMoreResults = true;
                 csp.setStartResults(0);
                 csp.setNumResults(numResultsPerBatch);
-
+                csp.setSortField("symbol");
+                csp.setSortOrder("ASC");
+                
                 while (hasMoreResults) {
                     List<Company> companies = this.companySearchRepo.searchForCompany(csp);
                     if (companies != null) {
@@ -388,6 +399,11 @@ public class HealthServiceImpl implements HealthService {
     @Override
     public HealthRecord getHealthRecord(String _key) {
         return this.healthRecordCache.get(_key);
+    }
+
+    public List<StockHistoryDateCount> generateStockHistoryDateCountList(int _days) {
+        return this.gapAnalysisManagerImpl.query(_days);
+        
     }
 
 }

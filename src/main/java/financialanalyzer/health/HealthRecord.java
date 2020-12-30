@@ -32,6 +32,8 @@ public class HealthRecord {
     private long totalNumberOfPositiveSystemAnalyzedNewsItems;
     private long totalNumberOfNegativeSystemAnalyzedNewsItems;
 
+    private List<StockHistoryDateCount> dailyStockCount;
+
     public Date getRecordDate() {
         return recordDate;
     }
@@ -150,6 +152,14 @@ public class HealthRecord {
 
     public void setCompaniesWithoutStockHistoriesInPast3Days(List<String> companiesWithoutStockHistoriesInPast3Days) {
         this.companiesWithoutStockHistoriesInPast3Days = companiesWithoutStockHistoriesInPast3Days;
+    }
+
+    public List<StockHistoryDateCount> getDailyStockCount() {
+        return dailyStockCount;
+    }
+
+    public void setDailyStockCount(List<StockHistoryDateCount> dailyStockCount) {
+        this.dailyStockCount = dailyStockCount;
     }
 
 }

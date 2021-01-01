@@ -33,7 +33,22 @@ public class VideoPackageRestController {
         restResponse.setObject(script);
         return restResponse;
     }
+    
+    @RequestMapping(value = "/videoTags/{endDate}/{reportName}", method = RequestMethod.GET, produces = "application/json")
+    public RestResponse generateVideoTagsForItem(@PathVariable("reportName") String _reportName,@PathVariable("endDate") String _endDate) {
+        RestResponse restResponse = new RestResponse();
+        String reportTags = "";
+        for (ReportGenerator reportGenerator : this.reportGeneratorRegistry.getReportGenerators()) {
+            if (reportGenerator.getId().equalsIgnoreCase(_reportName)) {
+                reportTags =  reportGenerator.getReportTags(_endDate, 10);
+            }
+        }
+        
 
+        restResponse.setObject(reportTags);
+        return restResponse;
+    }
+    
     @RequestMapping(value = "/audioreport/{endDate}/{reportName}", method = RequestMethod.GET, produces = "application/json")
     public RestResponse generateSummaryAudioForItem(@PathVariable("reportName") String _reportName,@PathVariable("endDate") String _endDate) {
         RestResponse restResponse = new RestResponse();

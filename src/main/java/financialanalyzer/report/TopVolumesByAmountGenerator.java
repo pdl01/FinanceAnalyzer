@@ -23,7 +23,7 @@ import org.springframework.stereotype.Component;
  * @author pldor
  */
 @Component
-public class TopVolumesByAmountGenerator implements ReportGenerator {
+public class TopVolumesByAmountGenerator extends AbstractReportGenerator implements ReportGenerator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TopVolumesByAmountGenerator.class.getName());
 
@@ -31,8 +31,6 @@ public class TopVolumesByAmountGenerator implements ReportGenerator {
     private StockHistoryReportSearchRepo stockHistoryReportSearchRepo;
     @Autowired
     private StockHistoryRepo stockHistorySearchRepo;
-    @Autowired
-    private CompanySearchRepo companySearchRepo;
 
     @Override
     public ReportSummary getReport(String _startDate, String _endDate) {
@@ -82,8 +80,6 @@ public class TopVolumesByAmountGenerator implements ReportGenerator {
 
     @Override
     public List<StockHistory> getReport(String _date, int _start, int _numResults) {
-        LOGGER.debug("Inside getReport");
-        List<StockHistory> stockHistories = new ArrayList<>();
 
         StockHistorySearchProperties shsp = new StockHistorySearchProperties();
         shsp.setSearchDate(_date);
@@ -91,30 +87,13 @@ public class TopVolumesByAmountGenerator implements ReportGenerator {
         shsp.setNumResults(_numResults);
         shsp.setSortField("volume");
         shsp.setSortOrder("DESC");
-        List<StockHistory> shs = this.stockHistorySearchRepo.searchForStockHistory(shsp);
-        if (shs != null) {
-            for (StockHistory stockHistory : shs) {
-                stockHistory.setCompanyName(this.getCompanyName(stockHistory.getExchange(), stockHistory.getSymbol()));
-                stockHistories.add(stockHistory);
-            }
-            //stockHistories.addAll(shs);
-        }
-
-        return stockHistories;
+        return this.buildStockHistoryList(shsp);
     }
 
-    private String getCompanyName(String _exchange, String _symbol) {
-        CompanySearchProperties csp = new CompanySearchProperties();
-        csp.setStockExchange(_exchange);
-        csp.setStockSymbol(_symbol);
-        int numResultsPerBatch = 1;
-        csp.setStartResults(0);
-        csp.setNumResults(numResultsPerBatch);
-
-        List<Company> companies = this.companySearchRepo.searchForCompany(csp);
-        if (companies != null && companies.size() > 0) {
-            return companies.get(0).getName();
-        }
-        return "";
+    @Override
+    public String getReportTags(String _date, int numOfItemsToInclude) {
+        List<StockHistory> stockHistories = this.getReport(_date, 0, numOfItemsToInclude);
+        return this.buildReportTags(stockHistories);
     }
+
 }

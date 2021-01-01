@@ -21,13 +21,12 @@ import org.springframework.stereotype.Component;
  * @author pldor
  */
 @Component
-public class TopGainersByPercentageGenerator implements ReportGenerator {
+public class TopGainersByPercentageGenerator extends AbstractReportGenerator implements ReportGenerator {
     private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(TopGainersByPercentageGenerator.class.getName());
 
     @Autowired
     private StockHistoryRepo stockHistorySearchRepo;
-    @Autowired
-    private CompanySearchRepo companySearchRepo;
+
     @Override
     public ReportSummary getReport(String _startDate, String _endDate) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
@@ -75,7 +74,6 @@ public class TopGainersByPercentageGenerator implements ReportGenerator {
 
     @Override
     public List<StockHistory> getReport(String _date, int _start, int _numResults) {
-        List<StockHistory> stockHistories = new ArrayList<>();
 
         StockHistorySearchProperties shsp = new StockHistorySearchProperties();
         shsp.setSearchDate(_date);
@@ -83,28 +81,14 @@ public class TopGainersByPercentageGenerator implements ReportGenerator {
         shsp.setNumResults(_numResults);
         shsp.setSortField("percent_gain");
         shsp.setSortOrder("DESC");
-        List<StockHistory> shs = this.stockHistorySearchRepo.searchForStockHistory(shsp);
-       if (shs != null) {
-            for (StockHistory stockHistory:shs){
-               stockHistory.setCompanyName(this.getCompanyName(stockHistory.getExchange(), stockHistory.getSymbol()));
-               stockHistories.add(stockHistory);
-            }
-            //stockHistories.addAll(shs);
-        }
-        return stockHistories;
-    }
-    private String getCompanyName(String _exchange,String _symbol) {
-        CompanySearchProperties csp = new CompanySearchProperties();
-            csp.setStockExchange(_exchange);
-            csp.setStockSymbol(_symbol);
-            int numResultsPerBatch = 1;
-            csp.setStartResults(0);
-            csp.setNumResults(numResultsPerBatch);
+        return this.buildStockHistoryList(shsp);
 
-            List<Company> companies = this.companySearchRepo.searchForCompany(csp);
-            if (companies != null && companies.size()>0){
-                return companies.get(0).getName();
-            }
-            return "";
     }
+
+    @Override
+    public String getReportTags(String _date, int numOfItemsToInclude) {
+        List<StockHistory> stockHistories = this.getReport(_date, 0, numOfItemsToInclude);
+        return this.buildReportTags(stockHistories);
+    }
+    
 }

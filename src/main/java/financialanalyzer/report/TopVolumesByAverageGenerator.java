@@ -12,7 +12,7 @@ import java.util.List;
  *
  * @author pldor
  */
-public class TopVolumesByAverageGenerator implements ReportGenerator{
+public class TopVolumesByAverageGenerator extends AbstractReportGenerator implements ReportGenerator{
 
     @Override
     public ReportSummary getReport(String _startDate, String _endDate) {
@@ -32,6 +32,12 @@ public class TopVolumesByAverageGenerator implements ReportGenerator{
     @Override
     public List<StockHistory> getReport(String _date, int _start, int _numResults) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String getReportTags(String _date, int numOfItemsToInclude) {
+        List<StockHistory> stockHistories = this.getReport(_date, 0, numOfItemsToInclude);
+        return this.buildReportTags(stockHistories);
     }
     
 }

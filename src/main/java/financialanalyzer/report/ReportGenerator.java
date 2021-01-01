@@ -17,4 +17,5 @@ public interface ReportGenerator {
     public ReportSummary getReport(String _startDate,String _endDate);
     public List<StockHistory> getReport(String _date,int _start,int _numResults);
     public String getReportAudioScript(String _date,int numOfItemsToInclude);
+    public String getReportTags(String _date,int numOfItemsToInclude);
 }
